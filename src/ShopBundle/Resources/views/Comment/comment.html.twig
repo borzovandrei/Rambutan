@@ -1,0 +1,6 @@
+{{ form_start(form, { 'action': path('comment_create' , { 'product_id' : comment.product.id }), 'method': 'POST' }) }}
+
+    {{ form_widget(form) }}
+<p>
+    <input type="submit" value="Добавить">
+</p>

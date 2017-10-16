@@ -1,0 +1,12 @@
+{% extends 'ShopBundle:Default:index.html.twig' %}
+
+{% block title %}Чат{% endblock %}
+
+{% block body %}
+   Добро пожаловать в чат!
+    {% for chatroom in chatroom %}
+     <br> <a href="{{ path('shop_chat', { 'id': chatroom.idRoom })}}">{{ chatroom.name }}</a>
+    {% else %}
+       <p>ВСКОРЕ ВЫ СМОЖЕТЕ СОЗДАВАТЬ ЧАТЫ</p>
+    {% endfor %}
+{% endblock %}

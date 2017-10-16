@@ -1,0 +1,7 @@
+{% extends 'ShopBundle:Default:index.html.twig' %}
+
+
+{% block body %}
+    <h1>Добавить отзыв для товара "{{ comment.product.name }}"</h1>
+    {% include 'ShopBundle:Comment:comment.html.twig' with { 'form': form } %}
+{% endblock %}

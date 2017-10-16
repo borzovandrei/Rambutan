@@ -1,0 +1,92 @@
+shop_homepage:
+    path:     /
+    defaults: { _controller: ShopBundle:Default:navigation }
+
+
+shop_product:
+    path:     /product/{id}
+    defaults: { _controller: ShopBundle:Default:product }
+    requirements:
+            methods:  GET
+            id: \d+
+
+shop_sort:
+    path:     /{id}
+    defaults: { _controller: ShopBundle:Default:navigation }
+    requirements:
+            methods:  POST
+            id: \d+
+
+############################################################################################################
+
+shop_login:
+    path:   /login
+    defaults: { _controller: ShopBundle:Page:login }
+    requirements:
+         methods:  GET
+
+shop_reg:
+    path:   /reg
+    defaults: { _controller: ShopBundle:Page:reg }
+    requirements:
+         methods:  GET
+
+############################################################################################################
+
+_security_login:
+    path:  /login
+    defaults: { _controller: ShopBundle:Page:login }
+
+_security_check:
+    path:  /login_check
+
+_security_logout:
+    path:  /logout
+
+admin_home:
+    path:  /admin
+    defaults: { _controller: ShopBundle:Admin:index }
+
+
+admin_product_edit:
+    path: /admin/product/{id}/edit
+    defaults: { _controller: ShopBundle:Admin:productEdit}
+    requirements:
+            id: \d+
+
+shop_add:
+    path:   /admin/add
+    defaults: { _controller: ShopBundle:Admin:addProduct }
+    requirements:
+         methods:  GET
+
+############################################################################################################
+chat_room:
+    path:  /chat
+    defaults: { _controller: ShopBundle:Page:chat }
+    requirements:
+              methods:  GET
+
+
+shop_chat:
+    path:  /chatroom/{id}
+    defaults: { _controller: ShopBundle:Page:chatroom }
+    requirements:
+              methods:  GET
+              id: \d+
+
+
+chat_send:
+    path:  /chat_send/{id}
+    defaults: { _controller: ShopBundle:Page:send }
+    requirements:
+              methods:  POST
+              id: \d+
+
+
+comment_create:
+    path:  /comment/{product_id}
+    defaults: { _controller: ShopBundle:Comment:create }
+    requirements:
+        methods:  POST
+        blog_id: \d+

@@ -1,0 +1,86 @@
+{% extends 'ShopBundle:Default:index.html.twig' %}
+
+
+{% block title %}Чат{% endblock%}
+
+{% block body %}
+
+
+
+
+   <p class="lead">Добро пожаловать в чат!</p>
+
+
+   {% for chat in chat %}
+      <article class="comment" id="comment">
+         <p><span class="highlight">{{ chat.author }}</span> {{ chat.message }}</p>
+      </article>
+   {% else %}
+      <p>Вы можете написать тут первым</p>
+   {% endfor %}
+
+
+
+   <article class="comment" id="comment">
+      <span class="highlight" id="autor"> <p id="msg"> </p> </span>
+   </article>
+
+
+   {#<p id="autor">#}
+   {#<p id="msg">#}
+
+
+
+
+   <form id="publish" class="form-inline">
+      <input type="text" name="message"/>
+      <input type="submit" class="btn btn-primary" value="Отправить"/>
+   </form>
+
+
+
+   <script>
+       const messages = document.getElementById('msg');
+       const autor = document.getElementById('autor');
+
+       publish.onsubmit = function(){
+           var xhr = new XMLHttpRequest();
+           xhr.open("POST", '/chat_send/{{ id }}', true);
+           xhr.onload = function(){
+           };
+
+           xhr.send(JSON.stringify({message: this.elements.message.value}));
+           this.elements.message.value = '';
+           return false;
+       };
+
+       subscribe();
+
+       function subscribe(){
+
+           var xhr = new XMLHttpRequest();
+           var timestamp = (new Date()).getTime();
+           url = 'http://localhost:8008/sub/' + {{ id }} + "?&v=" + timestamp;
+           xhr.open("GET", url, true);
+           xhr.onload = function(){
+               var autors = document.createElement('autor');
+               var msgs = document.createElement('msg');
+
+               autors.textContent = JSON.parse(this.responseText).user_autor;
+               autor.appendChild(autors);
+
+               msgs.textContent = JSON.parse(this.responseText).message['message'];
+               messages.appendChild(msgs);
+
+               subscribe();
+           };
+           xhr.onerror = xhr.onabort = function(){
+               setTimeout(subscribe, 500);
+           };
+           xhr.send('');
+       }
+
+   </script>
+
+
+{% endblock %}

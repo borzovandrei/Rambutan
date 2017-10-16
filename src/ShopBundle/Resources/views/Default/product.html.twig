@@ -1,0 +1,34 @@
+{% extends 'ShopBundle:Default:index.html.twig' %}
+
+{% block body %}
+
+
+    <img class="rounded"
+         src="{{ asset(['img/products/', product.path]|join) }}"
+         alt="Generic placeholder image" width="340" height="340">
+    <h2>{{ product.name }}.</h2>
+    <h3>Осталось на складе: {{ product.balanse }} ({{  product.measure.name }}.)</h3>
+    <p>Цена: {{ product.shopPrice }} руб.</p>
+    <p><a class="btn btn-secondary" data-id="{{ product.id }}" data-price="{{ product.shopPrice }}" href="#" role="button">Купить</a></p>
+    <p><a class="btn btn-secondary" href="{{ path('admin_product_edit', { 'id': product.id }) }}">Изменить</a></p>
+
+    <script src="{{ asset('scripts/js/add_cart.js') }}"></script>
+
+    <h3>Отзывы</h3>
+
+    {% for comment in comments %}
+        <article class="comment {{ cycle(['odd', 'even'], loop.index0) }}" id="comment-{{ comment.id }}">
+            <header>
+                <p><span class="highlight">{{ comment.user }}</span> commented <time datetime="{{ comment.created|date('c') }}">{{ comment.created|date('l, F j, Y') }}</time></p>
+            </header>
+            <p>{{ comment.comment }}</p>
+        </article>
+    {% else %}
+        <p>Упс.. Пока что никто не оставлял отзыв на этот товр. Вы можете сделать это первым.</p>
+    {% endfor %}
+
+    <h3>Оставить отзыв:</h3>
+
+    {{ render(controller('ShopBundle:Comment:new', { 'product_id':  product.id })) }}
+
+{% endblock %}

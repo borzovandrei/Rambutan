@@ -1,0 +1,54 @@
+{% extends 'ShopBundle:Default:index.html.twig' %}
+
+{% block title %}Добавить продукт{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="container">
+                <form>
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Новый прдукт</label>
+                        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                               placeholder="Яблоко">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleFormControlSelect1">Выберете категорию</label>
+                        <select class="form-control" id="exampleFormControlSelect1">
+                            <option>1</option>
+                            <option>2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput">Закупочная цена</label>
+                        <input type="text" class="form-control" id="exampleInputPassword1" placeholder="По чем продали">
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInput">Цена в магазине</label>
+                        <input type="text" class="form-control" id="exampleInputPassword1" placeholder="По чем продаем">
+                    </div>
+                    <div class="form-group">
+                        <input type="file" name="image" id="image" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <form>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Новая категория</label>
+                    <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                           placeholder="Фрукты">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Подробнее</label>
+                    <input type="text" class="form-control" id="exampleInputPassword1" placeholder="Описание категории">
+                </div>
+                <button type="submit" class="btn btn-primary">Добавить</button>
+            </form>
+        </div>
+    </div>
+
+    {{ form(form_add_product, {'attr': {'class': 'form-control'}}) }}
+{% endblock %}
