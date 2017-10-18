@@ -1,38 +1,40 @@
 {% extends 'ShopBundle:Default:index.html.twig' %}
 {% block body %}
-
-
-    <div class="container">
-        <h2>Корзина</h2>
-        <p>Вы можете добавить или удалить товар:</p>
-        <table class="table table-condensed">
-            <thead>
-            <tr>
-                <th>Изображение</th>
-                <th>Продукт</th>
-                <th>Цена</th>
-                <th>Колличество</th>
-                <th>Удалить</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for cart in carts %}
+        <div class="container">
+            <h2>Корзина</h2>
+            <p>Вы можете добавить или удалить товар:</p>
+            <table class="table table-condensed">
+                <thead>
                 <tr>
-                    <td><img class="rounded"
-                             src="{{ asset(['img/products/', cart.path]|join) }}"
-                             alt="Generic placeholder image" width="50" height=50></td>
-                    <td>{{ cart.name }}</td>
-                    <td>{{ cart.shopprice }}</td>
-                    <td> {{ result[cart.id] }}</td>
-                    <td><a class="btn btn-secondary" role="button">Удалить</a></td>
+                    <th>Изображение</th>
+                    <th>Продукт</th>
+                    <th>Цена</th>
+                    <th>Колличество</th>
+                    <th>Изменить</th>
                 </tr>
-            {% else %}
-                <p>Положите товар в корзину</p>
-            {% endfor %}
-            </tbody>
-        </table>
-        <br>Итого в вашей корзине продуктов на:
-    </div>
-    <td><a class="btn btn-secondary" role="button" href="{{ path('shop_order')}}">Оформить заказ</a></td>
-
+                </thead>
+                <tbody>
+                {% for cart in carts %}
+                    <tr>
+                        <td><img class="rounded"
+                                 src="{{ asset(['img/products/', cart.path]|join) }}"
+                                 alt="Generic placeholder image" width="50" height=50></td>
+                        <td>{{ cart.name }}</td>
+                        <td>{{ cart.shopprice }}</td>
+                        <td> {{ result[cart.id] }}</td>
+                        <td>
+                            <a class="btn btn-warning " id="minus" data-id="{{ cart.id }}" role="button">-</a>
+                            <a class="btn btn-success" id="plus" data-id="{{ cart.id }}" role="button">+</a>
+                            <a class="btn btn-danger" id="del" data-id="{{ cart.id }}" role="button">X</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <p>Положите товар в корзину</p>
+                {% endfor %}
+                </tbody>
+            </table>
+            <br>Итого в вашей корзине продуктов на:
+        </div>
+    <td><a class="btn btn-secondary" role="button" href="{{ path('shop_order') }}">Оформить заказ</a></td>
+    <script src="{{ asset('scripts/js/del_cart.js') }}"></script>
 {% endblock %}

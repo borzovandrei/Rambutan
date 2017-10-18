@@ -1,10 +1,40 @@
 {% extends 'ShopBundle:Default:index.html.twig' %}
 
 {% block body %}
+    <div class="row">
+        <div class="col-lg-6 col-md-6">
+            <div class="container">
+                <h2>Корзина</h2>
+                <table class="table table-condensed">
+                    <thead>
+                    <tr>
+                        <th>Изображение</th>
+                        <th>Продукт</th>
+                        <th>Цена</th>
+                        <th>Колличество</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for cart in carts %}
+                        <tr>
+                            <td><img class="rounded"
+                                     src="{{ asset(['img/products/', cart.path]|join) }}"
+                                     alt="Generic placeholder image" width="50" height=50></td>
+                            <td>{{ cart.name }}</td>
+                            <td>{{ cart.shopprice }}</td>
+                            <td> {{ result[cart.id] }}</td>
+                        </tr>
+                    {% else %}
+                        <p>Нет товаров в корзине</p>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6">
+            {{ form(form_order, {'attr': {'class': 'form-control'}}) }}
+        </div>
+    </div>
 
-    {{ user.firstname }}
-    {{ user.lastname }}
-    {{ user.phone }}
-    {{ form(form_order, {'attr': {'class': 'form-control'}}) }}
 
 {% endblock %}

@@ -27,7 +27,6 @@ class Order
     protected $date;
 
 
-
     /**
      * @ORM\Column(type="string", length=50)
      */
@@ -39,6 +38,15 @@ class Order
      */
     protected $price;
 
+    /**
+     * @ORM\Column(type="string", length=50)
+     */
+    protected $firstname;
+
+    /**
+     * @ORM\Column(type="string", length=50)
+     */
+    protected $lastname;
 
     /**
      * @ORM\Column(type="string")
@@ -95,7 +103,6 @@ class Order
     }
 
 
-
     /**
      * @return mixed
      */
@@ -131,18 +138,35 @@ class Order
     /**
      * @return mixed
      */
-    public function getMap()
+    public function getFirstname()
     {
-        return $this->map;
+        return $this->firstname;
     }
 
     /**
-     * @param mixed $map
+     * @param mixed $firstname
      */
-    public function setMap($map)
+    public function setFirstname($firstname)
     {
-        $this->map = $map;
+        $this->firstname = $firstname;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getLastname()
+    {
+        return $this->lastname;
+    }
+
+    /**
+     * @param mixed $lastname
+     */
+    public function setLastname($lastname)
+    {
+        $this->lastname = $lastname;
+    }
+
 
     /**
      * @return mixed
@@ -207,8 +231,6 @@ class Order
     {
         $this->phone = $phone;
     }
-
-
 
 
 }

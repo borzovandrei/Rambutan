@@ -3,25 +3,22 @@ var cart = {
     actions: []
 };
 var price = +0;
-$('.btn.btn-secondary').on('click', addToCart);
+$('#plus').on('click', plus);
+$('#minus').on('click', minus);
+$('#del').on('click', del);
 
 
-function addToCart() {
-    var id = $(this).attr('data-id');
-    var priceprod = $(this).attr('data-price');
-    var url = $(this).data('url');
-    price += +priceprod;
 
-    cart.products.shift();
-    cart.products.push({
-        id: id,
-        prace: priceprod
-    });
-    console.log(cart);
-    postCart(url);
-    showMiniCart();
+function plus() {
+
 }
 
+function minus() {
+
+}
+function del() {
+
+}
 
 function showMiniCart() {
     var out="";

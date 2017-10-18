@@ -14,6 +14,7 @@ use Symfony\Component\Security\Core\Security;
 
 class PageController extends Controller
 {
+
     //метод авторизазии
     public function loginAction(Request $request)
     {
@@ -65,7 +66,10 @@ class PageController extends Controller
             foreach ($result as $key => $value) {
                 $product[] = $em->getRepository('ShopBundle:Products')->find($key);
             }
-        }else{$product=null; $result=null;};
+        } else {
+            $product = null;
+            $result = null;
+        };
 
 
         return $this->render('ShopBundle:Page:cart.html.twig', array(
@@ -78,19 +82,47 @@ class PageController extends Controller
     //заказ
     public function orderAction(Request $request)
     {
+        //ПРАВАЯ СТОРОНА
         $order = new Order();
-        $form = $this->createForm(OrderType::class,  $order );
-        $form -> handleRequest($request);
-
         $user = $this->getUser();
-//        $firstname = $user->getFirstname();
-//        $lastname = $user->getLastname();
-//        $phone = $user->getPhone();
-//        $address = $user->getAddress();
-        dump($user);
+        if (!$user) {
+            $firstname = null;
+            $lastname = null;
+            $phone = null;
+            $address = null;
+        } else {
+            $firstname = $user->getFirstname();
+            $lastname = $user->getLastname();
+            $phone = $user->getPhone();
+            $address = $user->getAddress();
+        }
+        $form = $this->createForm(OrderType::class, $order, ['arg1' => $firstname, 'arg2' => $lastname, 'arg3' => $phone, 'arg4' => $address]);
+        $form->handleRequest($request);
+
+        //ЛЕВАЯ СТОРОНА
+        $cardId = $request->cookies->get('PHPSESSID');
+        $redis = $this->get('snc_redis.default');
+        $redis->get("cart_{$cardId}");
+        $redis = json_decode($redis->get("cart_{$cardId}"), true);
+        if ($redis["products"]) {
+            foreach ($redis["products"] as $key => $value) {
+                $manyprod[] = $redis["products"][$key]["id"];
+            }
+            $result = array_count_values($manyprod);
+            $em = $this->getDoctrine()->getManager();
+            foreach ($result as $key => $value) {
+                $product[] = $em->getRepository('ShopBundle:Products')->find($key);
+            }
+        } else {
+            $product = null;
+            $result = null;
+        };
+
         return $this->render('ShopBundle:Page:order.html.twig', array(
-            'form_order'=> $form -> createView(),
-            'user'=>$user,
+            'form_order' => $form->createView(),
+            'user' => $user,
+            'carts' => $product,
+            'result' => $result,
         ));
     }
 
@@ -99,7 +131,7 @@ class PageController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $chatroom = $em->getRepository('ShopBundle:ChatRoom')->findAll();
-        var_dump($chatroom);
+//        var_dump($chatroom);
         return $this->render('ShopBundle:Page:chat.html.twig', array(
             'chatroom' => $chatroom,
         ));
