@@ -40,7 +40,11 @@
                                 </p>
                                 <h2>{{ product.name }}.</h2>
                                 <p>Цена: {{ product.shopPrice }} руб.</p>
-                                <p><a class="btn btn-secondary" data-id="{{ product.id }}" data-price="{{ product.shopPrice }}" role="button">Купить</a></p>
+                                <p><a class="btn btn-secondary"
+                                      data-id="{{ product.id }}"
+                                      data-price="{{ product.shopPrice }}"
+                                      data-url="{{ path('add_cart') }}"
+                                      role="button">Купить</a></p>
                             </div>
 
 

@@ -24,7 +24,8 @@ framework:
         engines: ['twig']
     default_locale: '%locale%'
     trusted_hosts: ~
-    session: ~
+    session:
+        handler_id: snc_redis.session.handler
 #        # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
 #        handler_id: session.handler.native_file
 #        save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
@@ -80,11 +81,24 @@ snc_redis:
             alias: default
             dsn: redis://localhost
             logging: %kernel.debug%
-        session:
+        session_client:
             type: predis
-            alias: session
-            dsn: redis://localhost:8008
+            alias: session_client
+            dsn: redis://localhost
+            logging: false # https://github.com/snc/SncRedisBundle/issues/161
+            type: phpredis
+        cache:
+            type: predis
+            alias: cache
+            dsn: redis://localhost:6379/1
             logging: true
+        profiler_storage:
+            type: predis
+            alias: profiler_storage
+            dsn: redis://localhost/2
+            logging: false
     session:
-        client: session
-        prefix: "Rambutan"
+        client: session_client
+        locking: false
+        prefix: session_prefix_
+        ttl: 120000

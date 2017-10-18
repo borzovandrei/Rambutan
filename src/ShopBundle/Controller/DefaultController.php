@@ -3,6 +3,8 @@
 namespace ShopBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
@@ -12,7 +14,26 @@ class DefaultController extends Controller
     }
 
 
-    public function productAction($id)
+    public function cartAction(Request $request)
+    {
+        $request = Request::createFromGlobals();
+        $data = $request->get("cart");
+        $redis = $this->get('snc_redis.default');
+
+        $cardId =$request->cookies->get('PHPSESSID');
+
+         if ($dataOld = $redis->get("cart_{$cardId}")) {
+             $dataOld = json_decode($dataOld, true);
+             $data['products'] = array_merge($data['products'], $dataOld['products']);
+         }
+
+        $redis->set("cart_{$cardId}", json_encode($data));
+        return new JsonResponse($data);
+    }
+
+
+
+    public function productAction($id, Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         $product = $em->getRepository('ShopBundle:Products')->find($id);
@@ -20,18 +41,15 @@ class DefaultController extends Controller
         if (!$product) {
             throw $this->createNotFoundException('Не удалось найти товар.');
         }
-
         $comments = $em->getRepository('ShopBundle:Comment')
             ->getCommentsForBlog($product->getId());
 
-//        $redis = $this->container->get('snc_redis.default');
-//        var_dump($redis);
-
         return $this->render('ShopBundle:Default:product.html.twig', array(
             'product' => $product,
-            'comments'  => $comments
+            'comments' => $comments
         ));
     }
+
 
 
     public function navigationAction($id = NULL)

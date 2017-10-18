@@ -27,6 +27,7 @@ class Order
     protected $date;
 
 
+
     /**
      * @ORM\Column(type="string", length=50)
      */
@@ -42,8 +43,17 @@ class Order
     /**
      * @ORM\Column(type="string")
      */
-    protected $map;
+    protected $address;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    protected $phone;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    protected $comment;
 
     /**
      *
@@ -83,6 +93,8 @@ class Order
     {
         $this->date = $date;
     }
+
+
 
     /**
      * @return mixed
@@ -148,9 +160,53 @@ class Order
         $this->id_products = $id_products;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
 
+    /**
+     * @param mixed $address
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+    }
 
+    /**
+     * @return mixed
+     */
+    public function getComment()
+    {
+        return $this->comment;
+    }
 
+    /**
+     * @param mixed $comment
+     */
+    public function setComment($comment)
+    {
+        $this->comment = $comment;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @param mixed $phone
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+    }
 
 
 

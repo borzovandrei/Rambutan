@@ -5,6 +5,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ShopBundle\Entity\Comment;
 use ShopBundle\Form\CommentType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\User\User;
 
 class CommentController extends Controller
 {
@@ -27,10 +28,15 @@ class CommentController extends Controller
     {
         $product = $this->getProduct($product_id);
 
+        $user = $this->getUser();
+        $username = $user->getUsername();
+
         $comment  = new Comment();
+        $comment->setUser($username);
         $comment->setProduct($product);
         $form    = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
+
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();

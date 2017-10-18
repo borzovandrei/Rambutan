@@ -17,6 +17,24 @@ shop_sort:
             methods:  POST
             id: \d+
 
+add_cart:
+    path:     /cartadd
+    defaults: { _controller: ShopBundle:Default:cart }
+    requirements:
+            methods:  POST
+
+shop_cart:
+    path:     /cart
+    defaults: { _controller: ShopBundle:Page:cart }
+    requirements:
+            methods:  POST
+
+shop_order:
+    path:     /order
+    defaults: { _controller: ShopBundle:Page:order }
+    requirements:
+            methods:  POST
+
 ############################################################################################################
 
 shop_login:

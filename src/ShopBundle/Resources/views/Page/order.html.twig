@@ -1,0 +1,10 @@
+{% extends 'ShopBundle:Default:index.html.twig' %}
+
+{% block body %}
+
+    {{ user.firstname }}
+    {{ user.lastname }}
+    {{ user.phone }}
+    {{ form(form_order, {'attr': {'class': 'form-control'}}) }}
+
+{% endblock %}

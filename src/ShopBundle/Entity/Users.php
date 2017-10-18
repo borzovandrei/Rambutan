@@ -52,6 +52,12 @@ class Users implements UserInterface
     protected $phone;
 
     /**
+     * @ORM\Column(type="string")
+     * @var string address
+     */
+    protected $address;
+
+    /**
      * @ORM\ManyToMany(targetEntity="Order")
      * @ORM\JoinTable(name="order_user",
      *     joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
@@ -254,6 +260,56 @@ class Users implements UserInterface
     {
         $this->lastname = $lastname;
     }
+
+    /**
+     * @return string
+     */
+    public function getPhone(): string
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @param string $phone
+     */
+    public function setPhone(string $phone)
+    {
+        $this->phone = $phone;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @param mixed $address
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIdOrder()
+    {
+        return $this->id_order;
+    }
+
+    /**
+     * @param mixed $id_order
+     */
+    public function setIdOrder($id_order)
+    {
+        $this->id_order = $id_order;
+    }
+
+
 
     /**
      * @return string

@@ -1,27 +1,44 @@
-var cart = {};
-
-$('.goods-out').html(out);
-$('.add-to-cart').on('click', addToCart);
+var cart = {
+    products: [],
+    actions: []
+};
+var price = +0;
+$('.btn.btn-secondary').on('click', addToCart);
 
 
 function addToCart() {
-    //добавляем товар в корзину
     var id = $(this).attr('data-id');
-    // console.log(id);
-    if (cart[id]==undefined) {
-        cart[id] = 1; //если в корзине нет товара - делаем равным 1
-    }
-    else {
-        cart[id]++; //если такой товар есть - увеличиваю на единицу
-    }
+    var priceprod = $(this).attr('data-price');
+    var url = $(this).data('url');
+    price += +priceprod;
+
+    cart.products.push({
+        id: id,
+        prace: priceprod
+    });
+    console.log(cart);
+    postCart(url);
     showMiniCart();
 }
 
+
 function showMiniCart() {
-    //показываю мини корзину
     var out="";
     for (var key in cart) {
-        out += key +' --- '+ cart[key]+'<br>';
+        out = 'В корзине: '+ price.toFixed(2) +'руб.';
     }
-    $('.mini-cart').html(out);
-};
+    $('.nav-link.disabled').html(out);
+}
+
+
+
+function postCart(url)
+{
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: ({
+            cart: cart
+        })
+    });
+}

@@ -3,15 +3,16 @@
 namespace ShopBundle\Controller;
 
 
-
 use ShopBundle\Entity\Chat;
 use ShopBundle\Entity\ChatRoom;
+use ShopBundle\Entity\Order;
+use ShopBundle\Form\OrderType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 
-class PageController  extends Controller
+class PageController extends Controller
 {
     //метод авторизазии
     public function loginAction(Request $request)
@@ -23,7 +24,7 @@ class PageController  extends Controller
             $error = $request->getSession()->get(Security::AUTHENTICATION_ERROR);
         }
         return $this->render('ShopBundle:Page:login.html.twig', array(
-            'last_username' =>$request->getSession()->get(Security::LAST_USERNAME),
+            'last_username' => $request->getSession()->get(Security::LAST_USERNAME),
             'error' => $error
         ));
     }
@@ -39,8 +40,57 @@ class PageController  extends Controller
             $error = $request->getSession()->get(Security::AUTHENTICATION_ERROR);
         }
         return $this->render('ShopBundle:Page:reg.html.twig', array(
-            'last_username' =>$request->getSession()->get(Security::LAST_USERNAME),
+            'last_username' => $request->getSession()->get(Security::LAST_USERNAME),
             'error' => $error
+        ));
+    }
+
+    //корзина
+    public function cartAction(Request $request)
+    {
+        $request = Request::createFromGlobals();
+        $cardId = $request->cookies->get('PHPSESSID');
+
+        $redis = $this->get('snc_redis.default');
+        $redis->get("cart_{$cardId}");
+        $redis = json_decode($redis->get("cart_{$cardId}"), true);
+
+
+        if ($redis["products"]) {
+            foreach ($redis["products"] as $key => $value) {
+                $manyprod[] = $redis["products"][$key]["id"];
+            }
+            $result = array_count_values($manyprod);
+            $em = $this->getDoctrine()->getManager();
+            foreach ($result as $key => $value) {
+                $product[] = $em->getRepository('ShopBundle:Products')->find($key);
+            }
+        }else{$product=null; $result=null;};
+
+
+        return $this->render('ShopBundle:Page:cart.html.twig', array(
+            'carts' => $product,
+            'result' => $result,
+        ));
+    }
+
+
+    //заказ
+    public function orderAction(Request $request)
+    {
+        $order = new Order();
+        $form = $this->createForm(OrderType::class,  $order );
+        $form -> handleRequest($request);
+
+        $user = $this->getUser();
+//        $firstname = $user->getFirstname();
+//        $lastname = $user->getLastname();
+//        $phone = $user->getPhone();
+//        $address = $user->getAddress();
+        dump($user);
+        return $this->render('ShopBundle:Page:order.html.twig', array(
+            'form_order'=> $form -> createView(),
+            'user'=>$user,
         ));
     }
 
@@ -49,8 +99,9 @@ class PageController  extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $chatroom = $em->getRepository('ShopBundle:ChatRoom')->findAll();
+        var_dump($chatroom);
         return $this->render('ShopBundle:Page:chat.html.twig', array(
-            'chatroom'=>$chatroom,
+            'chatroom' => $chatroom,
         ));
     }
 
@@ -66,9 +117,9 @@ class PageController  extends Controller
         }
         $messages = $em->getRepository('ShopBundle:Chat')->getChat($chat->getIdRoom());
 
-        return $this->render('ShopBundle:Page:chatroom.html.twig',array(
-            'chat'=> $messages,
-            'id'=>$id,
+        return $this->render('ShopBundle:Page:chatroom.html.twig', array(
+            'chat' => $messages,
+            'id' => $id,
         ));
     }
 
@@ -77,11 +128,9 @@ class PageController  extends Controller
     public function sendAction(Request $request, ChatRoom $chatRoom)
     {
         $message = json_decode($request->getContent());
-        if( $this->container->get( 'security.authorization_checker' )->isGranted( 'IS_AUTHENTICATED_FULLY' ) )
-        {
-            $user =  $this->getUser()->getUserName();
-        }
-        else $user = "anonim";
+        if ($this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
+            $user = $this->getUser()->getUserName();
+        } else $user = "anonim";
 
         $data = [
             "user_autor" => $user,
@@ -90,7 +139,7 @@ class PageController  extends Controller
 
         var_dump($chatRoom->getName());
 
-        $ch = curl_init('http://127.0.0.1:8008/pub?id='.$chatRoom->getIdRoom());
+        $ch = curl_init('http://127.0.0.1:8008/pub?id=' . $chatRoom->getIdRoom());
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
@@ -98,8 +147,7 @@ class PageController  extends Controller
         curl_close($ch);
 
 
-
-        $chat  = new Chat();
+        $chat = new Chat();
         $chat->setChatroom($chatRoom);
         $chat->setAuthor($user);
         $chat->setMessage($message->message);
