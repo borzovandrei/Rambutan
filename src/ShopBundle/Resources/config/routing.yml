@@ -18,8 +18,22 @@ shop_sort:
             id: \d+
 
 add_cart:
-    path:     /cartadd
+    path:     /cart/add
     defaults: { _controller: ShopBundle:Default:cart }
+    requirements:
+            methods:  POST
+
+
+minus_cart:
+    path:     /cart/minus
+    defaults: { _controller: ShopBundle:Default:minusCart }
+    requirements:
+            methods:  POST
+
+
+del_cart:
+    path:     /cart/del
+    defaults: { _controller: ShopBundle:Default:delCart }
     requirements:
             methods:  POST
 

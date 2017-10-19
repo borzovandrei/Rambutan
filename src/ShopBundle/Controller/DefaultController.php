@@ -27,9 +27,58 @@ class DefaultController extends Controller
              $data['products'] = array_merge($data['products'], $dataOld['products']);
          }
 
+
         $redis->set("cart_{$cardId}", json_encode($data));
         return new JsonResponse($data);
     }
+
+
+    public function minusCartAction(Request $request)
+    {
+        $request = Request::createFromGlobals();
+        $id = $request->get("id");
+        $redis = $this->get('snc_redis.default');
+
+        $cardId =$request->cookies->get('PHPSESSID');
+
+        $dataOld = $redis->get("cart_{$cardId}");
+        $dataOld = json_decode($dataOld, true);
+
+        foreach ($dataOld['products'] as $key => $p) {
+             if($p['id'] == $id){
+                 unset($dataOld['products'][$key]);
+                 break;
+             }
+         }
+
+        $redis->set("cart_{$cardId}", json_encode($dataOld));
+        return new JsonResponse($dataOld);
+    }
+
+
+
+    public function delCartAction(Request $request)
+    {
+        $request = Request::createFromGlobals();
+        $id = $request->get("id");
+        $redis = $this->get('snc_redis.default');
+
+        $cardId =$request->cookies->get('PHPSESSID');
+
+        $dataOld = $redis->get("cart_{$cardId}");
+        $dataOld = json_decode($dataOld, true);
+
+        foreach ($dataOld['products'] as $key => $p) {
+            if($p['id'] == $id){
+                unset($dataOld['products'][$key]);
+            }
+        }
+
+        $redis->set("cart_{$cardId}", json_encode($dataOld));
+        return new JsonResponse($dataOld);
+    }
+
+
 
 
 

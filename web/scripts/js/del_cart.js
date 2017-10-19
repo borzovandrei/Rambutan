@@ -3,40 +3,62 @@ var cart = {
     actions: []
 };
 var price = +0;
-$('#plus').on('click', plus);
-$('#minus').on('click', minus);
-$('#del').on('click', del);
+$('.btn-plus').click(plus);
+$('.btn-minus').click(minus);
+$('.btn-del').click(del);
 
 
 
 function plus() {
+    var id = $(this).attr('data-id');
+    var priceprod = $(this).attr('data-price');
+    var url = $(this).data('url');
+    price += +priceprod;
 
+
+    cart.products.shift();
+    cart.products.push({
+        id: id,
+        prace: priceprod
+    });
+
+    postCart(url);
+    saveCart();
+    showMiniCart();
 }
 
 function minus() {
+    var id = $(this).attr('data-id');
+    var priceprod = $(this).attr('data-price');
+    var url = $(this).data('url');
+    price += -priceprod;
 
-}
-function del() {
-
-}
-
-function showMiniCart() {
-    var out="";
-    for (var key in cart) {
-        out = 'В корзине: '+ price.toFixed(2) +'руб.';
-    }
-    $('.nav-link.disabled').html(out);
-}
-
-
-
-function postCart(url)
-{
-    $.ajax({
-        type: "POST",
-        url: url,
-        data: ({
-            cart: cart
-        })
+    cart.products.shift();
+    cart.products.push({
+        id: id,
+        prace: priceprod
     });
+
+    delProductById(url,id);
+    saveCart();
+    showMiniCart();
 }
+
+function del() {
+    var id = $(this).attr('data-id');
+    var sum = $(this).attr('data-sum');
+    var priceprod = $(this).attr('data-price'); //реализовать изменение цен
+    var url = $(this).data('url');
+    price -= priceprod * sum;
+
+    cart.products.shift();
+    cart.products.push({
+        id: id,
+        prace: priceprod
+    });
+
+    delProductById(url,id);
+    saveCart();
+    showMiniCart();
+}
+

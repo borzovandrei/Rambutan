@@ -17,7 +17,6 @@
 
         <p><a class="btn btn-secondary" href="{{ path('admin_product_edit', { 'id': product.id }) }}">Изменить</a></p>
     </form>
-    <script src="{{ asset('scripts/js/add_cart.js') }}"></script>
 
     <h3>Отзывы</h3>
 
@@ -40,7 +39,7 @@
         {{ render(controller('ShopBundle:Comment:new', { 'product_id':  product.id })) }}
     {% else %}
         <h3>Для того что бы оставить отзыв, Вам необходимо зарегестрироваться или авторизироваться</h3>
-     <a  class="btn btn-secondary" href="{{ path('shop_login') }}">Войти</a>
+        <a class="btn btn-secondary" href="{{ path('shop_login') }}">Войти</a>
     {% endif %}
 
 
