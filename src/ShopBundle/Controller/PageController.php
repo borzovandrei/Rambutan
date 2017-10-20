@@ -47,7 +47,7 @@ class PageController extends Controller
     }
 
 
-
+    //ЛИЧНЫЙ КАБИНЕТ
     public function roomAction()
     {
         return $this->render('ShopBundle:Page:room.html.twig', array(
@@ -108,6 +108,7 @@ class PageController extends Controller
         $form = $this->createForm(OrderType::class, $order, ['arg1' => $firstname, 'arg2' => $lastname, 'arg3' => $phone, 'arg4' => $address]);
         $form->handleRequest($request);
 
+
         //ЛЕВАЯ СТОРОНА
         $cardId = $request->cookies->get('PHPSESSID');
         $redis = $this->get('snc_redis.default');
@@ -121,11 +122,26 @@ class PageController extends Controller
             $em = $this->getDoctrine()->getManager();
             foreach ($result as $key => $value) {
                 $product[] = $em->getRepository('ShopBundle:Products')->find($key);
+                $prod =$em->getRepository('ShopBundle:Products')->find($key);
+                $price[] = $prod->getShopPrice();
             }
         } else {
             $product = null;
             $result = null;
         };
+
+
+
+//        отправка в бд
+        if ($form->isSubmitted() &&  $form->isValid()){
+            $em = $this->getDoctrine()->getManager();
+            $order->setPrice(array_sum($price));
+            $order->setCreated();
+            $order->setStatus(0);
+            $em -> persist($order);
+            $em->flush();
+            return $this->redirectToRoute("shop_room");
+        }
 
         return $this->render('ShopBundle:Page:order.html.twig', array(
             'form_order' => $form->createView(),

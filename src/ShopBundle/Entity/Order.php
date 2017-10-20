@@ -20,6 +20,11 @@ class Order
      */
     protected $id;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    protected $created;
+
 
     /**
      * @ORM\Column(type="datetime")
@@ -70,6 +75,12 @@ class Order
      */
     protected $id_products;
 
+
+
+
+
+
+
     /**
      * @return mixed
      */
@@ -85,6 +96,26 @@ class Order
     {
         $this->id = $id;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCreated()
+    {
+        return $this->created;
+    }
+
+    /**
+     * @param mixed $created
+     */
+    public function setCreated()
+    {
+        $this->created = new \DateTime();
+    }
+
+
+
+
 
     /**
      * @return mixed

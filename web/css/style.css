@@ -36,3 +36,8 @@ body{
 .navbar-custom .icon-bar {
     background-color:#33aa33;
 }
+
+.icons{
+    -webkit-filter: invert(1);
+    filter: invert(1);
+}

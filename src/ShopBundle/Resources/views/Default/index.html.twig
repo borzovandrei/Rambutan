@@ -37,26 +37,60 @@
                 <ul class="navbar-nav mr-auto">
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                         <li class="nav-item active">
-                            <a class="nav-link" href="{{ path('shop_room') }}">Личный кабинет</a>
+                            <a class="nav-link" href="{{ path('shop_room') }}">
+                                <img class="icons"
+                                     src="{{ asset('img/icons/profile1.svg') }}"
+                                     alt="Личный кабинет"
+                                     width="30" height="30">
+                            </a>
                         </li>
                         <li class="nav-item active">
-                            <a class="nav-link" href="{{ path('shop_add') }}">Добавить продукт</a>
+                            <a class="nav-link" href="{{ path('shop_add') }}">
+                                <img class="icons"
+                                     src="{{ asset('img/icons/new.svg') }}"
+                                     alt="Добавить продукт"
+                                     width="30" height="30"></a>
                         </li>
                         <li class="nav-item active">
-                            <a class="nav-link" href="{{ path('chat_room') }}">Чат менеджеров</a>
+                            <a class="nav-link" href="{{ path('chat_room') }}">
+
+                                <span>
+<object type="image/svg+xml" data=”{{ asset('img/icons/chat.svg') }}" id=’object’ class=’icon’></object>
+
+                                    {#{{ source(asset('img/icons/chat.svg')) }}#}
+                                </span>
+                                {#<img class="icons"#}
+                                     {#src=""#}
+                                     {#alt="Чат менеджеров"#}
+                                     {#width="30" height="30"></a>#}
                         </li>
                         <li class="nav-item active">
-                            <a class="nav-link" href="{{ path('_security_logout') }}">Выход</a>
+                            <a class="nav-link" href="{{ path('_security_logout') }}">
+                                <img class="icons"
+                                     src="{{ asset('img/icons/exit.svg') }}"
+                                     alt="Выход"
+                                     width="30" height="30"></a>
                         </li>
                     {% else %}
-                        <li class="nav-item active"><a class="nav-link" href="{{ path('shop_login') }}">Регистрация</a></li>
+                        <li class="nav-item active"><a class="nav-link" href="{{ path('shop_login') }}">
+                                <img class="icons"
+                                     src="{{ asset('img/icons/login.svg') }}"
+                                     alt="Регистрация"
+                                     width="30" height="30"></a></li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">О компании</a>
+                        <a class="nav-link" href="#">
+                            <img class="icons"
+                                 src="{{ asset('img/icons/viral-marketing.svg') }}"
+                                 alt="О компании"
+                                 width="30" height="30"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link disabled" href="{{ path('shop_cart') }}">Корзина</a>
-
+                        <a class="nav-link disabled" href="{{ path('shop_cart') }}">
+                            <img class="icons"
+                                 src="{{ asset('img/icons/cart.svg') }}"
+                                 alt="Корзина"
+                                 width="30" height="30"></a>
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0">
