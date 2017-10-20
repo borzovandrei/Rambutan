@@ -1,0 +1,63 @@
+{% extends 'ShopBundle:Default:index.html.twig' %}
+
+{% block title %}Личный кабинет{% endblock%}
+
+{% block body %}
+   <h1>Личный кабинет</h1>
+   <div class="row">
+   <div class="col-lg-6 col-md-6">
+      <div class="container">
+         Изображение
+
+      </div>
+   </div>
+   <div class="col-lg-6 col-md-6">
+      <table class="table">
+         <tbody>
+         <tr>
+            <th scope="row">Логин:</th>
+            <td>{{ user.username }}</td>
+         </tr>
+         <tr>
+            <th scope="row">Логин:</th>
+            <td>{{ user.firstname }}</td>
+         </tr>
+         <tr>
+            <th scope="row">Имя:</th>
+            <td>{{ user.lastname }}</td>
+         </tr>
+         <tr>
+            <th scope="row">Фамилия:</th>
+            <td>{{ user.email }}</td>
+         </tr>
+         <tr>
+            <th scope="row">Телефон:</th>
+            <td>{{ user.phone }}</td>
+         </tr>
+         <tr>
+            <th scope="row">Дата рождения:</th>
+            <td> {{ user.age|date('d-m-Y')  }}</td>
+         </tr>
+         <tr>
+            <th scope="row">Пол:</th>
+            <td>{{ user.sex }}</td>
+         </tr>
+         <tr>
+            <th scope="row">Адрес:</th>
+            <td>{{ user.address }}</td>
+         </tr>
+         </tbody>
+      </table>
+
+
+
+
+
+
+
+
+
+   </div>
+</div>
+
+{% endblock %}

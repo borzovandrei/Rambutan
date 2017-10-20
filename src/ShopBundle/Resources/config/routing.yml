@@ -122,3 +122,10 @@ comment_create:
     requirements:
         methods:  POST
         blog_id: \d+
+
+
+shop_room:
+    path:  /room
+    defaults: { _controller: ShopBundle:Page:room }
+    requirements:
+        methods:  GET

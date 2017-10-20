@@ -21,18 +21,24 @@
                              alt="Generic placeholder image" width="50" height=50></td>
                     <td>{{ cart.name }}</td>
                     <td>{{ cart.shopprice }}руб.</td>
-                    <td> {{ result[cart.id] }}{{ cart.measure.name }}.</td>
+
+                    <td> <sum class="sum{{ cart.id }}" id='id{{ cart.id }}' sum-id='{{ cart.id }}'>{{ result[cart.id] }}</sum> {{ cart.measure.name }}.</td>
+
                     <td>
                         <a class="btn btn-success btn-plus"
                            data-id="{{ cart.id }}"
                            data-price="{{ cart.shopPrice }}"
+                           data-sum="{{ result[cart.id] }}"
                            data-url="{{ path('add_cart') }}"
                            role="button">+</a>
+
                         <a class="btn btn-warning btn-minus"
                            data-id="{{ cart.id }}"
                            data-price="{{ cart.shopPrice }}"
+                           data-sum="{{ result[cart.id] }}"
                            data-url="{{ path('minus_cart') }}"
                            role="button">-</a>
+
                         <a class="btn btn-danger btn-del"
                            data-id="{{ cart.id }}"
                            data-sum="{{ result[cart.id] }}"

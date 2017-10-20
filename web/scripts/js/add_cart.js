@@ -13,7 +13,6 @@ function addToCart() {
     var url = $(this).data('url');
     price += +priceprod;
 
-
     cart.products.shift();
     cart.products.push({
         id: id,
@@ -23,11 +22,12 @@ function addToCart() {
     postCart(url);
     saveCart();
     showMiniCart();
+
 }
 
 
 function saveCart() {
-    localStorage.setItem('cost', JSON.stringify(price));
+    localStorage.setItem('cost', JSON.stringify(price.toFixed(2)));
 }
 
 function loadCart() {
@@ -41,7 +41,7 @@ function loadCart() {
 
 function showMiniCart() {
     var out = "Корзина";
-    if(JSON.parse(localStorage.getItem('cost')) === 0){
+    if(JSON.parse(localStorage.getItem('cost')) === 0.00){
         out = 'Корзина';
     }else {
         out = 'В корзине: ' + price.toFixed(2) + 'руб.';
@@ -72,6 +72,7 @@ function delProductById(url, id) {
         }
     });
 }
+
 
 
 $(document).ready(function () {

@@ -10,7 +10,13 @@ $('.btn-del').click(del);
 
 
 function plus() {
+    var num = $(this).attr('data-id');
+    var sum = $('.sum'+num).attr('sum-id');
+    document.getElementById('id'+sum).innerHTML++;
+
     var id = $(this).attr('data-id');
+    var sum = $(this).attr('data-sum');
+
     var priceprod = $(this).attr('data-price');
     var url = $(this).data('url');
     price += +priceprod;
@@ -27,12 +33,19 @@ function plus() {
     showMiniCart();
 }
 
+
 function minus() {
+    var num = $(this).attr('data-id');
+    var sum = $('.sum'+num).attr('sum-id');
+
+    console.log(document.getElementById('id'+sum));
+    if (document.getElementById('id'+sum).innerHTML > 0){
+        document.getElementById('id'+sum).innerHTML--;
+    }
     var id = $(this).attr('data-id');
     var priceprod = $(this).attr('data-price');
     var url = $(this).data('url');
     price += -priceprod;
-
     cart.products.shift();
     cart.products.push({
         id: id,
@@ -45,11 +58,15 @@ function minus() {
 }
 
 function del() {
+    var num = $(this).attr('data-id');
+    var sum = $('.sum'+num).attr('sum-id');
+    var prod = document.getElementById('id'+sum).innerHTML;
+    document.getElementById('id'+sum).innerHTML=0;
+
     var id = $(this).attr('data-id');
-    var sum = $(this).attr('data-sum');
     var priceprod = $(this).attr('data-price'); //реализовать изменение цен
     var url = $(this).data('url');
-    price -= priceprod * sum;
+    price -= priceprod * prod;
 
     cart.products.shift();
     cart.products.push({

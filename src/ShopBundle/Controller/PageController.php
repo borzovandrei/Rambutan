@@ -46,6 +46,15 @@ class PageController extends Controller
         ));
     }
 
+
+
+    public function roomAction()
+    {
+        return $this->render('ShopBundle:Page:room.html.twig', array(
+            'user'=>$this->getUser()
+        ));
+    }
+
     //корзина
     public function cartAction(Request $request)
     {
