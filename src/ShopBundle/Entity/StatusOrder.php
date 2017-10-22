@@ -1,21 +1,17 @@
 <?php
-namespace ShopBundle\Entity;
 
 namespace ShopBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
+
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-
 
 /**
  * @ORM\Entity(repositoryClass="ShopBundle\Repository\ShopRepository")
- * @ORM\Table(name="sort")
+ * @ORM\Table(name="status_order")
  * @ORM\HasLifecycleCallbacks
  */
-class Sort
+class StatusOrder
 {
-
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -23,22 +19,15 @@ class Sort
      */
     protected $id;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Order", mappedBy="status")
+     */
+    protected $id_order;
 
     /**
      * @ORM\Column(type="string", length=30)
-     * @Assert\NotBlank()
      */
     protected $name;
-
-    /**
-     * @ORM\Column(type="string")
-     */
-    protected $about;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Products", mappedBy="id_class")
-     */
-    protected $id_sort;
 
     /**
      * @return mixed
@@ -75,19 +64,18 @@ class Sort
     /**
      * @return mixed
      */
-    public function getAbout()
+    public function getIdOrder()
     {
-        return $this->about;
+        return $this->id_order;
     }
 
     /**
-     * @param mixed $about
+     * @param mixed $id_order
      */
-    public function setAbout($about)
+    public function setIdOrder($id_order)
     {
-        $this->about = $about;
+        $this->id_order = $id_order;
     }
-
 
 
 }

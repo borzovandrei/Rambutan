@@ -26,7 +26,7 @@
 
 <section id="wrapper">
     <header id="header">
-        <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-custom  fixed-top">
             <img class="rounded"
                  src="{{ asset(['img/logo.png']|join) }}" width="40" height="40">
             <a class="navbar-brand" href="{{ path('shop_homepage')}}">Rambutan</a>
@@ -54,15 +54,11 @@
                         <li class="nav-item active">
                             <a class="nav-link" href="{{ path('chat_room') }}">
 
-                                <span>
-<object type="image/svg+xml" data=”{{ asset('img/icons/chat.svg') }}" id=’object’ class=’icon’></object>
 
-                                    {#{{ source(asset('img/icons/chat.svg')) }}#}
-                                </span>
-                                {#<img class="icons"#}
-                                     {#src=""#}
-                                     {#alt="Чат менеджеров"#}
-                                     {#width="30" height="30"></a>#}
+                                <img class="icons"
+                                     src="{{ asset('img/icons/chat.svg') }}"
+                                     alt="Чат менеджеров"
+                                     width="30" height="30"></a>
                         </li>
                         <li class="nav-item active">
                             <a class="nav-link" href="{{ path('_security_logout') }}">
@@ -79,7 +75,7 @@
                                      width="30" height="30"></a></li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link" href="{{ path('shop_about') }}">
                             <img class="icons"
                                  src="{{ asset('img/icons/viral-marketing.svg') }}"
                                  alt="О компании"
@@ -111,4 +107,5 @@
 
 </section>
 <script src="{{ asset('scripts/js/add_cart.js') }}"></script>
+<script src="{{ asset('scripts/js/del_cart.js') }}"></script>
 </body>

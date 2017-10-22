@@ -5,7 +5,10 @@ namespace ShopBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -25,6 +28,17 @@ class Users implements UserInterface
      * @var string username
      */
     protected $username;
+
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    public $path;
+
+    /**
+     * @Assert\File(maxSize="6000000")
+     */
+    private $file;
 
     /**
      * @ORM\Column(type="string")
@@ -58,10 +72,8 @@ class Users implements UserInterface
     protected $address;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Order")
-     * @ORM\JoinTable(name="order_user",
-     *     joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@ORM\JoinColumn(name="order_id", referencedColumnName="id")})
+     * Many Groups have Many Users.
+     * @ManyToMany(targetEntity="Order", mappedBy="id_user")
      */
     protected $id_order;
 
@@ -100,7 +112,6 @@ class Users implements UserInterface
      * @var ArrayCollection $userRoles
      */
     protected $userRoles;
-
 
 
     /**
@@ -182,6 +193,8 @@ class Users implements UserInterface
         $this->userRoles = new ArrayCollection();
         $this->createdAt = new \DateTime();
     }
+
+
 
     /**
      * Сброс прав пользователя.
@@ -310,7 +323,6 @@ class Users implements UserInterface
     }
 
 
-
     /**
      * @return string
      */
@@ -357,6 +369,66 @@ class Users implements UserInterface
     public function setSex($sex)
     {
         $this->sex = $sex;
+    }
+
+
+    public function getAbsolutePath()
+    {
+        return null === $this->path
+            ? null
+            : $this->getUploadRootDir() . '/' . $this->path;
+    }
+
+    public function getWebPath()
+    {
+        return null === $this->path
+            ? null
+            : $this->getUploadDir() . '/' . $this->path;
+    }
+
+    protected function getUploadRootDir()
+    {
+        return __DIR__ . '/../../../web/' . $this->getUploadDir();
+    }
+
+    protected function getUploadDir()
+    {
+        return 'img/users';
+    }
+
+
+    /**
+     * Sets file.
+     *
+     * @param UploadedFile $file
+     */
+    public function setFile(UploadedFile $file = null)
+    {
+        $this->file = $file;
+    }
+
+    /**
+     * Get file.
+     *
+     * @return UploadedFile
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
+
+    public function upload()
+    {
+
+        if (null === $this->getFile()) {
+            return;
+        }
+        $this->getFile()->move(
+            $this->getUploadRootDir(),
+            $this->getFile()->getClientOriginalName()
+        );
+        $this->path = $this->getFile()->getClientOriginalName();
+        $this->file = null;
     }
 
 

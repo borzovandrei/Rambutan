@@ -46,12 +46,24 @@ class PageController extends Controller
         ));
     }
 
+    //ЛИЧНЫЙ КАБИНЕТ
+    public function aboutAction()
+    {
+        return $this->render('ShopBundle:Page:about.html.twig', array(
+
+        ));
+    }
 
     //ЛИЧНЫЙ КАБИНЕТ
     public function roomAction()
     {
+        $user=$this->getUser();
+        $em = $this->getDoctrine()->getManager();
+        $orders = $em->getRepository('ShopBundle:Order')->findBy( array('firstname' => $user->getFirstname(),'phone'=>$user->getPhone()));
+
         return $this->render('ShopBundle:Page:room.html.twig', array(
-            'user'=>$this->getUser()
+            'user' => $user,
+            'order' => $orders,
         ));
     }
 
@@ -74,16 +86,26 @@ class PageController extends Controller
             $em = $this->getDoctrine()->getManager();
             foreach ($result as $key => $value) {
                 $product[] = $em->getRepository('ShopBundle:Products')->find($key);
+                $prod = $em->getRepository('ShopBundle:Products')->find($key);
+                $price[] = $prod->getShopPrice();
+                $ar = array_map(function ($price, $result) {
+                    return $price * $result;
+                }, $price, $result);
             }
         } else {
             $product = null;
             $result = null;
+            $price[] = null;
+            $ar[]=null;
         };
 
+
+        $sum = array_sum($ar);
 
         return $this->render('ShopBundle:Page:cart.html.twig', array(
             'carts' => $product,
             'result' => $result,
+            'sum' => $sum,
         ));
     }
 
@@ -122,25 +144,62 @@ class PageController extends Controller
             $em = $this->getDoctrine()->getManager();
             foreach ($result as $key => $value) {
                 $product[] = $em->getRepository('ShopBundle:Products')->find($key);
-                $prod =$em->getRepository('ShopBundle:Products')->find($key);
+                $prod = $em->getRepository('ShopBundle:Products')->find($key);
                 $price[] = $prod->getShopPrice();
+                $ar = array_map(function ($price, $result) {
+                    return $price * $result;
+                }, $price, $result);
             }
         } else {
             $product = null;
             $result = null;
+            $price[] = null;
+            $ar[]=null;
         };
+
+        $sum = array_sum($ar);
+
+
+
+
+
+        $redis = $this->get('snc_redis.default');
+        $redis->get("cart_{$cardId}");
+        $redis = json_decode($redis->get("cart_{$cardId}"), true);
+        foreach ($redis["products"] as $key => $value) {
+           dump($value['id']);
+        }
+
+
+
+
 
 
 
 //        отправка в бд
-        if ($form->isSubmitted() &&  $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $order->setPrice(array_sum($price));
+            $order->setPrice($sum);
             $order->setCreated();
-            $order->setStatus(0);
-            $em -> persist($order);
+
+//            $order->setStatus(1);
+            dump( $order->getId());die();
+//            if ($user) {
+//                $order->setIdUser($user->getId());
+//            }
+//
+            $redis = $this->get('snc_redis.default');
+            $redis->del("cart_{$cardId}", '*');
+            dump($redis);
+            $em->persist($order);
             $em->flush();
-            return $this->redirectToRoute("shop_room");
+
+            if (!$user) {
+                return $this->redirectToRoute("shop_homepage");
+            } else {
+                return $this->redirectToRoute("shop_room");
+            }
+
         }
 
         return $this->render('ShopBundle:Page:order.html.twig', array(
@@ -148,6 +207,7 @@ class PageController extends Controller
             'user' => $user,
             'carts' => $product,
             'result' => $result,
+            'sum' => $sum,
         ));
     }
 
@@ -156,7 +216,6 @@ class PageController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $chatroom = $em->getRepository('ShopBundle:ChatRoom')->findAll();
-//        var_dump($chatroom);
         return $this->render('ShopBundle:Page:chat.html.twig', array(
             'chatroom' => $chatroom,
         ));
@@ -212,8 +271,8 @@ class PageController extends Controller
 
 
         $em = $this->getDoctrine()->getManager();
-//        $em->persist($chat);
-//        $em->flush();
+        $em->persist($chat);
+        $em->flush();
 
         return new JsonResponse($data);
 

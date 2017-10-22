@@ -4,6 +4,9 @@ namespace ShopBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
+
 
 /**
  * @ORM\Entity(repositoryClass="ShopBundle\Repository\ShopRepository")
@@ -33,9 +36,11 @@ class Order
 
 
     /**
-     * @ORM\Column(type="string", length=50)
+     * @ORM\ManyToOne(targetEntity="StatusOrder", inversedBy="id_order")
+     * @ORM\JoinColumn(name="status_order", referencedColumnName="id")
      */
     protected $status;
+
 
 
     /**
@@ -68,17 +73,19 @@ class Order
      */
     protected $comment;
 
+
     /**
-     *
-     * @ORM\ManyToMany(targetEntity="Products", inversedBy="id_order")
-     * @ORM\JoinTable(name="order_products")
+     * @ORM\ManyToOne(targetEntity="OrderItem", inversedBy="order")
+     * @ORM\JoinColumn(name="orderItem_id", referencedColumnName="id")
      */
-    protected $id_products;
+    protected $oderitem;
 
 
-
-
-
+    /**
+     * @ManyToMany(targetEntity="Users", inversedBy="id_order")
+     * @JoinTable(name="order_user")
+     */
+    protected $id_user;
 
 
     /**
@@ -114,9 +121,6 @@ class Order
     }
 
 
-
-
-
     /**
      * @return mixed
      */
@@ -133,7 +137,6 @@ class Order
         $this->date = $date;
     }
 
-
     /**
      * @return mixed
      */
@@ -149,6 +152,9 @@ class Order
     {
         $this->status = $status;
     }
+
+
+
 
     /**
      * @return mixed
@@ -202,22 +208,6 @@ class Order
     /**
      * @return mixed
      */
-    public function getIdProducts()
-    {
-        return $this->id_products;
-    }
-
-    /**
-     * @param mixed $id_products
-     */
-    public function setIdProducts($id_products)
-    {
-        $this->id_products = $id_products;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getAddress()
     {
         return $this->address;
@@ -261,6 +251,22 @@ class Order
     public function setPhone($phone)
     {
         $this->phone = $phone;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIdUser()
+    {
+        return $this->id_user;
+    }
+
+    /**
+     * @param mixed $id_user
+     */
+    public function setIdUser($id_user)
+    {
+        $this->id_user = $id_user;
     }
 
 

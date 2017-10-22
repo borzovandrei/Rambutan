@@ -52,13 +52,6 @@ class Products
     protected $id_class;
 
 
-
-    /**
-     * @ORM\ManyToMany(targetEntity="Order", mappedBy="id_products")
-     */
-    protected $id_order;
-
-
     /**
      * @ORM\Column(type="float")
      * @Assert\NotBlank()
@@ -203,31 +196,29 @@ class Products
     }
 
 
-
     public function getAbsolutePath()
     {
         return null === $this->path
             ? null
-            : $this->getUploadRootDir().'/'.$this->path;
+            : $this->getUploadRootDir() . '/' . $this->path;
     }
 
     public function getWebPath()
     {
         return null === $this->path
             ? null
-            : $this->getUploadDir().'/'.$this->path;
+            : $this->getUploadDir() . '/' . $this->path;
     }
 
     protected function getUploadRootDir()
     {
-        return __DIR__.'/../../../web/'.$this->getUploadDir();
+        return __DIR__ . '/../../../web/' . $this->getUploadDir();
     }
 
     protected function getUploadDir()
     {
         return 'img/products';
     }
-
 
 
     /**
@@ -267,8 +258,6 @@ class Products
     }
 
 
-
-
     /**
      * Add comment
      *
@@ -304,12 +293,10 @@ class Products
     }
 
 
-
     public function __toString()
     {
         return $this->getName();
     }
-
 
 
     public function upload()

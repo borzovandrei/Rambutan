@@ -37,7 +37,27 @@ body{
     background-color:#33aa33;
 }
 
+
+
+.nav-item#sort_nav{
+    background-color: #d1ffb8;
+    margin-left: 15px;
+}
+.nav-item#sort_nav > a {
+    color: #63a353;
+}
+.nav-item#sort_nav > a:hover {
+    color: #ffffff;
+}
+.nav-link.active{
+    background-color: #7cc96a !important;
+    color: #ffffff;
+}
+
+
 .icons{
     -webkit-filter: invert(1);
     filter: invert(1);
 }
+
+

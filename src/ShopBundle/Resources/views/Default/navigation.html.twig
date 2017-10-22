@@ -9,8 +9,8 @@
                 </li>
 
                 {% for sort in sort %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('shop_sort', {id: sort.id}) }}">{{ sort.name }}</a>
+                    <li class="nav-item" id="sort_nav">
+                        <a class="nav-link " href="{{ path('shop_sort', {id: sort.id}) }}">{{ sort.name }}</a>
                     </li>
                 {% endfor %}
 
@@ -40,7 +40,7 @@
                                 </p>
                                 <h2>{{ product.name }}.</h2>
                                 <p>Цена: {{ product.shopPrice }} руб.</p>
-                                <p><a class="btn btn-secondary"
+                                <p><a class="btn btn-outline-success"
                                       data-id="{{ product.id }}"
                                       data-price="{{ product.shopPrice }}"
                                       data-url="{{ path('add_cart') }}"

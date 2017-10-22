@@ -7,7 +7,39 @@
    <div class="row">
    <div class="col-lg-6 col-md-6">
       <div class="container">
-         Изображение
+         <img class="rounded"
+              src="{{ asset(['img/users/', user.path]|join) }}"
+              alt="Generic placeholder image" width="340" height="340">
+
+      </div>
+      <div class="container">
+         <h3>Заказы:</h3>
+         <table class="table table-condensed">
+            <thead>
+            <tr>
+               <th>Создан</th>
+               <th>Доставка</th>
+               <th>Цена</th>
+               <th>Коментарий</th>
+               <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for order in order %}
+               <tr>
+                  <td>{{ order.created |date('Y.m.d')}}</td>
+                  <td>{{ order.date |date('Y.m.d h:m') }}</td>
+                  <td>{{ order.price }}</td>
+                  {#<td>{{ order.status }}</td>#}
+                  <td>{{ order.comment }}</td>
+
+
+               </tr>
+            {% else %}
+               <p>Положите товар в корзину</p>
+            {% endfor %}
+            </tbody>
+         </table>
 
       </div>
    </div>

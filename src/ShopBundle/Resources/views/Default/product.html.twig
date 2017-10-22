@@ -9,7 +9,7 @@
         <h2>{{ product.name }}.</h2>
         <h3>Осталось на складе: {{ product.balanse }} ({{ product.measure.name }}.)</h3>
         <p>Цена: {{ product.shopPrice }} руб.</p>
-        <p><a class="btn btn-secondary"
+        <p><a class="btn btn-outline-success"
               data-id="{{ product.id }}"
               data-price="{{ product.shopPrice }}"
               data-url="{{ path('add_cart') }}"

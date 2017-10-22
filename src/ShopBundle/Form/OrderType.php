@@ -21,7 +21,7 @@ class OrderType extends AbstractType
                 'data' => $options['arg1'],))
             ->add("lastname", TextareaType::class, array(
                 'label' => 'Имя:',
-                'data' => $options['arg1'],))
+                'data' => $options['arg2'],))
             -> add("date", DateTimeType::class, array(
                 'label' => 'Желаемое время доставки:',
                 'date_widget' => 'single_text',

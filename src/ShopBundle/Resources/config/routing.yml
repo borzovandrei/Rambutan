@@ -49,6 +49,12 @@ shop_order:
     requirements:
             methods:  POST
 
+shop_about:
+    path:     /about
+    defaults: { _controller: ShopBundle:Page:about }
+    requirements:
+            methods:  POST
+
 ############################################################################################################
 
 shop_login:

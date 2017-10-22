@@ -30,21 +30,30 @@
                            data-price="{{ cart.shopPrice }}"
                            data-sum="{{ result[cart.id] }}"
                            data-url="{{ path('add_cart') }}"
-                           role="button">+</a>
+                           role="button"><img class="icons"
+                                              src="{{ asset('img/icons/plus.svg') }}"
+                                              alt="О компании"
+                                              width="20" height="20"></a>
 
                         <a class="btn btn-warning btn-minus"
                            data-id="{{ cart.id }}"
                            data-price="{{ cart.shopPrice }}"
                            data-sum="{{ result[cart.id] }}"
                            data-url="{{ path('minus_cart') }}"
-                           role="button">-</a>
+                           role="button"><img class="icons"
+                                              src="{{ asset('img/icons/minus.svg') }}"
+                                              alt="О компании"
+                                              width="20" height="20"></a>
 
                         <a class="btn btn-danger btn-del"
                            data-id="{{ cart.id }}"
                            data-sum="{{ result[cart.id] }}"
                            data-price="{{ cart.shopPrice }}"
                            data-url="{{ path('del_cart') }}"
-                           role="button">X</a>
+                           role="button"><img class="icons"
+                                              src="{{ asset('img/icons/garbage.svg') }}"
+                                              alt="О компании"
+                                              width="20" height="20"></a>
                     </td>
                 </tr>
             {% else %}
@@ -52,8 +61,8 @@
             {% endfor %}
             </tbody>
         </table>
-        <br>Итого в вашей корзине продуктов на:
+        <br>Итого в вашей корзине продуктов на <b id="sum_cart">{{ sum }}руб.</b>
     </div>
     <td><a class="btn btn-secondary" role="button" href="{{ path('shop_order') }}">Оформить заказ</a></td>
-    <script src="{{ asset('scripts/js/del_cart.js') }}"></script>
+
 {% endblock %}
