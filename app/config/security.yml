@@ -24,6 +24,7 @@ security:
             logout: true
             security: true
             anonymous: true
+#            access_denied_handler: ShopBundle/Controller/AccessDeniedHandler
 
     access_control:
         - { path: /admin/.*, role: ROLE_ADMIN }

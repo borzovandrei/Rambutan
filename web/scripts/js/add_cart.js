@@ -6,6 +6,8 @@ var cart = {
 var price = +0;
 $('.btn.btn-outline-success').on('click', addToCart);
 $('.btn-default.btn').on('click', delCart);
+$('#order_Оформить').on('click', delCart);
+
 
 function addToCart() {
     var id = $(this).attr('data-id');
@@ -43,7 +45,7 @@ function loadCart() {
 
 function delCart() {
     if (localStorage.getItem('cost')) {
-        cost = 0;
+        localStorage.setItem('cost', 0);
         showMiniCart();
     }
 }

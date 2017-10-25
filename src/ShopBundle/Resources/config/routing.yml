@@ -98,6 +98,18 @@ shop_add:
     requirements:
          methods:  GET
 
+user_role:
+    path:   /admin/add/user_role
+    defaults: { _controller: ShopBundle:Admin:user_role }
+    requirements:
+         methods:  GET
+
+order_status:
+    path:   /admin/add/order_status
+    defaults: { _controller: ShopBundle:Admin:order_status }
+    requirements:
+         methods:  GET
+
 ############################################################################################################
 chat_room:
     path:  /chat
@@ -135,3 +147,10 @@ shop_room:
     defaults: { _controller: ShopBundle:Page:room }
     requirements:
         methods:  GET
+
+room_order:
+    path:     /room/order/{id}
+    defaults: { _controller: ShopBundle:Page:room_order }
+    requirements:
+            methods:  GET
+            id: \d+

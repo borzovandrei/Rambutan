@@ -21,14 +21,21 @@ class OrderItem
     protected $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="Order", mappedBy="oderitem")
+     * @ORM\Column(type="string", length=255)
      */
-    protected $order;
+    protected $orderprod;
+
 
     /**
      * @ORM\Column(type="integer")
      */
     protected $item;
+
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $sum;
 
     /**
      * @return mixed
@@ -46,22 +53,20 @@ class OrderItem
         $this->id = $id;
     }
 
-
-
     /**
      * @return mixed
      */
-    public function getOrder()
+    public function getOrderprod()
     {
-        return $this->order;
+        return $this->orderprod;
     }
 
     /**
-     * @param mixed $order
+     * @param mixed $orderprod
      */
-    public function setOrder($order)
+    public function setOrderprod($orderprod)
     {
-        $this->order = $order;
+        $this->orderprod = $orderprod;
     }
 
     /**
@@ -79,6 +84,24 @@ class OrderItem
     {
         $this->item = $item;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getSum()
+    {
+        return $this->sum;
+    }
+
+    /**
+     * @param mixed $sum
+     */
+    public function setSum($sum)
+    {
+        $this->sum = $sum;
+    }
+
+
 
 
 

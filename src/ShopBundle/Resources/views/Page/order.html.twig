@@ -22,7 +22,7 @@
                                      alt="Generic placeholder image" width="50" height=50></td>
                             <td>{{ cart.name }}</td>
                             <td>{{ cart.shopprice }}</td>
-                            <td> {{ result[cart.id] }}</td>
+                            <td> {{ result[cart.id] }} {{ cart.measure.name }}.</td>
                         </tr>
                     {% else %}
                         <p>Нет товаров в корзине</p>

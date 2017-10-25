@@ -22,12 +22,11 @@
 
 
    <article class="comment" id="comment">
-      <span class="highlight" id="autor"> <p id="msg"> </p> </span>
+       <div id="messages"></div>
    </article>
 
 
-   {#<p id="autor">#}
-   {#<p id="msg">#}
+
 
 
 
@@ -40,8 +39,7 @@
 
 
    <script>
-       const messages = document.getElementById('msg');
-       const autor = document.getElementById('autor');
+       const messages = document.getElementById('messages');
 
        publish.onsubmit = function(){
            var xhr = new XMLHttpRequest();
@@ -63,13 +61,14 @@
            url = 'http://localhost:8008/sub/' + {{ id }} + "?&v=" + timestamp;
            xhr.open("GET", url, true);
            xhr.onload = function(){
-               var autors = document.createElement('autor');
-               var msgs = document.createElement('msg');
+               var authors = document.createElement('div');
+               var msgs = document.createElement('div');
+               authors.classList.add('chat-author');
+               msgs.classList.add('chat-messages');
 
-               autors.textContent = JSON.parse(this.responseText).user_autor;
-               autor.appendChild(autors);
-
+               authors.textContent = JSON.parse(this.responseText).user_autor;
                msgs.textContent = JSON.parse(this.responseText).message['message'];
+               messages.appendChild(authors);
                messages.appendChild(msgs);
 
                subscribe();

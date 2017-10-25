@@ -3,6 +3,7 @@
 namespace ShopBundle\Entity;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
@@ -36,11 +37,10 @@ class Order
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="StatusOrder", inversedBy="id_order")
+     * @ORM\ManyToOne(targetEntity="StatusOrder", inversedBy="id")
      * @ORM\JoinColumn(name="status_order", referencedColumnName="id")
      */
     protected $status;
-
 
 
     /**
@@ -75,8 +75,7 @@ class Order
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="OrderItem", inversedBy="order")
-     * @ORM\JoinColumn(name="orderItem_id", referencedColumnName="id")
+     * @ORM\Column(type="string")
      */
     protected $oderitem;
 
@@ -86,6 +85,12 @@ class Order
      * @JoinTable(name="order_user")
      */
     protected $id_user;
+
+
+    public function __construct()
+    {
+        $this->id_user = new ArrayCollection();
+    }
 
 
     /**
@@ -253,6 +258,8 @@ class Order
         $this->phone = $phone;
     }
 
+
+
     /**
      * @return mixed
      */
@@ -266,8 +273,25 @@ class Order
      */
     public function setIdUser($id_user)
     {
-        $this->id_user = $id_user;
+        $this->id_user[] = $id_user;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getOderitem()
+    {
+        return $this->oderitem;
+    }
+
+    /**
+     * @param mixed $oderitem
+     */
+    public function setOderitem($oderitem)
+    {
+        $this->oderitem = $oderitem;
+    }
+
 
 
 }

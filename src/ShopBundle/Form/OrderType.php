@@ -32,7 +32,7 @@ class OrderType extends AbstractType
             -> add("phone", TextareaType::class, array(
                 'label' => 'Телефон:',
                 'data' => $options['arg3'],
-))
+                ))
             -> add("address", TextareaType::class, array(
                 'label' => 'Адрес:',
                 'data' => $options['arg4']))

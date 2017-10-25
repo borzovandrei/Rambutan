@@ -39,11 +39,6 @@ class Products
      */
     private $file;
 
-    /**
-     * @ORM\Column(type="string", length=50)
-     * @Assert\NotBlank()
-     */
-    protected $class;
 
     /**
      * @ORM\ManyToOne(targetEntity="Sort", inversedBy="id_sort")
@@ -115,21 +110,6 @@ class Products
         $this->name = $name;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getClass()
-    {
-        return $this->class;
-    }
-
-    /**
-     * @param mixed $class
-     */
-    public function setClass($class)
-    {
-        $this->class = $class;
-    }
 
     /**
      * @return mixed

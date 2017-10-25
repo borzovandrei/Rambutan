@@ -1,0 +1,84 @@
+{% extends 'ShopBundle:Default:index.html.twig' %}
+
+{% block navigation %}
+
+    <div class="row">
+        <div class="col-lg-5 col-md-6">
+            <div class="container">
+                <h3>Информация о заказе:</h3>
+                <table class="table">
+                    <tbody>
+                    <tr>
+                        <th scope="row">Фамилия:</th>
+                        <td>{{ order.firstname }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Имя:</th>
+                        <td>{{ order.lastname }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Телефон:</th>
+                        <td>{{ order.phone }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Дата оформления:</th>
+                        <td> {{ order.created|date('d.m.Y') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Дата поставки:</th>
+                        <td> {{ order.date|date('d.m.Y') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Время поставки:</th>
+                        <td> {{ order.date|date('h:m') }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Адрес:</th>
+                        <td>{{ order.address }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Комментарий:</th>
+                        <td>{{ order.comment}}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Цена:</th>
+                        <td>{{ order.price }} руб.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6">
+            <h3>Купленные продукты</h3>
+            <table class="table table-condensed">
+                <thead>
+                <tr>
+                    <th>Изображение</th>
+                    <th>Артикул</th>
+                    <th>Продукт</th>
+                    <th>Цена</th>
+                    <th>Колличество</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if (products) %}
+                     {% for key, products in products %}
+                         <tr>
+                             <td><img class="rounded"
+                                      src="{{ asset(['img/products/', products.path]|join) }}"
+                                      alt="Generic placeholder image" width="50" height=50></td>
+                             <td>№: {{ products.id }}</td>
+                             <td>{{ products.name }}</td>
+                             <td>{{ products.shopprice }} руб.</td>
+                             <td> {{ sum[key] }} {{ products.measure.name }}.</td>
+                         </tr>
+                    {% endfor %}
+                {% else %}
+                    <p>Мы не нашли товары в данном заказе.</p>
+                 {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

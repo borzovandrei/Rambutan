@@ -6,10 +6,15 @@ namespace ShopBundle\Controller;
 use ShopBundle\Entity\Chat;
 use ShopBundle\Entity\ChatRoom;
 use ShopBundle\Entity\Order;
+use ShopBundle\Entity\OrderItem;
+use ShopBundle\Entity\Role;
+use ShopBundle\Entity\Users;
+use ShopBundle\Form\NewUserType;
 use ShopBundle\Form\OrderType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Symfony\Component\Security\Core\Security;
 
 class PageController extends Controller
@@ -34,38 +39,69 @@ class PageController extends Controller
     //метод регистрации
     public function regAction(Request $request)
     {
-        $session = $request->getSession();
-        if ($request->attributes->has(Security::AUTHENTICATION_ERROR)) {
-            $error = $request->attributes->get(Security::AUTHENTICATION_ERROR);
-        } else {
-            $error = $request->getSession()->get(Security::AUTHENTICATION_ERROR);
+        $user = new Users();
+        $em = $this->getDoctrine()->getManager();
+        $role = $em->getRepository('ShopBundle:Role')->find(2);
+        $user->getUserRoles()->add($role);
+        $form = $this->createForm(NewUserType::class, $user);
+        $form -> handleRequest($request);
+        $user->setSalt(md5(time()));
+        $encoder = new MessageDigestPasswordEncoder('sha512', true, 10);
+        $password = $encoder->encodePassword($form["password"]->getData(), $user->getSalt());
+        $user->setPassword($password);
+
+
+        if ($form->isSubmitted() &&  $form->isValid()){
+            $user->upload();
+            $em -> persist($user);
+            $em->flush();
+            return $this->redirectToRoute("shop_login");
         }
+
         return $this->render('ShopBundle:Page:reg.html.twig', array(
-            'last_username' => $request->getSession()->get(Security::LAST_USERNAME),
-            'error' => $error
+            'form_add_user'=> $form -> createView()
         ));
     }
 
     //ЛИЧНЫЙ КАБИНЕТ
     public function aboutAction()
     {
-        return $this->render('ShopBundle:Page:about.html.twig', array(
-
-        ));
+        return $this->render('ShopBundle:Page:about.html.twig', array());
     }
 
     //ЛИЧНЫЙ КАБИНЕТ
     public function roomAction()
     {
-        $user=$this->getUser();
+        $user = $this->getUser();
         $em = $this->getDoctrine()->getManager();
-        $orders = $em->getRepository('ShopBundle:Order')->findBy( array('firstname' => $user->getFirstname(),'phone'=>$user->getPhone()));
+        $orders = $em->getRepository('ShopBundle:Order')->findBy(array('firstname' => $user->getFirstname(), 'phone' => $user->getPhone()));
+        dump($orders);
 
         return $this->render('ShopBundle:Page:room.html.twig', array(
             'user' => $user,
             'order' => $orders,
         ));
     }
+
+
+    //просмотр определенного заказа
+    public function room_orderAction(Request $request)
+    {
+        $id = $request->get("id");
+        $em = $this->getDoctrine()->getManager();
+        $order = $em->getRepository('ShopBundle:Order')->find($id);
+        $orderitem = $em->getRepository('ShopBundle:OrderItem')->findBy(array('orderprod'=>$order->getOderitem()));
+        foreach ($orderitem as $key => $value) {
+            $products[] = $em->getRepository('ShopBundle:Products')->find($orderitem[$key]->getItem());
+            $sum[]=$orderitem[$key]->getSum();
+        }
+        return $this->render('ShopBundle:Page:room_order.html.twig', array(
+            'order' => $order,
+            'products' => $products,
+            'sum' => $sum,
+        ));
+    }
+
 
     //корзина
     public function cartAction(Request $request)
@@ -96,7 +132,7 @@ class PageController extends Controller
             $product = null;
             $result = null;
             $price[] = null;
-            $ar[]=null;
+            $ar[] = null;
         };
 
 
@@ -154,54 +190,66 @@ class PageController extends Controller
             $product = null;
             $result = null;
             $price[] = null;
-            $ar[]=null;
+            $ar[] = null;
         };
 
         $sum = array_sum($ar);
 
 
-
-
-
-        $redis = $this->get('snc_redis.default');
-        $redis->get("cart_{$cardId}");
-        $redis = json_decode($redis->get("cart_{$cardId}"), true);
-        foreach ($redis["products"] as $key => $value) {
-           dump($value['id']);
-        }
-
-
-
-
-
-
-
 //        отправка в бд
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $order->setPrice($sum);
-            $order->setCreated();
+            //уменьшение товара на складе
+            if ($result) {
+                foreach ($result as $key => $value) {
+                    $prod_balance[] = $em->getRepository('ShopBundle:Products')->find($key);
+                }
+                foreach ($prod_balance as $key => $value) {
+                    $balance = $prod_balance[$key]->getBalanse();
+                    $newbalance = $balance - (1 * $result[$prod_balance[$key]->getId()]);
 
-//            $order->setStatus(1);
-            dump( $order->getId());die();
-//            if ($user) {
-//                $order->setIdUser($user->getId());
-//            }
+                    $prod_balance[$key]->setBalanse($newbalance);
+                    $em->persist($prod_balance[$key]);
+                    $em->flush();
+                }
+
+                //создание заказа
+                $order->setPrice($sum);
+                $order->setCreated();
+                $status= $em->getRepository('ShopBundle:StatusOrder')->find(1);
+                $order->setStatus($status);
+                if ($user) {
+                    $order->setIdUser($user);
+                }
+                $order->setOderitem(strval(md5(rand())));
+                dump($order);
+
+
+                //сохранение в заказ продуктов
+                foreach ($result as $key => $value) {
+                    $orderitem = new OrderItem();
+                    $orderitem->setOrderprod($order->getOderitem());
+                    $orderitem->setItem($key);
+                    $orderitem->setSum($result[$key]);
+                    $em->persist($orderitem);
+                }
+
+//                $em->flush();
 //
-            $redis = $this->get('snc_redis.default');
-            $redis->del("cart_{$cardId}", '*');
-            dump($redis);
-            $em->persist($order);
-            $em->flush();
+                //очистка редиса
+                $redis = $this->get('snc_redis.default');
+                $redis->del("cart_{$cardId}", '*');
+                $em->persist($order);
+                $em->flush();
 
-            if (!$user) {
-                return $this->redirectToRoute("shop_homepage");
-            } else {
-                return $this->redirectToRoute("shop_room");
+                if (!$user) {
+                    return $this->redirectToRoute("shop_homepage");
+                } else {
+                    return $this->redirectToRoute("shop_room");
+                }
+
             }
-
         }
-
         return $this->render('ShopBundle:Page:order.html.twig', array(
             'form_order' => $form->createView(),
             'user' => $user,
@@ -253,7 +301,7 @@ class PageController extends Controller
             "message" => $message
         ];
 
-        var_dump($chatRoom->getName());
+//        dump($chatRoom->getIdRoom());
 
         $ch = curl_init('http://127.0.0.1:8008/pub?id=' . $chatRoom->getIdRoom());
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -271,9 +319,9 @@ class PageController extends Controller
 
 
         $em = $this->getDoctrine()->getManager();
-        $em->persist($chat);
-        $em->flush();
-
+//        $em->persist($chat);
+//        $em->flush();
+dump($data);
         return new JsonResponse($data);
 
     }

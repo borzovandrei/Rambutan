@@ -9,10 +9,14 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="ShopBundle\Repository\ShopRepository")
  * @ORM\Table(name="user")
+ * @UniqueEntity("username")
+ * @UniqueEntity("email")
+ * @ORM\HasLifecycleCallbacks
  */
 class Users implements UserInterface
 {
@@ -24,7 +28,7 @@ class Users implements UserInterface
     protected $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      * @var string username
      */
     protected $username;
@@ -54,7 +58,7 @@ class Users implements UserInterface
 
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", unique=true)
      * @var string email
      */
     protected $email;
@@ -83,10 +87,11 @@ class Users implements UserInterface
     protected $age;
 
     /**
-     * @ORM\Column(type="string")
-     * @var string sex
+     * @ORM\ManyToOne(targetEntity="Sex", inversedBy="id_sex")
+     * @ORM\JoinColumn(name="sex_id", referencedColumnName="id")
      */
     protected $sex;
+
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -277,7 +282,7 @@ class Users implements UserInterface
     /**
      * @return string
      */
-    public function getPhone(): string
+    public function getPhone()
     {
         return $this->phone;
     }
