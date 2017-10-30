@@ -15,9 +15,7 @@ class AdminController extends Controller
     public function indexAction()
     {
 
-        return $this->render('ShopBundle:Admin:index.html.twig',array(
-
-    ));
+        return $this->render('ShopBundle:Admin:index.html.twig', array());
 
     }
 
@@ -25,68 +23,70 @@ class AdminController extends Controller
     public function addProductAction(Request $request)
     {
         $product = new Products();
-        $form = $this->createForm(ProductAddType::class, $product );
-        $form -> handleRequest($request);
+        $form = $this->createForm(ProductAddType::class, $product);
+        $form->handleRequest($request);
 
-        if ($form->isSubmitted() &&  $form->isValid()){
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $product->upload();
-            $em -> persist($product);
+            $em->persist($product);
             $em->flush();
             return $this->redirectToRoute("shop_homepage");
         }
 
 
         return $this->render("ShopBundle:Admin:add.html.twig", [
-            'form_add_product'=> $form -> createView(),
+            'form_add_product' => $form->createView(),
         ]);
     }
 
 
-
-
-
-    public function productEditAction($id, Request $request){
+    public function productEditAction($id, Request $request)
+    {
         $em = $this->getDoctrine();
         $product = $em->getRepository("ShopBundle:Products")->find($id);
-        if(!$product){
+        if (!$product) {
             throw $this->createAccessDeniedException("Данного товара нет в магазине");
         }
 
-        $form = $this->createForm(ProductAddType::class, $product );
-        $form -> handleRequest($request);
-        if ($form->isSubmitted() &&  $form->isValid()){
+        $form = $this->createForm(ProductAddType::class, $product);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $product->upload();
-            $em -> persist($product);
+            $em->persist($product);
             $em->flush();
             return $this->redirectToRoute("shop_product", array('id' => $id));
         }
 
         return $this->render("ShopBundle:Admin:edit.html.twig", [
-            'form_edit_blog'=> $form -> createView()
+            'form_edit_blog' => $form->createView()
         ]);
 
     }
+
     public function user_roleAction(Request $request)
     {
         $user = new Users();
         $search = $request->query->get('search');
         $em = $this->getDoctrine();
-        $user = $em->getRepository("ShopBundle:Users")->findBy(array('username' => $search ));
+        $user = $em->getRepository("ShopBundle:Users")->findBy(array('username' => $search));
+        if (!$user) {
+            $this->get('session')->getFlashBag()->add('user_role', 'Данный пользователь не найден.');
+            return $this->redirect($this->generateUrl('shop_add'));
+        }
 
         $newrole = $request->query->get('role');
 
-        $role = $em->getRepository('ShopBundle:Role')->findBy(array('name' => $newrole ));
+        $role = $em->getRepository('ShopBundle:Role')->findBy(array('name' => $newrole));
         $user[0]->getUserRoles()->add($role[0]);
 
         $em = $this->getDoctrine()->getManager();
-        $em -> persist($user[0]);
+        $em->persist($user[0]);
         $em->flush();
-        dump($user,$newrole, $role);die();
 
-
-        return $this->render('ShopBundle:Admin:index.html.twig');
+        $this->get('session')->getFlashBag()->add('user_role', 'Пользователю получил права.');
+        return $this->redirect($this->generateUrl('shop_add'));
 
     }
 
@@ -99,16 +99,26 @@ class AdminController extends Controller
         $em = $this->getDoctrine();
         $order = $em->getRepository("ShopBundle:Order")->find($order);
         $status = $em->getRepository("ShopBundle:StatusOrder")->find($status);
+        if (!$order) {
+            $this->get('session')->getFlashBag()->add('order_status', 'Данный заказ не найден.');
+            return $this->redirect($this->generateUrl('shop_add'));
+        }
 
         $order->setStatus($status);
 
+        $message = \Swift_Message::newInstance()
+            ->setSubject('Rambutan orders')
+            ->setFrom('order@rambutan.com')
+            ->setTo($order->getEmail())
+            ->setBody($this->renderView('ShopBundle:Email:statusEmail.html.twig', array('enquiry' => $order)));
+        $this->get('mailer')->send($message);
+
         $em = $this->getDoctrine()->getManager();
-        $em -> persist($order);
+        $em->persist($order);
         $em->flush();
-        dump($order, $status);die();
 
-
-        return $this->render('ShopBundle:Admin:index.html.twig');
+        $this->get('session')->getFlashBag()->add('order_status', 'Статус заказа изменен.');
+        return $this->redirect($this->generateUrl('shop_add'));
 
     }
 

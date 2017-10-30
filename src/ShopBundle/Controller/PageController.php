@@ -5,10 +5,11 @@ namespace ShopBundle\Controller;
 
 use ShopBundle\Entity\Chat;
 use ShopBundle\Entity\ChatRoom;
+use ShopBundle\Entity\Feedback;
 use ShopBundle\Entity\Order;
 use ShopBundle\Entity\OrderItem;
-use ShopBundle\Entity\Role;
 use ShopBundle\Entity\Users;
+use ShopBundle\Form\EmileType;
 use ShopBundle\Form\NewUserType;
 use ShopBundle\Form\OrderType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -63,10 +64,34 @@ class PageController extends Controller
         ));
     }
 
-    //ЛИЧНЫЙ КАБИНЕТ
-    public function aboutAction()
-    {
-        return $this->render('ShopBundle:Page:about.html.twig', array());
+
+    //О компании
+    public function aboutAction(Request $request)
+    {   $feedback = new Feedback();
+
+        $form = $this->createForm(EmileType::class, $feedback);
+
+        if ($request->isMethod($request::METHOD_POST)) {
+            $form->handleRequest($request);
+            if ($form->isValid()) {
+                $message = \Swift_Message::newInstance()
+                    ->setSubject('Rambutan feedback')
+                    ->setFrom('rambutan@feedback.com')
+                    ->setTo('borzovandrei45@gmail.com')
+                    ->setBody($this->renderView('ShopBundle:Email:feedbackEmail.txt.twig', array('enquiry' => $feedback)));
+
+                $this->get('mailer')->send($message);
+
+                $this->get('session')->getFlashBag()->add('shop-notice', 'Спасибо! Ваше письмо было отправлено!');
+
+                return $this->redirect($this->generateUrl('shop_about'));
+
+            }
+
+        }
+        return $this->render('ShopBundle:Page:about.html.twig', array(
+            'form' => $form->createView()
+        ));
     }
 
     //ЛИЧНЫЙ КАБИНЕТ
@@ -162,8 +187,9 @@ class PageController extends Controller
             $lastname = $user->getLastname();
             $phone = $user->getPhone();
             $address = $user->getAddress();
+            $email = $user->getEmail();
         }
-        $form = $this->createForm(OrderType::class, $order, ['arg1' => $firstname, 'arg2' => $lastname, 'arg3' => $phone, 'arg4' => $address]);
+        $form = $this->createForm(OrderType::class, $order, ['arg1' => $firstname, 'arg2' => $lastname, 'arg3' => $phone, 'arg4' => $address, 'arg5' => $email]);
         $form->handleRequest($request);
 
 
@@ -319,8 +345,8 @@ class PageController extends Controller
 
 
         $em = $this->getDoctrine()->getManager();
-//        $em->persist($chat);
-//        $em->flush();
+        $em->persist($chat);
+        $em->flush();
 dump($data);
         return new JsonResponse($data);
 

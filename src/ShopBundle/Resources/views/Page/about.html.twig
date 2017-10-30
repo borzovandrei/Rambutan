@@ -3,5 +3,31 @@
 {% block title %}О компании{% endblock%}
 
 {% block body %}
-    О компании
+
+    {% for flashMessage in app.session.flashbag.get('shop-notice') %}
+        <div class="shop-notice">
+            {{ flashMessage }}
+        </div>
+    {% endfor %}
+
+
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="container">
+
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <p>Есть вопросы? Свяжитесь с нами!</p>
+            {{ form_start(form, { 'action': path('shop_about'), 'method': 'POST', 'attr': {'class': 'blogger'} }) }}
+            {{ form_errors(form) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.subject) }}
+            {{ form_row(form.body) }}
+            {{ form_rest(form) }}
+            <input type="submit" value="Submit" class="btn btn-success" />
+        </div>
+    </div>
+
 {% endblock %}

@@ -11,6 +11,11 @@
         </div>
         <div class="col-sm-4">
             <br>
+            {% for flashMessage in app.session.flashbag.get('user_role') %}
+                <div class="shop-notice">
+                    {{ flashMessage }}
+                </div>
+            {% endfor %}
             <form
                     class="navbar-form"
                     method="get"
@@ -29,6 +34,11 @@
                 </select>
             </form>
             <br>
+            {% for flashMessage in app.session.flashbag.get('order_status') %}
+                <div class="shop-notice">
+                    {{ flashMessage }}
+                </div>
+            {% endfor %}
             <form
                     class="navbar-form"
                     method="get"

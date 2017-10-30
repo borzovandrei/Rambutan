@@ -5,6 +5,7 @@ namespace ShopBundle\Form;
 use ShopBundle\Entity\Order;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -29,6 +30,10 @@ class OrderType extends AbstractType
                 'minutes'=>range(0,45,15),
                 'data' => new \DateTime(),
                 ))
+            -> add("email", EmailType::class, array(
+                'label' => 'Email:',
+                'data' => $options['arg5'],
+            ))
             -> add("phone", TextareaType::class, array(
                 'label' => 'Телефон:',
                 'data' => $options['arg3'],
@@ -50,6 +55,7 @@ class OrderType extends AbstractType
             'arg2' => null,
             'arg3' => null,
             'arg4' => null,
+            'arg5' => null,
         ]);
     }
 

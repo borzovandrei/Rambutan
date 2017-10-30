@@ -71,6 +71,11 @@ class Order
     /**
      * @ORM\Column(type="string")
      */
+    protected $email;
+
+    /**
+     * @ORM\Column(type="string")
+     */
     protected $comment;
 
 
@@ -256,6 +261,22 @@ class Order
     public function setPhone($phone)
     {
         $this->phone = $phone;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param mixed $email
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
     }
 
 
