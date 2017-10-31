@@ -1,9 +1,20 @@
-{% extends 'ShopBundle:Default:index.html.twig' %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="utf-8"/>
+    <title>Чек</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+              integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
+              crossorigin="anonymous">
 
-{% block navigation %}
-
+</head>
+<body>
     <div class="row">
         <div class="col-lg-5 col-md-6">
+            <div style="text-align: center;">
+            <img src="{{ rootDir ~ '/web' ~ asset('img/logo.png') }}"  width="50" height="50"/>
+            <h1>Rambutan: online shop</h1>
+            </div>
             <div class="container">
                 <h3>Информация о заказе:</h3>
                 <table class="table">
@@ -13,12 +24,8 @@
                         <td>{{ order.id }}</td>
                     </tr>
                     <tr>
-                        <th scope="row">Фамилия:</th>
-                        <td>{{ order.firstname }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Имя:</th>
-                        <td>{{ order.lastname }}</td>
+                        <th scope="row">Имя Фамилия:</th>
+                        <td>{{ order.lastname }} {{ order.firstname }}</td>
                     </tr>
                     <tr>
                         <th scope="row">Телефон:</th>
@@ -67,23 +74,25 @@
                 </thead>
                 <tbody>
                 {% if (products) %}
-                     {% for key, products in products %}
-                         <tr>
-                             <td><img style="text-align: center;"
-                                      src="{{ asset(['img/products/', products.path]|join) }}"
-                                      alt="Generic placeholder image" width="50" height=50></td>
-                             <td>№: {{ products.id }}</td>
-                             <td>{{ products.name }}</td>
-                             <td>{{ products.shopprice }} руб.</td>
-                             <td> {{ sum[key] }} {{ products.measure.name }}.</td>
-                         </tr>
+                    {% for key, products in products %}
+                        <tr>
+                            <td><img style="text-align: center;"
+                                     src="{{ rootDir ~ '/web' ~ asset(['img/products/', products.path]|join) }}"
+                                     alt="not found" width="40" height="40"></td>
+                            <td>№: {{ products.id }}</td>
+                            <td>{{ products.name }}</td>
+                            <td>{{ products.shopprice }} руб.</td>
+                            <td> {{ sum[key] }} {{ products.measure.name }}.</td>
+                        </tr>
                     {% endfor %}
                 {% else %}
                     <p>Мы не нашли товары в данном заказе.</p>
-                 {% endif %}
+                {% endif %}
                 </tbody>
             </table>
-            <a href="{{ path('invoice', {id: order.id})}}" class="btn btn-outline-success btn-lg btn-block" role="button">Накладная</a>
+            <div style="text-align: right;">
+                <img src="{{ rootDir ~ '/web' ~ asset('img/post.png') }}"  width="200" />
+            </div>
         </div>
     </div>
-{% endblock %}
+</body>

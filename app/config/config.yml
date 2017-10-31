@@ -102,3 +102,18 @@ snc_redis:
         locking: false
         prefix: session_prefix_
         ttl: 120000
+
+
+
+knp_snappy:
+    pdf:
+        enabled:    true
+        binary:     /usr/local/bin/wkhtmltopdf
+        options:
+            encoding: UTF-8
+            no-outline: true
+            page-size: LETTER
+    image:
+        enabled:    true
+        binary:     /usr/local/bin/wkhtmltoimage
+        options:    []

@@ -268,9 +268,11 @@ class PageController extends Controller
                 $em->persist($order);
                 $em->flush();
 
+
                 if (!$user) {
                     return $this->redirectToRoute("shop_homepage");
                 } else {
+                    $this->get('session')->getFlashBag()->add('room_order', 'Спасибо, что вы выбрали нас! Чек о покупке Вы сможеье найти на странице заказа.');
                     return $this->redirectToRoute("shop_room");
                 }
 

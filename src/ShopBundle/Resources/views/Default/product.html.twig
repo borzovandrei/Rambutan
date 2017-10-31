@@ -1,22 +1,66 @@
 {% extends 'ShopBundle:Default:index.html.twig' %}
 
 {% block body %}
+    <div class="container">
+    <div class="row">
+        <div class="col-lg-4 col-md-6">
+            <div class="container">
+                <img class="rounded img" id="img_prod" style="position:fixed;"
+                     src="{{ asset(['img/products/', product.path]|join) }}"
+                     alt="Generic placeholder image" width="340" height="340">
+            </div>
+        </div>
+        <div class="jumbotron">
+            <h2>{{ product.name }}.</h2>
+            <h3>Осталось на складе: {{ product.balanse }} ({{ product.measure.name }}.)</h3>
+            <p>Цена: {{ product.shopPrice }} руб.</p>
+            <p><a class="btn btn-outline-success"
+                  data-id="{{ product.id }}"
+                  data-price="{{ product.shopPrice }}"
+                  data-url="{{ path('add_cart') }}"
+                  role="button">Купить</a></p>
+            <p><a class="btn btn-secondary" href="{{ path('admin_product_edit', { 'id': product.id }) }}">Изменить</a>
+            </p>
 
-    <form class="product">
-        <img class="rounded"
-             src="{{ asset(['img/products/', product.path]|join) }}"
-             alt="Generic placeholder image" width="340" height="340">
-        <h2>{{ product.name }}.</h2>
-        <h3>Осталось на складе: {{ product.balanse }} ({{ product.measure.name }}.)</h3>
-        <p>Цена: {{ product.shopPrice }} руб.</p>
-        <p><a class="btn btn-outline-success"
-              data-id="{{ product.id }}"
-              data-price="{{ product.shopPrice }}"
-              data-url="{{ path('add_cart') }}"
-              role="button">Купить</a></p>
 
-        <p><a class="btn btn-secondary" href="{{ path('admin_product_edit', { 'id': product.id }) }}">Изменить</a></p>
-    </form>
+            <h2>Недавно просмотренные:</h2>
+            <div class="row">
+                {% for data in data %}
+                    <div class="col-3">
+                        <p>
+                            <a href="{{ path('shop_product', {id: data.id}) }}">
+                                <img class="rounded"
+                                     src="{{ asset(['img/products/', data.path]|join) }}"
+                                     alt="Generic placeholder image" width="70" height="70">
+                            </a>
+                        </p>
+                        <h3>{{ data.name }}.</h3>
+                        <p>Цена: {{ data.shopPrice }} руб.</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <h2>Вам может понравиться:</h2>
+            <div class="row">
+                {% for recomend in recomend %}
+                    <div class="col-3">
+                        <p>
+                            <a href="{{ path('shop_product', {id: recomend.id}) }}">
+                                <img class="rounded"
+                                     src="{{ asset(['img/products/', recomend.path]|join) }}"
+                                     alt="Generic placeholder image" width="70" height="70">
+                            </a>
+                        </p>
+                        <h3>{{ recomend.name }}.</h3>
+                        <p>Цена: {{ recomend.shopPrice }} руб.</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+
+
 
     <h3>Отзывы</h3>
 
@@ -39,9 +83,8 @@
         {{ render(controller('ShopBundle:Comment:new', { 'product_id':  product.id })) }}
     {% else %}
         <h3>Для того что бы оставить отзыв, Вам необходимо зарегестрироваться или авторизироваться</h3>
-        <a class="btn btn-secondary" href="{{ path('shop_login') }}">Войти</a>
+        <a class="btn btn-success" href="{{ path('shop_login') }}">Войти</a>
     {% endif %}
 
-
-
+    </div>
 {% endblock %}

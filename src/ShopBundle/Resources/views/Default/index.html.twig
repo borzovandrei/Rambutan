@@ -47,9 +47,9 @@
                             <a class="nav-link" href="{{ path('shop_room') }}">
                                 <img class="icons"
                                         {% if is_granted('ROLE_ADMIN') %}
-                                            src="{{ asset('img/icons/profile2.svg') }}"
-                                        {% elseif  is_granted('ROLE_USER') %}
-                                            src="{{ asset('img/icons/profile1.svg') }}"
+                                     src="{{ asset('img/icons/profile1.svg') }}"
+                                     {% elseif  is_granted('ROLE_USER') %}
+                                         src="{{ asset('img/icons/profile2.svg') }}"
                                         {% endif %}
                                      alt="Личный кабинет"
                                      width="30" height="30">

@@ -27,6 +27,7 @@ body{
 
 }
 
+
 .navbar-custom .navbar-brand {
     color: #63a353;
 }
@@ -60,4 +61,8 @@ body{
     filter: invert(1);
 }
 
+.jumbotron{
+    color: #63a353;
+    background-color: rgba(208, 255, 186, 0.58) !important;
+}
 

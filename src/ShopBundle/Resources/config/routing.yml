@@ -154,3 +154,11 @@ room_order:
     requirements:
             methods:  GET
             id: \d+
+
+
+invoice:
+    path:     /room/invoice/{id}
+    defaults: { _controller: ShopBundle:Default:invoice}
+    requirements:
+            methods:  GET
+            id: \d+
