@@ -112,6 +112,7 @@ class PageController extends Controller
     //просмотр определенного заказа
     public function room_orderAction(Request $request)
     {
+
         $id = $request->get("id");
         $em = $this->getDoctrine()->getManager();
         $order = $em->getRepository('ShopBundle:Order')->find($id);
@@ -120,10 +121,29 @@ class PageController extends Controller
             $products[] = $em->getRepository('ShopBundle:Products')->find($orderitem[$key]->getItem());
             $sum[]=$orderitem[$key]->getSum();
         }
+
+        $params = array(
+            'geocode' => $order->getAddress(), // адрес
+            'format'  => 'json',                          // формат ответа
+            'results' => 1,                               // количество выводимых результатов
+        );
+        $response = json_decode(file_get_contents('http://geocode-maps.yandex.ru/1.x/?' . http_build_query($params, '', '&')));
+
+        if ($response->response->GeoObjectCollection->metaDataProperty->GeocoderResponseMetaData->found > 0)
+        {
+            $map = str_replace(' ',',',$response->response->GeoObjectCollection->featureMember[0]->GeoObject->Point->pos);
+        }
+        else
+        {
+            $map=null;
+        }
+
+
         return $this->render('ShopBundle:Page:room_order.html.twig', array(
             'order' => $order,
             'products' => $products,
             'sum' => $sum,
+            'map'=>$map,
         ));
     }
 
@@ -182,6 +202,7 @@ class PageController extends Controller
             $lastname = null;
             $phone = null;
             $address = null;
+            $email = null;
         } else {
             $firstname = $user->getFirstname();
             $lastname = $user->getLastname();
@@ -225,7 +246,7 @@ class PageController extends Controller
 //        отправка в бд
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            //уменьшение товара на складе
+            //уменьшение товара на складе, увеличение рейтнга
             if ($result) {
                 foreach ($result as $key => $value) {
                     $prod_balance[] = $em->getRepository('ShopBundle:Products')->find($key);
@@ -233,8 +254,13 @@ class PageController extends Controller
                 foreach ($prod_balance as $key => $value) {
                     $balance = $prod_balance[$key]->getBalanse();
                     $newbalance = $balance - (1 * $result[$prod_balance[$key]->getId()]);
-
                     $prod_balance[$key]->setBalanse($newbalance);
+
+
+                    $rating = $prod_balance[$key]->getRating();
+                    $newrating = $rating + (1 * $result[$prod_balance[$key]->getId()]);
+                    $prod_balance[$key]->setRating($newrating);
+
                     $em->persist($prod_balance[$key]);
                     $em->flush();
                 }
@@ -329,8 +355,6 @@ class PageController extends Controller
             "message" => $message
         ];
 
-//        dump($chatRoom->getIdRoom());
-
         $ch = curl_init('http://127.0.0.1:8008/pub?id=' . $chatRoom->getIdRoom());
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
@@ -338,13 +362,11 @@ class PageController extends Controller
         curl_exec($ch);
         curl_close($ch);
 
-
         $chat = new Chat();
         $chat->setChatroom($chatRoom);
         $chat->setAuthor($user);
         $chat->setMessage($message->message);
         $chat->setDate(new \DateTime(date("d-m-Y G:i:s")));
-
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($chat);

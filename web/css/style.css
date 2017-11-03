@@ -65,4 +65,11 @@ body{
     color: #63a353;
     background-color: rgba(208, 255, 186, 0.58) !important;
 }
-
+.navbar-custom .navbar-nav > li > a {
+    color:#fff;
+}
+.text-muted.navbar-dark.bg-dark.sticky-bottom {
+    background: linear-gradient(to right, #63a353, #b2e53f, #c2ff8b, #ffffff);
+    color:#ffffff;
+    border-radius:0;
+}

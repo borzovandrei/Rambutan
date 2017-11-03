@@ -11,3 +11,4 @@ php bin/console doctrine:generate:entities ShopBundle:Order
 
 
 
+key=AIzaSyDN9kqI9h5GErYsKf2FE-GV0NCywWjx-Zc

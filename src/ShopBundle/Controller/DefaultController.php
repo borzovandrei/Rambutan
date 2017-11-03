@@ -94,7 +94,7 @@ class DefaultController extends Controller
 
         $OldHistory = $redis->lrange("history_{$historyId}", 0, -1);
 
-        if ($redis->llen("history_{$historyId}") <= 6){
+        if ($redis->llen("history_{$historyId}") <= 5){
             $redis->lpush("history_{$historyId}", $product->getId());
         }else{
             $redis->rpop("history_{$historyId}");
@@ -124,68 +124,13 @@ class DefaultController extends Controller
         arsort($similar);// сортирует по убыванию
         $similar = array_flip($similar);//меняем ключ-значение местами
         $similar = array_slice($similar, 0, 5);//оставляем топ 5 просматриваемых
-        foreach ($similar as $key => $p) {$data_one[] = $em->getRepository('ShopBundle:Products')->find($p);}//получаем топ продуктов
-        foreach ($data_one as $key => $p) {$data_two[] = $data_one[$key]->getIdClass()->getId();} //сорт топ продуктов
-        $data_two = array_chunk($data_two, 1);//разбиваем массив на части
 
-        switch (count($data_two)) {
-            case 1:
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[0]));
+        $data_two =  $em->getRepository('ShopBundle:Sort')->getSort($similar); //массив категорий
+        $data_three =  $em->getRepository('ShopBundle:Products')->getTop($data_two); //массив id продуктов рекомендаций
 
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                break;
-            case 2:
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[0]));
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[1]));
-
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                $recomend[] = $data_recomend[1][mt_rand(0, count($data_recomend[1]) - 1)];
-                $recomend[] = $data_recomend[1][mt_rand(0, count($data_recomend[1]) - 1)];
-                break;
-            case 3:
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[0]));
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[1]));
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[2]));
-
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                $recomend[] = $data_recomend[1][mt_rand(0, count($data_recomend[1]) - 1)];
-                $recomend[] = $data_recomend[1][mt_rand(0, count($data_recomend[1]) - 1)];
-                $recomend[] = $data_recomend[2][mt_rand(0, count($data_recomend[2]) - 1)];
-                break;
-            case 4:
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[0]));
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[1]));
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[2]));
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[3]));
-
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                $recomend[] = $data_recomend[1][mt_rand(0, count($data_recomend[1]) - 1)];
-                $recomend[] = $data_recomend[2][mt_rand(0, count($data_recomend[2]) - 1)];
-                $recomend[] = $data_recomend[3][mt_rand(0, count($data_recomend[3]) - 1)];
-                break;
-            case 5:
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[0]));
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[1]));
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[2]));
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[3]));
-                $data_recomend[] = $em->getRepository('ShopBundle:Products')->findBy(array('id_class' => $data_two[4]));
-
-                $recomend[] = $data_recomend[0][mt_rand(0, count($data_recomend[0]) - 1)];
-                $recomend[] = $data_recomend[1][mt_rand(0, count($data_recomend[1]) - 1)];
-                $recomend[] = $data_recomend[2][mt_rand(0, count($data_recomend[2]) - 1)];
-                $recomend[] = $data_recomend[3][mt_rand(0, count($data_recomend[3]) - 1)];
-                $recomend[] = $data_recomend[4][mt_rand(0, count($data_recomend[4]) - 1)];
-                break;
+        foreach ($data_three as $key => $p) {
+            $recomend[] = $em->getRepository('ShopBundle:Products')->find($p);
         }
-
 
         if (!$product) {
             throw $this->createNotFoundException('Не удалось найти товар.');
@@ -197,7 +142,7 @@ class DefaultController extends Controller
             'product' => $product,
             'comments' => $comments,
             'data' => $data,
-            'recomend' => array_unique($recomend),
+            'recomend' => $recomend,
         ));
     }
 

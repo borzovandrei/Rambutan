@@ -3,10 +3,21 @@
 {% block title %}Чат{% endblock %}
 
 {% block body %}
-   Добро пожаловать в чат!
-    {% for chatroom in chatroom %}
-     <br> <a href="{{ path('shop_chat', { 'id': chatroom.idRoom })}}">{{ chatroom.name }}</a>
-    {% else %}
-       <p>ВСКОРЕ ВЫ СМОЖЕТЕ СОЗДАВАТЬ ЧАТЫ</p>
-    {% endfor %}
+
+    <div class="container jumbotron border border-success ">
+        <div class="container">
+            <h4 class="display-5">
+                Добро пожаловать в чат, {{ app.user.username }}!
+            </h4>
+            {% for chatroom in chatroom %}
+
+                <input class="btn btn-lg btn-success btn-outline-success btn-block" type="button" value="{{ chatroom.name }}"
+                       onClick='location.href="{{ path('shop_chat', { 'id': chatroom.idRoom }) }}"'>
+
+            {% else %}
+                <p>ВСКОРЕ ВЫ СМОЖЕТЕ СОЗДАВАТЬ ЧАТЫ</p>
+            {% endfor %}
+
+        </div>
+    </div>
 {% endblock %}

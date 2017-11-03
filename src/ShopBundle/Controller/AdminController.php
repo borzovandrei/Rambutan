@@ -23,6 +23,7 @@ class AdminController extends Controller
     public function addProductAction(Request $request)
     {
         $product = new Products();
+        $product->setRating(0);
         $form = $this->createForm(ProductAddType::class, $product);
         $form->handleRequest($request);
 

@@ -1,11 +1,18 @@
 {% extends 'ShopBundle:Default:index.html.twig' %}
 
 {% block body %}
-    <div class="container">
 
-        <form class="form-signin">
-            <h2 class="form-signin-heading"> Регистрация</h2>
-            {{ form(form_add_user, {'attr': {'class': 'form-control'}}) }}
-        </form>
+
+
+    <div class="container jumbotron border border-success lg-2">
+        <div class="row justify-content-center">
+        <div class="col-6">
+
+                <form class="form-signin">
+                    <h2 class="display-4"> Регистрация</h2>
+                    {{ form(form_add_user, {'attr': {'class': 'form-control'}}) }}
+                </form>
+    </div>
+        </div>
     </div>
 {% endblock %}

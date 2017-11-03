@@ -53,6 +53,11 @@ class Products
      */
     protected $balanse;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $rating;
+
 
     /**
      * @ORM\ManyToOne(targetEntity="Measure", inversedBy="id_measure")
@@ -174,6 +179,23 @@ class Products
     {
         $this->balanse = $balanse;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getRating()
+    {
+        return $this->rating;
+    }
+
+    /**
+     * @param mixed $rating
+     */
+    public function setRating($rating)
+    {
+        $this->rating = $rating;
+    }
+
 
 
     public function getAbsolutePath()

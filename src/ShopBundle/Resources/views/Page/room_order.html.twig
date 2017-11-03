@@ -38,11 +38,14 @@
                     </tr>
                     <tr>
                         <th scope="row">Адрес:</th>
-                        <td>{{ order.address }}</td>
+                        <td> <a data-toggle="collapse" href="#collapseTwo" aria-expanded="false">
+                                {{ order.address }}</a>
+                        </td>
+
                     </tr>
                     <tr>
                         <th scope="row">Комментарий:</th>
-                        <td>{{ order.comment}}</td>
+                        <td>{{ order.comment }}</td>
                     </tr>
                     <tr>
                         <th scope="row">Цена:</th>
@@ -50,6 +53,16 @@
                     </tr>
                     </tbody>
                 </table>
+
+                {#<iframe#}
+                {#width="600"#}
+                {#height="200"#}
+                {#frameborder="0" style="border:0"#}
+                {#src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDN9kqI9h5GErYsKf2FE-GV0NCywWjx-Zc#}
+                {#&q={{order.address}}#}
+                {#&zoom=16" allowfullscreen>#}
+                {#</iframe>#}
+
             </div>
         </div>
 
@@ -67,23 +80,46 @@
                 </thead>
                 <tbody>
                 {% if (products) %}
-                     {% for key, products in products %}
-                         <tr>
-                             <td><img style="text-align: center;"
-                                      src="{{ asset(['img/products/', products.path]|join) }}"
-                                      alt="Generic placeholder image" width="50" height=50></td>
-                             <td>№: {{ products.id }}</td>
-                             <td>{{ products.name }}</td>
-                             <td>{{ products.shopprice }} руб.</td>
-                             <td> {{ sum[key] }} {{ products.measure.name }}.</td>
-                         </tr>
+                    {% for key, products in products %}
+                        <tr>
+                            <td><img style="text-align: center;"
+                                     src="{{ asset(['img/products/', products.path]|join) }}"
+                                     alt="Generic placeholder image" width="50" height=50></td>
+                            <td>№: {{ products.id }}</td>
+                            <td>{{ products.name }}</td>
+                            <td>{{ products.shopprice }} руб.</td>
+                            <td> {{ sum[key] }} {{ products.measure.name }}.</td>
+                        </tr>
                     {% endfor %}
                 {% else %}
                     <p>Мы не нашли товары в данном заказе.</p>
-                 {% endif %}
+                {% endif %}
                 </tbody>
             </table>
-            <a href="{{ path('invoice', {id: order.id})}}" class="btn btn-outline-success btn-lg btn-block" role="button">Накладная</a>
+            <a href="{{ path('invoice', {id: order.id}) }}" class="btn btn-outline-success btn-lg btn-block"
+               role="button">Накладная</a>
+
+
+
+
+            <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo"
+                 data-parent="#accordion">
+
+                {% if map %}
+                    <iframe
+                            width="600"
+                            height="300"
+                            frameborder="0" style="border:0"
+                            src="https://static-maps.yandex.ru/1.x/?ll={{ map }}&size=600,300&l=map&z=15&pt={{ map }},org"
+                            allowfullscreen>
+                    </iframe>
+                {% else %}
+                    Местоположение не найдено.
+                {% endif %}
+
+            </div>
+
         </div>
+    </div>
     </div>
 {% endblock %}
