@@ -17,6 +17,43 @@ class DefaultController extends Controller
     }
 
 
+    public function searchAction(Request $request)
+    {
+        $search = $request->query->get('search');
+        $data = null;
+        $em = $this->getDoctrine();
+
+        $sort = $em->getRepository("ShopBundle:Sort")->findAll();
+        foreach ($sort as $key => $value) {
+            $pos = strpos(mb_strtolower($value->getName()), mb_strtolower($search));
+            if ($pos !== false) {
+                $data[] = $em->getRepository("ShopBundle:Products")->findBy(array('id_class' => $value));
+            }
+        }
+        if ($data) {
+            $data = call_user_func_array('array_merge', $data);
+        }
+
+
+        $products = $em->getRepository("ShopBundle:Products")->findAll();
+        foreach ($products as $key => $value) {
+            $pos = strpos(mb_strtolower($value), mb_strtolower($search));
+            if ($pos !== false) {
+                $data[] = $value;
+            }
+        }
+
+        if (!$data) {
+            $data = [0];
+        }
+        dump($data);
+        return $this->render('ShopBundle:Default:search.html.twig', array(
+            'data' => array_unique($data),
+            'search'=>$search,
+        ));
+    }
+
+
     public function cartAction(Request $request)
     {
         $request = Request::createFromGlobals();
@@ -88,9 +125,9 @@ class DefaultController extends Controller
         $likes = $request->get("likes");
 
         $em = $this->getDoctrine()->getManager();
-        $like = $em->getRepository('ShopBundle:Likes')->findBy(array('author' => $author, 'product'=>$id));
+        $like = $em->getRepository('ShopBundle:Likes')->findBy(array('author' => $author, 'product' => $id));
 
-        if (!$like){
+        if (!$like) {
             $like1 = new Likes();
             $author = $em->getRepository('ShopBundle:Users')->find($author);
             $id = $em->getRepository('ShopBundle:Products')->find($id);
@@ -99,12 +136,12 @@ class DefaultController extends Controller
             $like1->setLikes($likes);
             $em->persist($like1);
             $em->flush();
-            if ($likes==0){
+            if ($likes == 0) {
                 $data = "Дислайк!";
-            }else{
+            } else {
                 $data = "Лайк!";
             }
-        }else{
+        } else {
             $data = "Вы уже оценивали продукт!";
         }
         return new Response($data);
@@ -115,9 +152,9 @@ class DefaultController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         //лайки
-        $like = $em->getRepository('ShopBundle:Likes')->findBy(array('product'=>$id,'likes'=>1));
-        $dislike = $em->getRepository('ShopBundle:Likes')->findBy(array('product'=>$id,'likes'=>0));
-        $like_count=count($like)-count($dislike);
+        $like = $em->getRepository('ShopBundle:Likes')->findBy(array('product' => $id, 'likes' => 1));
+        $dislike = $em->getRepository('ShopBundle:Likes')->findBy(array('product' => $id, 'likes' => 0));
+        $like_count = count($like) - count($dislike);
 
 
         $product = $em->getRepository('ShopBundle:Products')->find($id);
@@ -174,7 +211,7 @@ class DefaultController extends Controller
             ->getCommentsForBlog($product->getId());
 
         return $this->render('ShopBundle:Default:product.html.twig', array(
-            'like'=>$like_count,
+            'like' => $like_count,
             'product' => $product,
             'comments' => $comments,
             'data' => $data,

@@ -1,0 +1,42 @@
+{% extends 'ShopBundle:Default:index.html.twig' %}
+
+{% block body %}
+    <div class="container jumbotron border border-success ">
+        <div class="container ">
+
+            {% if data[0]=="0" %}
+                <h1>К сожалению, по запросу "{{ search }}" ничего не удалось найти</h1>
+
+            {% else %}
+                <h1>Вот, что удалось найти по запросу: "{{ search }}"</h1>
+                <div class="container marketing">
+                    <div class="row">
+
+                        {% for data in data %}
+                            <div class="col-lg-4">
+                                <p>
+                                    <a href="{{ path('shop_product', {id: data.id}) }}">
+                                        <img class="rounded"
+                                             src="{{ asset(['img/products/', data.path]|join) }}"
+                                             alt="Generic placeholder image" width="140" height="140">
+                                    </a>
+                                </p>
+                                <h2>{{ data.name }}.</h2>
+                                <p>Цена: {{ data.shopPrice }} руб.</p>
+                                <p><a class="btn btn-outline-success"
+                                      data-id="{{ data.id }}"
+                                      data-price="{{ data.shopPrice }}"
+                                      data-url="{{ path('add_cart') }}"
+                                      role="button">Купить</a></p>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+
+
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}

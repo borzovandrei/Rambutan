@@ -1,5 +1,7 @@
 {% extends 'ShopBundle:Default:index.html.twig' %}
 {% block body %}
+    <div class="container jumbotron border border-success ">
+    <div class="container ">
     <div class="container">
         <h2>Корзина</h2>
         <p>Вы можете добавить или удалить товар:</p>
@@ -63,6 +65,8 @@
         </table>
         <br>Итого в вашей корзине продуктов на <b id="sum_cart">{{ sum }}руб.</b>
     </div>
-    <td><a class="btn btn-secondary" role="button" href="{{ path('shop_order') }}">Оформить заказ</a></td>
+    <td><a class="btn btn-success" role="button" href="{{ path('shop_order') }}">Оформить заказ</a></td>
+    </div>
+    </div>
 
 {% endblock %}

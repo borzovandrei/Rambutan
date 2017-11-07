@@ -1,5 +1,10 @@
+@font-face {
+    font-family: Tavolga; /* Гарнитура шрифта */
+    src: url(font/Tavolga.ttf); /* Путь к файлу со шрифтом */
+}
 body{
     margin-top: 60px;
+    font-family: Tavolga;
 }
 
 .navbar-custom {
@@ -29,6 +34,8 @@ body{
 
 
 .navbar-custom .navbar-brand {
+    font-family: "Hobo Std";
+    font-size: x-large;
     color: #63a353;
 }
 .navbar-custom .navbar-toggle {

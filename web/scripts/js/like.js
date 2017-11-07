@@ -1,5 +1,8 @@
-$('.like').click(like);
-$('.dislike').click(dislike);
+
+//изменить данный файл
+
+// $('.like').click(like);
+// $('.dislike').click(dislike);
 
 
 
@@ -35,5 +38,6 @@ function postLike(url, id, author, likes) {
             likes: likes
         })
     });
+
 
 }

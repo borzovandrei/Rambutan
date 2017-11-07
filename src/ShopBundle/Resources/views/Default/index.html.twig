@@ -102,9 +102,12 @@
                                  width="30" height="30"></a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-success my-2 my-sm-0" type="submit">Search</button>
+                <form class="form-inline my-2 my-lg-0"
+                      method="get"
+                      action="{{ path("shop_search", {'search': app.request.query.get('search')}) }}"
+                      role="search">
+                    <input class="form-control mr-sm-2" type="text" name="search" placeholder="Яблоки" aria-label="Search">
+                    <button class="btn btn-success my-2 my-sm-0" type="submit">Поиск</button>
                 </form>
             </div>
         </nav>

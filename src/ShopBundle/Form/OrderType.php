@@ -43,7 +43,11 @@ class OrderType extends AbstractType
                 'data' => $options['arg4']))
             -> add("comment", TextareaType::class, array(
                 'label' => 'Комментраий к заказу:'))
-            ->add("Оформить", SubmitType::class);
+            ->add("Оформить", SubmitType::class, array(
+                'attr' => array(
+                    'class' => "btn btn-success btn-lg btn-block"
+                )
+                 ));
 
     }
 

@@ -5,6 +5,8 @@ namespace ShopBundle\Form;
 
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -50,8 +52,16 @@ class ProductAddType extends AbstractType
                 'class' => 'ShopBundle\Entity\Measure',
                 'choice_label' => 'name',
             ))
-            ->add('file')
-            ->add("save", SubmitType::class);
+            ->add('file'
+                , FileType::class, array(
+                'label' => 'Изображение:',
+            )
+            )
+            ->add("Добавить", SubmitType::class, array(
+                'attr' => array(
+                    'class' => "btn btn-success"
+                )
+            ));
 
     }
 

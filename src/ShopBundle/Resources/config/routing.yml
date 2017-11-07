@@ -10,6 +10,13 @@ shop_product:
             methods:  GET
             id: \d+
 
+shop_search:
+    path:     /search
+    defaults: { _controller: ShopBundle:Default:search }
+    requirements:
+            methods:  GET
+            id: \d+
+
 shop_like:
     path:     /product/like
     defaults: { _controller: ShopBundle:Default:like }

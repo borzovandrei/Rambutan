@@ -5,7 +5,7 @@
 {% block body %}
 
     <body>
-    <div class="container jumbotron border border-success ">
+    <div class="container jumbotron border border-success">
         <div class="container">
 
             <h3 class="display-4">
@@ -28,7 +28,7 @@
 
                     {% endfor %}
                 {% else %}
-                    <tr class="table-success">
+                    <tr class="table-warning">
                         <td>Нет файлов</td>
                     </tr>
                 {% endif %}
@@ -51,13 +51,13 @@
                 {% if error %}
                     {% for error in error.0 %}
 
-                        <tr class="table-success">
+                        <tr class="table-danger">
                             <td>{{ error }}</td>
                         </tr>
 
                     {% endfor %}
                 {% else %}
-                    <tr class="table-success">
+                    <tr class="table-warning">
                         <td>Нет файлов</td>
                     </tr>
                 {% endif %}

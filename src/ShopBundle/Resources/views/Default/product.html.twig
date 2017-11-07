@@ -28,8 +28,8 @@
                     {% endif %}
 
                     {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                        <a id="publish"
-                           class="like"
+                        <a class="like"
+                           id="like"
                            data-id="{{ product.id }}"
                            data-author="{{ app.user.id }}"
                            data-url="{{ path('shop_like') }}"
@@ -39,8 +39,8 @@
 
                         {{ like }}
 
-                        <a class="dislike"
-                           id="publish1"
+                        <a class="like"
+                           id="dislike"
                            data-id="{{ product.id }}"
                            data-author="{{ app.user.id }}"
                            data-url="{{ path('shop_like') }}"
@@ -49,39 +49,53 @@
                                               alt="Дизлайк"
                                               width="50" height="50"></a>
 
-                        <div id="content">сюда response text</div>
+                        <div class="btn" id="content"></div>
 
                     {% else %}
                         Что бы оценить товар, Вам необходимо авторизоваться!
                     {% endif %}
 
+
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                     <script>
                         const messages = document.getElementById('content');
-                        console.log("0");
-//
-                        publish.onclick = function () {
-
-                            console.log("1");
-
-                            const xhr = new XMLHttpResponse();
-                            url = 'http://localhost:8008/product/like';
-                            xhr.open("GET", url, true);
+                        like.onclick = function () {
+                            const xhr = new XMLHttpRequest();
+                            url = '/product/like';
+                            var formData = new FormData(document.forms.person);
+                            formData.append("id", "{{ product.id  }}");
+                            formData.append("author", "{{  app.user.id  }}");
+                            formData.append("likes", "1");
+                            xhr.open("POST", url, true);
                             xhr.onload = function () {
                                 if (xhr.readyState !== 4) return;
-                                console.log("2");
-
-                                var msg = document.createElement('div');
-                                console.log(xhr);
-                                msg.classList.add('chat-author');
-
-                                msg.textContent = JSON.parse(this.responseText);
-
-                                messages.appendChild(msg);
+                                messages.innerHTML=this.responseText;
+                                setTimeout(function() {
+                                    messages.innerHTML='';
+                                }, 3000);
                             };
-                            xhr.timeout = 5000; // 5 секунд (в миллисекундах)
-                            xhr.send();
+                            xhr.send(formData);
+                        };
+                        dislike.onclick = function () {
+                            const xhr = new XMLHttpRequest();
+                            url = '/product/like';
+                            var formData = new FormData(document.forms.person);
+                            formData.append("id", "{{ product.id  }}");
+                            formData.append("author", "{{  app.user.id  }}");
+                            formData.append("likes", "0");
+                            xhr.open("POST", url, true);
+                            xhr.onload = function () {
+                                if (xhr.readyState !== 4) return;
+                                messages.innerHTML=this.responseText;
+                                setTimeout(function() {
+                                    messages.innerHTML='';
+                                }, 3000);
+                            };
+                            xhr.send(formData);
+
                         }
                     </script>
+                    {% endif %}
 
                     <h2>Недавно просмотренные:</h2>
                     <div class="row">
@@ -122,7 +136,7 @@
 
 
         <div class="card border-success mb-3" style="max-width: 100rem;">
-            <div class="card-header bg-transparent border-success">Отзывы</div>
+            <div class="card-header bg-transparent border-success"><h2>Отзывы</h2></div>
 
             {% for comment in comments %}
                 <div class="card-body text-success">
