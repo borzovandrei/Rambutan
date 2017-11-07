@@ -19,6 +19,7 @@ class AppKernel extends Kernel
             new ShopBundle\ShopBundle(),
             new Snc\RedisBundle\SncRedisBundle(),
             new Knp\Bundle\SnappyBundle\KnpSnappyBundle(),
+            new Liuggio\ExcelBundle\LiuggioExcelBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

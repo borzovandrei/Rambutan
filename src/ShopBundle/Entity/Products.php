@@ -84,6 +84,11 @@ class Products
     protected $comments;
 
     /**
+     * @ORM\OneToMany(targetEntity="Likes", mappedBy="product")
+     */
+    protected $likes;
+
+    /**
      * @return integer
      */
     public function getId()

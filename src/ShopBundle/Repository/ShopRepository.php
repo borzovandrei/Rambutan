@@ -6,10 +6,23 @@ namespace ShopBundle\Repository;
 ;
 use Doctrine\ORM\Query\Expr\Join;
 use ShopBundle\Entity\Products;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 
 
 class ShopRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * @var ContainerAwareInterface
+     */
+    private $container;
+
+    /**
+     * @param mixed $container
+     */
+    public function setContainer($container)
+    {
+        $this->container = $container;
+    }
 
     public function getRecomend($sort, $sum)
     {
@@ -36,31 +49,13 @@ class ShopRepository extends \Doctrine\ORM\EntityRepository
 
 
 
-    public function getTop(array $idSort)
+    public function getTop(array $idSort, array $lim)
     {
         foreach ($idSort as $key=>$value){
             $sort[]=(int)$value;
         }
 
-        switch (count($sort)) {
-            case 1:
-                $limit=array(5);
-                break;
-            case 2:
-                $limit=array(3,2);
-                break;
-            case 3:
-                $limit=array(3,1,1);
-                break;
-            case 4:
-                $limit=array(2,1,1,1);
-                break;
-            case 5:
-                $limit=array(1,1,1,1,1);
-                break;
-        }
-
-//        $limit = $this->container->getParameter("view_more.count" . count($sort));
+        $limit = $lim["count" . count($sort)];
 
         $sql=$this->getSQL("p",$sort[0],$limit[0]);
         for ($i=1; $i<count($sort); $i++){

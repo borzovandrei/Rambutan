@@ -1,4 +1,7 @@
 services:
-#    shop.example:
-#        class: ShopBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+#    shop_bundle.repository.shop:
+#        class: ShopBundle\Repository\ShopRepository
+##        factory: ["@doctrine", getRepository]
+#        arguments: ["@doctrine", "@class"]
+#        calls:
+#            - [ setContainer, [ '@service_container' ] ]

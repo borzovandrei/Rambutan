@@ -1,125 +1,154 @@
 {% extends 'ShopBundle:Default:index.html.twig' %}
 
 {% block navigation %}
+    <div class="container jumbotron border border-success ">
+        <div class="row justify-content-center">
+            <div class="row">
+                <div class="col-lg-5 col-md-6">
+                    <div class="container">
+                        <h3>Информация о заказе:</h3>
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <th scope="row">Номер заказа:</th>
+                                <td>{{ order.id }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Фамилия:</th>
+                                <td>{{ order.firstname }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Имя:</th>
+                                <td>{{ order.lastname }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Телефон:</th>
+                                <td>{{ order.phone }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Дата оформления:</th>
+                                <td> {{ order.created|date('d.m.Y') }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Дата поставки:</th>
+                                <td> {{ order.date|date('d.m.Y') }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Время поставки:</th>
+                                <td> {{ order.date|date('h:m') }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Адрес:</th>
+                                <td><a href="#" data-toggle="modal"
+                                       data-target="#basicModal">
+                                        {{ order.address }}</a>
+                                </td>
 
-    <div class="row">
-        <div class="col-lg-5 col-md-6">
-            <div class="container">
-                <h3>Информация о заказе:</h3>
-                <table class="table">
-                    <tbody>
-                    <tr>
-                        <th scope="row">Номер заказа:</th>
-                        <td>{{ order.id }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Фамилия:</th>
-                        <td>{{ order.firstname }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Имя:</th>
-                        <td>{{ order.lastname }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Телефон:</th>
-                        <td>{{ order.phone }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Дата оформления:</th>
-                        <td> {{ order.created|date('d.m.Y') }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Дата поставки:</th>
-                        <td> {{ order.date|date('d.m.Y') }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Время поставки:</th>
-                        <td> {{ order.date|date('h:m') }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Адрес:</th>
-                        <td> <a data-toggle="collapse" href="#collapseTwo" aria-expanded="false">
-                                {{ order.address }}</a>
-                        </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Комментарий:</th>
+                                <td>{{ order.comment }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Цена:</th>
+                                <td>{{ order.price }} руб.</td>
+                            </tr>
+                            </tbody>
+                        </table>
 
-                    </tr>
-                    <tr>
-                        <th scope="row">Комментарий:</th>
-                        <td>{{ order.comment }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Цена:</th>
-                        <td>{{ order.price }} руб.</td>
-                    </tr>
-                    </tbody>
-                </table>
 
-                {#<iframe#}
-                {#width="600"#}
-                {#height="200"#}
-                {#frameborder="0" style="border:0"#}
-                {#src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDN9kqI9h5GErYsKf2FE-GV0NCywWjx-Zc#}
-                {#&q={{order.address}}#}
-                {#&zoom=16" allowfullscreen>#}
-                {#</iframe>#}
+                    </div>
+                </div>
 
-            </div>
-        </div>
-
-        <div class="col-lg-6 col-md-6">
-            <h3>Купленные продукты</h3>
-            <table class="table table-condensed">
-                <thead>
-                <tr>
-                    <th>Изображение</th>
-                    <th>Артикул</th>
-                    <th>Продукт</th>
-                    <th>Цена</th>
-                    <th>Колличество</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% if (products) %}
-                    {% for key, products in products %}
+                <div class="col-lg-6 col-md-6">
+                    <h3>Купленные продукты</h3>
+                    <table class="table table-condensed">
+                        <thead>
                         <tr>
-                            <td><img style="text-align: center;"
-                                     src="{{ asset(['img/products/', products.path]|join) }}"
-                                     alt="Generic placeholder image" width="50" height=50></td>
-                            <td>№: {{ products.id }}</td>
-                            <td>{{ products.name }}</td>
-                            <td>{{ products.shopprice }} руб.</td>
-                            <td> {{ sum[key] }} {{ products.measure.name }}.</td>
+                            <th>Изображение</th>
+                            <th>Артикул</th>
+                            <th>Продукт</th>
+                            <th>Цена</th>
+                            <th>Колличество</th>
                         </tr>
-                    {% endfor %}
-                {% else %}
-                    <p>Мы не нашли товары в данном заказе.</p>
-                {% endif %}
-                </tbody>
-            </table>
-            <a href="{{ path('invoice', {id: order.id}) }}" class="btn btn-outline-success btn-lg btn-block"
-               role="button">Накладная</a>
+                        </thead>
+                        <tbody>
+                        {% if (products) %}
+                            {% for key, products in products %}
+                                <tr>
+                                    <td><img style="text-align: center;"
+                                             src="{{ asset(['img/products/', products.path]|join) }}"
+                                             alt="Generic placeholder image" width="50" height=50></td>
+                                    <td>№: {{ products.id }}</td>
+                                    <td>{{ products.name }}</td>
+                                    <td>{{ products.shopprice }} руб.</td>
+                                    <td> {{ sum[key] }} {{ products.measure.name }}.</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <p>Мы не нашли товары в данном заказе.</p>
+                        {% endif %}
+                        </tbody>
+                    </table>
+
+                    <a href="{{ path('invoice', {id: order.id}) }}" class="btn btn-outline-success btn-lg btn-block"
+                       role="button">Накладная</a>
 
 
+                    <div class="modal fade" id="basicModal" tabindex="-1" role="dialog" aria-labelledby="basicModal"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="myModalLabel">{{ order.address }}</h4>
+                                </div>
+                                <div class="modal-body">
+                                    {% if map %}
+                                        <script src="//api-maps.yandex.ru/2.1/?lang=ru_RU"
+                                                type="text/javascript"></script>
+                                        <script type="text/javascript">
+                                            var myMap;
+                                            ymaps.ready(init);
+                                            function init() {
+                                                myMap = new ymaps.Map('map', {
+                                                    center: [{{ map.1 }}, {{ map.0 }}], // Москва
+                                                    zoom: 15,
+                                                    controls: ['zoomControl',
+//                                                               'typeSelector',
+                                                               'fullscreenControl']
+                                                });
 
+                                                myPlacemarkWithContent = new ymaps.Placemark([{{ map.1 }}, {{ map.0 }}], {
+                                                    hintContent: 'Собственный значок метки с контентом'
+                                                }, {
 
-            <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo"
-                 data-parent="#accordion">
+                                                    iconLayout: 'default#image',
+                                                    iconImageHref: '/img/logo.png',
+                                                    iconImageSize: [48, 48]
+                                                });
 
-                {% if map %}
-                    <iframe
-                            width="600"
-                            height="300"
-                            frameborder="0" style="border:0"
-                            src="https://static-maps.yandex.ru/1.x/?ll={{ map }}&size=600,300&l=map&z=15&pt={{ map }},org"
-                            allowfullscreen>
-                    </iframe>
-                {% else %}
-                    Местоположение не найдено.
-                {% endif %}
+                                                myMap.geoObjects
+                                                    .add(myPlacemarkWithContent);
 
+                                            }
+                                        </script>
+                                        <div id="map" style="width:465px; height:300px"></div>
+                                    {% else %}
+                                        Местоположение не найдено.
+                                    {% endif %}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-success" data-dismiss="modal">Закрыть</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-
         </div>
     </div>
-    </div>
+
+
+
 {% endblock %}

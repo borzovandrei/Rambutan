@@ -10,6 +10,12 @@ shop_product:
             methods:  GET
             id: \d+
 
+shop_like:
+    path:     /product/like
+    defaults: { _controller: ShopBundle:Default:like }
+    requirements:
+            methods:  POST
+
 shop_sort:
     path:     /{id}
     defaults: { _controller: ShopBundle:Default:navigation }
@@ -84,6 +90,10 @@ _security_logout:
 admin_home:
     path:  /admin
     defaults: { _controller: ShopBundle:Admin:index }
+
+admin_supply:
+    path:  /admin/supply
+    defaults: { _controller: ShopBundle:Admin:supply }
 
 
 admin_product_edit:

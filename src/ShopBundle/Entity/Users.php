@@ -94,6 +94,12 @@ class Users implements UserInterface
 
 
     /**
+     * @ORM\OneToMany(targetEntity="Likes", mappedBy="author")
+     */
+    protected $likes;
+
+
+    /**
      * @ORM\Column(type="string", length=255)
      *
      * @var string password

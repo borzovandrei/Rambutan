@@ -131,7 +131,7 @@ class PageController extends Controller
 
         if ($response->response->GeoObjectCollection->metaDataProperty->GeocoderResponseMetaData->found > 0)
         {
-            $map = str_replace(' ',',',$response->response->GeoObjectCollection->featureMember[0]->GeoObject->Point->pos);
+            $map = explode(" ", $response->response->GeoObjectCollection->featureMember[0]->GeoObject->Point->pos);
         }
         else
         {

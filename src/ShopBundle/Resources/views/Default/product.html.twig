@@ -1,99 +1,156 @@
 {% extends 'ShopBundle:Default:index.html.twig' %}
 
 {% block body %}
-<div class="container">
-    <div class="row">
-        <div class="col-6 col-md-4">
-            <div class="container">
-                <img class="rounded img" id="img_prod"
-                        {#style="position:fixed"#}
-                     src="{{ asset(['img/products/', product.path]|join) }}"
-                     alt="Generic placeholder image" width="340" height="340">
-            </div>
-        </div>
-        <div class="col-12 col-md-8">
-            <div class="jumbotron border border-success border-top-0 border-bottom-0">
-                <h2>{{ product.name }}.</h2>
-                <h3>Осталось на складе: {{ product.balanse }} ({{ product.measure.name }}.)</h3>
-                <p>Цена: {{ product.shopPrice }} руб.</p>
-                <p><a class="btn btn-outline-success"
-                      data-id="{{ product.id }}"
-                      data-price="{{ product.shopPrice }}"
-                      data-url="{{ path('add_cart') }}"
-                      role="button">Купить</a></p>
-                <p><a class="btn btn-secondary"
-                      href="{{ path('admin_product_edit', { 'id': product.id }) }}">Изменить</a>
-                </p>
-
-
-                <h2>Недавно просмотренные:</h2>
-                <div class="row">
-                    {% for data in data %}
-                        <div class="col">
-                            <p>
-                                <a href="{{ path('shop_product', {id: data.id}) }}">
-                                    <img class="rounded"
-                                         src="{{ asset(['img/products/', data.path]|join) }}"
-                                         alt="Generic placeholder image" width="70" height="70">
-                                </a>
-                            </p>
-                            <h3>{{ data.name }}.</h3>
-                            <p>Цена: {{ data.shopPrice }} руб.</p>
-                        </div>
-                    {% endfor %}
-                </div>
-
-                <h2>Вам может понравиться:</h2>
-                <div class="row">
-                    {% for recomend in recomend %}
-                        <div class="col">
-                            <p>
-                                <a href="{{ path('shop_product', {id: recomend.id}) }}">
-                                    <img class="rounded"
-                                         src="{{ asset(['img/products/', recomend.path]|join) }}"
-                                         alt="Generic placeholder image" width="70" height="70">
-                                </a>
-                            </p>
-                            <h3>{{ recomend.name }}.</h3>
-                            <p>Цена: {{ recomend.shopPrice }} руб.</p>
-                        </div>
-                    {% endfor %}
+    <div class="container">
+        <div class="row">
+            <div class="col-6 col-md-4">
+                <div class="container">
+                    <img class="rounded img" id="img_prod"
+                            {#style="position:fixed"#}
+                         src="{{ asset(['img/products/', product.path]|join) }}"
+                         alt="Generic placeholder image" width="340" height="340">
                 </div>
             </div>
-        </div>
-    </div>
+            <div class="col-12 col-md-8">
+                <div class="jumbotron border border-success border-top-0 ">
+                    <h2>{{ product.name }}.</h2>
+                    <h3>Осталось на складе: {{ product.balanse }} ({{ product.measure.name }}.)</h3>
+                    <p>Цена: {{ product.shopPrice }} руб.</p>
+                    <p><a class="btn btn-outline-success"
+                          data-id="{{ product.id }}"
+                          data-price="{{ product.shopPrice }}"
+                          data-url="{{ path('add_cart') }}"
+                          role="button">Купить</a></p>
+                    {% if is_granted('ROLE_MANAGER') %}
+                        <p><a class="btn btn-outline-warning"
+                              href="{{ path('admin_product_edit', { 'id': product.id }) }}">Изменить</a>
+                        </p>
+                    {% endif %}
 
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <a id="publish"
+                           class="like"
+                           data-id="{{ product.id }}"
+                           data-author="{{ app.user.id }}"
+                           data-url="{{ path('shop_like') }}"
+                           role="button"><img class="icon" src="{{ asset('img/icons/hands.svg') }}"
+                                              alt="Лайк"
+                                              width="50" height="50"></a>
 
-    <div class="card border-success mb-3" style="max-width: 100rem;">
-        <div class="card-header bg-transparent border-success">Отзывы</div>
+                        {{ like }}
 
-        {% for comment in comments %}
-        <div class="card-body text-success">
-            <article class="comment {{ cycle(['odd', 'even'], loop.index0) }}" id="comment-{{ comment.id }}">
-                <h5 class="card-title">
-                    <p><span class="highlight">{{ comment.user }}</span> оставил отзыв
-                        <time datetime="{{ comment.created|date('c') }}">{{ comment.created|date('l, F j, Y') }}</time>
-                    </p>
-                </h5>
-                <p>{{ comment.comment }}</p>
-            </article>
-        </div>
-        {% else %}
-            <p>Упс.. Пока что никто не оставлял отзыв на этот товр. Вы можете сделать это первым.</p>
-        {% endfor %}
+                        <a class="dislike"
+                           id="publish1"
+                           data-id="{{ product.id }}"
+                           data-author="{{ app.user.id }}"
+                           data-url="{{ path('shop_like') }}"
+                           role="button"><img class="icon"
+                                              src="{{ asset('img/icons/dishands.svg') }}"
+                                              alt="Дизлайк"
+                                              width="50" height="50"></a>
 
-        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-        <div class="card-footer bg-transparent border-success">
-            <h3>Оставить отзыв:</h3>
-            <h5>От имени: {{ app.user.username }}</h5>
-            {{ render(controller('ShopBundle:Comment:new', { 'product_id':  product.id })) }}
-        </div>
-        {% else %}
-            <div class="card-footer bg-transparent border-success">
-                <h3>Для того что бы оставить отзыв, Вам необходимо зарегестрироваться или авторизироваться</h3>
-                <a class="btn btn-success" href="{{ path('shop_login') }}">Войти</a>
+                        <div id="content">сюда response text</div>
+
+                    {% else %}
+                        Что бы оценить товар, Вам необходимо авторизоваться!
+                    {% endif %}
+
+                    <script>
+                        const messages = document.getElementById('content');
+                        console.log("0");
+//
+                        publish.onclick = function () {
+
+                            console.log("1");
+
+                            const xhr = new XMLHttpResponse();
+                            url = 'http://localhost:8008/product/like';
+                            xhr.open("GET", url, true);
+                            xhr.onload = function () {
+                                if (xhr.readyState !== 4) return;
+                                console.log("2");
+
+                                var msg = document.createElement('div');
+                                console.log(xhr);
+                                msg.classList.add('chat-author');
+
+                                msg.textContent = JSON.parse(this.responseText);
+
+                                messages.appendChild(msg);
+                            };
+                            xhr.timeout = 5000; // 5 секунд (в миллисекундах)
+                            xhr.send();
+                        }
+                    </script>
+
+                    <h2>Недавно просмотренные:</h2>
+                    <div class="row">
+                        {% for data in data %}
+                            <div class="col">
+                                <p>
+                                    <a href="{{ path('shop_product', {id: data.id}) }}">
+                                        <img class="rounded"
+                                             src="{{ asset(['img/products/', data.path]|join) }}"
+                                             alt="Generic placeholder image" width="70" height="70">
+                                    </a>
+                                </p>
+                                <h3>{{ data.name }}.</h3>
+                                <p>Цена: {{ data.shopPrice }} руб.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <h2>Вам может понравиться:</h2>
+                    <div class="row">
+                        {% for recomend in recomend %}
+                            <div class="col">
+                                <p>
+                                    <a href="{{ path('shop_product', {id: recomend.id}) }}">
+                                        <img class="rounded"
+                                             src="{{ asset(['img/products/', recomend.path]|join) }}"
+                                             alt="Generic placeholder image" width="70" height="70">
+                                    </a>
+                                </p>
+                                <h3>{{ recomend.name }}.</h3>
+                                <p>Цена: {{ recomend.shopPrice }} руб.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-        {% endif %}
+        </div>
+
+
+        <div class="card border-success mb-3" style="max-width: 100rem;">
+            <div class="card-header bg-transparent border-success">Отзывы</div>
+
+            {% for comment in comments %}
+                <div class="card-body text-success">
+                    <article class="comment {{ cycle(['odd', 'even'], loop.index0) }}" id="comment-{{ comment.id }}">
+                        <h5 class="card-title">
+                            <p><span class="highlight">{{ comment.user }}</span> оставил отзыв
+                                <time datetime="{{ comment.created|date('c') }}">{{ comment.created|date('l, F j, Y') }}</time>
+                            </p>
+                        </h5>
+                        <p>{{ comment.comment }}</p>
+                    </article>
+                </div>
+            {% else %}
+                <p>Упс.. Пока что никто не оставлял отзыв на этот товр. Вы можете сделать это первым.</p>
+            {% endfor %}
+
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <div class="card-footer bg-transparent border-success">
+                    <h3>Оставить отзыв:</h3>
+                    <h5>От имени: {{ app.user.username }}</h5>
+                    {{ render(controller('ShopBundle:Comment:new', { 'product_id':  product.id })) }}
+                </div>
+            {% else %}
+                <div class="card-footer bg-transparent border-success">
+                    <h3>Для того что бы оставить отзыв, Вам необходимо зарегестрироваться или авторизироваться</h3>
+                    <a class="btn btn-success" href="{{ path('shop_login') }}">Войти</a>
+                </div>
+            {% endif %}
+        </div>
     </div>
-    </div>
-    {% endblock %}
+{% endblock %}

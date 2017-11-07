@@ -1,0 +1,78 @@
+{% extends 'ShopBundle:Default:index.html.twig' %}
+
+{% block title %}Добавить продукт{% endblock %}
+
+{% block body %}
+
+    <body>
+    <div class="container jumbotron border border-success ">
+        <div class="container">
+
+            <h3 class="display-4">
+                Добавленное в базу данных:
+            </h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Продукт</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% if success %}
+                    {% for  success in success.0 %}
+
+                        <tr class="table-success">
+                            <td>{{ success }}</td>
+                        </tr>
+
+                    {% endfor %}
+                {% else %}
+                    <tr class="table-success">
+                        <td>Нет файлов</td>
+                    </tr>
+                {% endif %}
+
+
+                </tbody>
+            </table>
+
+
+            <h3 class="display-4">
+                Не найденное в базе данных:
+            </h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Продукт</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if error %}
+                    {% for error in error.0 %}
+
+                        <tr class="table-success">
+                            <td>{{ error }}</td>
+                        </tr>
+
+                    {% endfor %}
+                {% else %}
+                    <tr class="table-success">
+                        <td>Нет файлов</td>
+                    </tr>
+                {% endif %}
+
+                </tbody>
+            </table>
+            {#{{ response->save('php://output') }}#}
+            {#{% readfile({{response}}) %}#}
+        </div>
+    </div>
+
+    </body>
+
+
+
+
+
+{% endblock %}
