@@ -100,7 +100,7 @@ class PageController extends Controller
         $user = $this->getUser();
         $em = $this->getDoctrine()->getManager();
         $orders = $em->getRepository('ShopBundle:Order')->findBy(array('firstname' => $user->getFirstname(), 'phone' => $user->getPhone()));
-        dump($orders);
+
 
         return $this->render('ShopBundle:Page:room.html.twig', array(
             'user' => $user,
