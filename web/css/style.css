@@ -1,6 +1,6 @@
 @font-face {
     font-family: Tavolga; /* Гарнитура шрифта */
-    src: url(font/Tavolga.ttf); /* Путь к файлу со шрифтом */
+    src: url(./font/Tavolga.ttf); /* Путь к файлу со шрифтом */
 }
 body{
     margin-top: 60px;
