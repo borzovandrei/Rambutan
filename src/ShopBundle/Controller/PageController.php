@@ -112,7 +112,8 @@ class PageController extends Controller
     //просмотр определенного заказа
     public function room_orderAction(Request $request)
     {
-
+        $products=null;
+        $sum=null;
         $id = $request->get("id");
         $em = $this->getDoctrine()->getManager();
         $order = $em->getRepository('ShopBundle:Order')->find($id);
@@ -355,7 +356,7 @@ class PageController extends Controller
             "message" => $message
         ];
 
-        $ch = curl_init('http://127.0.0.1:8008/pub?id=' . $chatRoom->getIdRoom());
+        $ch = curl_init('http://rambutan.ml/pub?id=' . $chatRoom->getIdRoom());
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
@@ -371,7 +372,7 @@ class PageController extends Controller
         $em = $this->getDoctrine()->getManager();
         $em->persist($chat);
         $em->flush();
-dump($data);
+
         return new JsonResponse($data);
 
     }

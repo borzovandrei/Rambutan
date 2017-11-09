@@ -109,10 +109,7 @@ knp_snappy:
     pdf:
         enabled:    true
         binary:     /usr/local/bin/wkhtmltopdf
-        options:
-            encoding: UTF-8
-            no-outline: true
-            page-size: LETTER
+        options:    []
     image:
         enabled:    true
         binary:     /usr/local/bin/wkhtmltoimage
