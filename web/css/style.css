@@ -2,81 +2,113 @@
     font-family: Tavolga; /* Гарнитура шрифта */
     src: url(./font/Tavolga.ttf); /* Путь к файлу со шрифтом */
 }
-body{
+
+body {
     margin-top: 60px;
     font-family: Tavolga;
 }
 
 .navbar-custom {
     background: linear-gradient(to left, #63a353, #b2e53f, #c2ff8b, #ffffff);
-    color:#ffffff;
-    border-radius:0;
+    color: #ffffff;
+    border-radius: 0;
 }
 
 .navbar-custom .navbar-nav > li > a {
-    color:#fff;
+    color: #fff;
 }
 
 .navbar-custom .navbar-nav > .active > a {
     color: #ffffff;
-    background-color:transparent;
+    background-color: transparent;
 }
 
 .navbar-custom .navbar-nav > li > a:hover,
 .navbar-custom .navbar-nav > li > a:focus,
 .navbar-custom .navbar-nav > .active > a:hover,
 .navbar-custom .navbar-nav > .active > a:focus,
-.navbar-custom .navbar-nav > .open >a {
+.navbar-custom .navbar-nav > .open > a {
     text-decoration: none;
     background-color: #7cc96a;
 
 }
-
 
 .navbar-custom .navbar-brand {
     font-family: "Hobo Std";
     font-size: x-large;
     color: #63a353;
 }
+
 .navbar-custom .navbar-toggle {
     background-color: #ffffff;
 }
+
 .navbar-custom .icon-bar {
-    background-color:#33aa33;
+    background-color: #33aa33;
 }
 
 
-
-.nav-item#sort_nav{
-    background-color: #d1ffb8;
-    margin-left: 15px;
-}
-.nav-item#sort_nav > a {
-    color: #63a353;
-}
-.nav-item#sort_nav > a:hover {
-    color: #ffffff;
-}
-.nav-link.active{
-    background-color: #7cc96a !important;
-    color: #ffffff;
+.navbar-custom .navbar-collapse {
+    text-align: center;
 }
 
+.navbar-custom .navbar-toggler {
+    color: rgb(255, 255, 255);
+    border-color: rgb(255, 255, 255);
+}
 
-.icons{
+.navbar-custom .navbar-toggler-icon {
+    background-image: url(../img/icons/cart.svg);
     -webkit-filter: invert(1);
     filter: invert(1);
 }
 
-.jumbotron{
+
+
+
+
+.nav-item#sort_nav {
+    background-color: #d1ffb8;
+    margin-left: 15px;
+}
+
+.nav-item#sort_nav > a {
+    color: #63a353;
+}
+
+.nav-item#sort_nav > a:hover {
+    color: #ffffff;
+}
+
+.nav-link.active {
+    background-color: #7cc96a !important;
+    color: #ffffff;
+}
+
+.icons {
+    -webkit-filter: invert(1);
+    filter: invert(1);
+}
+
+.jumbotron {
     color: #63a353;
     background-color: rgba(208, 255, 186, 0.58) !important;
 }
+
 .navbar-custom .navbar-nav > li > a {
-    color:#fff;
+    color: #fff;
 }
-.text-muted.navbar-dark.bg-dark.sticky-bottom {
+
+.footer {
     background: linear-gradient(to right, #63a353, #b2e53f, #c2ff8b, #ffffff);
-    color:#ffffff;
-    border-radius:0;
+    color: #ffffff;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+
+.marketing .col-lg-4 {
+    margin-bottom: 1.5rem;
+    text-align: center;
 }
