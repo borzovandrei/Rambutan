@@ -28,15 +28,8 @@
             {% endfor %}
 
 
-            <div class="card border-primary mb-3 ml-auto" style="max-width: 20rem;">
-                <div class="card-header"></div>
-                <div class="card-body">
-                    <h4 class="card-title"  id="comment"></h4>
-                    <p class="card-text" id="messages"></p>
-                </div>
-            </div>
 
-
+            <div id="messages"></div>
 
             <form id="publish" class="form-inline ">
                 <div class="input-group">
@@ -66,17 +59,19 @@
 
                     var xhr = new XMLHttpRequest();
                     var timestamp = (new Date()).getTime();
-                    url = 'http://rambutan.ml/sub/' + {{ id }} +"?&v=" + timestamp;
+                    url = 'http://localhost:8008/sub/' + {{ id }} +"?&v=" + timestamp;
                     xhr.open("GET", url, true);
                     xhr.onload = function () {
-                        var authors = document.createElement('div');
-                        var msgs = document.createElement('div');
-                        authors.classList.add('chat-author');
-                        msgs.classList.add('chat-messages');
 
-                        authors.textContent = JSON.parse(this.responseText).user_autor;
-                        msgs.textContent = JSON.parse(this.responseText).message['message'];
-                        messages.appendChild(authors);
+                        var msgs = document.createElement('div');
+
+                        msgs.innerHTML = "<div class='card border-primary mb-3 ml-auto' style='max-width:20rem;'>" +
+                            "<div class='card-header'>"+Date.now()+"</div><div class='card-body'>" +
+                            "<h4 class='card-title' >"+JSON.parse(this.responseText).user_autor+"</h4><p class='card-text'>"+
+                            JSON.parse(this.responseText).message['message']+
+                            "</p></div></div>";
+
+
                         messages.appendChild(msgs);
 
                         subscribe();

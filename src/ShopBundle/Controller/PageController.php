@@ -356,7 +356,7 @@ class PageController extends Controller
             "message" => $message
         ];
 
-        $ch = curl_init('http://rambutan.ml/pub?id=' . $chatRoom->getIdRoom());
+        $ch = curl_init('http://127.0.0.1:8008/pub?id=' . $chatRoom->getIdRoom());
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
@@ -370,9 +370,8 @@ class PageController extends Controller
         $chat->setDate(new \DateTime(date("d-m-Y G:i:s")));
 
         $em = $this->getDoctrine()->getManager();
-        $em->persist($chat);
-        $em->flush();
-
+//        $em->persist($chat);
+//        $em->flush();
         return new JsonResponse($data);
 
     }
