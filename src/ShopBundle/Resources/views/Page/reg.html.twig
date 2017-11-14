@@ -8,7 +8,7 @@
         <div class="row justify-content-center">
         <div class="col-6">
 
-                <form class="form-signin">
+                <form class="form-signin" method="post" enctype="multipart/form-data">
                     <h2 class="display-4"> Регистрация</h2>
                     {{ form(form_add_user, {'attr': {'class': 'form-control'}}) }}
                 </form>

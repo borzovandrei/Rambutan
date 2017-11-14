@@ -10,6 +10,7 @@
             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                 <h3 class="display-4">
                     Добро пожаловать на администраторскую страницу, {{ app.user.username }}!
+                    <a href="http://rambutan.ml/room"> Войдите в личный кабинет</a>
                 </h3>
             {% else %}
                 {% if error %}

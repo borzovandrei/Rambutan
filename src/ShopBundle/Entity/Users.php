@@ -408,6 +408,7 @@ class Users implements UserInterface
     }
 
 
+
     /**
      * Sets file.
      *
@@ -427,6 +428,12 @@ class Users implements UserInterface
     {
         return $this->file;
     }
+
+
+//    public function __toString()
+//    {
+//        return $this->getUsername();
+//    }
 
     public function upload()
     {

@@ -252,7 +252,7 @@ class AdminController extends Controller
             ->setSubject('Rambutan orders')
             ->setFrom('order@rambutan.com')
             ->setTo($order->getEmail())
-            ->setBody($this->renderView('ShopBundle:Email:statusEmail.html.twig', array('enquiry' => $order)));
+            ->setBody($this->renderView('ShopBundle:Email:statusEmail.html.twig', array('enquiry' => $order)), 'text/html');
         $this->get('mailer')->send($message);
 
         $em = $this->getDoctrine()->getManager();

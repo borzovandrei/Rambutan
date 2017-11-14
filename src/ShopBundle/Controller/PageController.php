@@ -41,16 +41,20 @@ class PageController extends Controller
     public function regAction(Request $request)
     {
         $user = new Users();
+
+        $form = $this->createForm(NewUserType::class, $user);
+        $form -> handleRequest($request);
+
         $em = $this->getDoctrine()->getManager();
         $role = $em->getRepository('ShopBundle:Role')->find(2);
         $user->getUserRoles()->add($role);
-        $form = $this->createForm(NewUserType::class, $user);
-        $form -> handleRequest($request);
+
         $user->setSalt(md5(time()));
         $encoder = new MessageDigestPasswordEncoder('sha512', true, 10);
         $password = $encoder->encodePassword($form["password"]->getData(), $user->getSalt());
         $user->setPassword($password);
 
+        dump($request);
 
         if ($form->isSubmitted() &&  $form->isValid()){
             $user->upload();
@@ -356,7 +360,7 @@ class PageController extends Controller
             "message" => $message
         ];
 
-        $ch = curl_init('http://127.0.0.1:8008/pub?id=' . $chatRoom->getIdRoom());
+        $ch = curl_init('http://rambutan.ml/pub?id=' . $chatRoom->getIdRoom());
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));

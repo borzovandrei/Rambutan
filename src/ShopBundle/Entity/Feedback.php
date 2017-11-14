@@ -23,7 +23,7 @@ class Feedback
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
         $metadata->addPropertyConstraint('name', new NotBlank());
-        $metadata->addPropertyConstraint('email', new Email(array('message' => 'Введи правельный емайл!')));
+        $metadata->addPropertyConstraint('email', new Email(array('message' => 'Введи правельный email!')));
         $metadata->addPropertyConstraint('subject',  new Length(array(
             'max'        => 50
 

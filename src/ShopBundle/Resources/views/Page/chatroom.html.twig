@@ -6,7 +6,7 @@
 {% block body %}
 
     <div class="container jumbotron border border-success ">
-        <div class="container ">
+        <imput class="container ">
             <h3 class="display-4">Добро пожаловать в чат, {{ app.user.username }}!</h3>
 
 
@@ -28,6 +28,7 @@
             {% endfor %}
 
 
+            <imput class="username" id="usernames" name="{{ app.user.username }}"/></imput>
 
             <div id="messages"></div>
 
@@ -59,14 +60,26 @@
 
                     var xhr = new XMLHttpRequest();
                     var timestamp = (new Date()).getTime();
-                    url = 'http://localhost:8008/sub/' + {{ id }} +"?&v=" + timestamp;
+                    url = 'http://rambutan.ml/sub/' + {{ id }} +"?&v=" + timestamp;
                     xhr.open("GET", url, true);
                     xhr.onload = function () {
+                        var date = new Date();
+                        var date_str=date.getDate()+"-"+(1+date.getMonth())+"-"+date.getFullYear()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
 
+
+
+
+                        if (JSON.parse(this.responseText).user_autor === '{{ app.user.username }}'){
+                            var writer = '<div  class="card border-primary mb-3 ml-auto" style="max-width: 20rem;" id="comment">';
+                        }else{
+                            var writer = '<div  class="card border-danger mb-3" style="max-width: 20rem;"id="comment">';
+                        }
+
+                        console.log(writer);
                         var msgs = document.createElement('div');
 
-                        msgs.innerHTML = "<div class='card border-primary mb-3 ml-auto' style='max-width:20rem;'>" +
-                            "<div class='card-header'>"+Date.now()+"</div><div class='card-body'>" +
+                        msgs.innerHTML = writer +
+                            "<div class='card-header'>"+date_str+"</div><div class='card-body'>" +
                             "<h4 class='card-title' >"+JSON.parse(this.responseText).user_autor+"</h4><p class='card-text'>"+
                             JSON.parse(this.responseText).message['message']+
                             "</p></div></div>";

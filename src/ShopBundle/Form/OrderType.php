@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -17,10 +18,10 @@ class OrderType extends AbstractType
     {
 
         $builder
-            ->add("firstname", TextareaType::class, array(
+            ->add("firstname", TextType::class, array(
                 'label' => 'Фамилия:',
                 'data' => $options['arg1'],))
-            ->add("lastname", TextareaType::class, array(
+            ->add("lastname", TextType::class, array(
                 'label' => 'Имя:',
                 'data' => $options['arg2'],))
             -> add("date", DateTimeType::class, array(
@@ -34,7 +35,7 @@ class OrderType extends AbstractType
                 'label' => 'Email:',
                 'data' => $options['arg5'],
             ))
-            -> add("phone", TextareaType::class, array(
+            -> add("phone", TextType::class, array(
                 'label' => 'Телефон:',
                 'data' => $options['arg3'],
                 ))
