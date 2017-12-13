@@ -58,6 +58,11 @@ class Products
      */
     protected $rating;
 
+    /**
+     * @ORM\Column(type="string")
+     */
+    protected $telegram;
+
 
     /**
      * @ORM\ManyToOne(targetEntity="Measure", inversedBy="id_measure")
@@ -297,6 +302,22 @@ class Products
     public function getComments()
     {
         return $this->comments;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTelegram()
+    {
+        return $this->telegram;
+    }
+
+    /**
+     * @param mixed $telegam
+     */
+    public function setTelegram($telegram)
+    {
+        $this->telegram = $telegram;
     }
 
 

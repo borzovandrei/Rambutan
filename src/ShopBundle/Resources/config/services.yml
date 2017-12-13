@@ -5,3 +5,14 @@ services:
 #        arguments: ["@doctrine", "@class"]
 #        calls:
 #            - [ setContainer, [ '@service_container' ] ]
+#
+#    Shop\Service\TelegramBot\TelegramBot:
+#        arguments: ['@snc_redis.default']
+#            $last_update: '285614981'
+#            $url: 'https://api.telegram.org/bot429703583:AAEToCrYueFNrgRAdX1NyP8TYJvt5QQDrEY/getUpdates?offset='
+    bot:
+      class: ShopBundle\Service\TelegramBot\TelegramBot
+#      arguments: ['@snc_redis.default', '@doctrine.orm.entity_manager']
+      arguments:
+          - '@snc_redis.default'
+          - '@doctrine.orm.entity_manager'

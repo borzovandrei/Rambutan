@@ -179,3 +179,11 @@ invoice:
     requirements:
             methods:  GET
             id: \d+
+
+
+############################################################################################################
+telegram:
+    path:  /admin/telegram
+    defaults: { _controller: ShopBundle:Telegram:telegram }
+    requirements:
+              methods:  GET
