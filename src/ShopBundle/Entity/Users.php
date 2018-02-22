@@ -5,7 +5,6 @@ namespace ShopBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\ManyToMany;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -76,10 +75,9 @@ class Users implements UserInterface
     protected $address;
 
     /**
-     * Many Groups have Many Users.
-     * @ManyToMany(targetEntity="Order", mappedBy="id_user")
+     * @ORM\OneToMany(targetEntity="Order", mappedBy="users")
      */
-    protected $id_order;
+    protected $orders;
 
     /**
      * @ORM\Column(type="date")
@@ -139,10 +137,12 @@ class Users implements UserInterface
      * Сеттер для имени пользователя.
      *
      * @param string $value The username.
+     * @return $this
      */
     public function setUsername($value)
     {
         $this->username = $value;
+        return $this;
     }
 
     /**
@@ -263,10 +263,12 @@ class Users implements UserInterface
 
     /**
      * @param string $firstname
+     * @return $this
      */
     public function setFirstname($firstname)
     {
         $this->firstname = $firstname;
+        return $this;
     }
 
     /**
@@ -279,10 +281,12 @@ class Users implements UserInterface
 
     /**
      * @param string $lastname
+     * @return $this
      */
     public function setLastname($lastname)
     {
         $this->lastname = $lastname;
+        return $this;
     }
 
     /**
@@ -295,10 +299,12 @@ class Users implements UserInterface
 
     /**
      * @param string $phone
+     * @return $this
      */
     public function setPhone(string $phone)
     {
         $this->phone = $phone;
+        return $this;
     }
 
     /**
@@ -311,10 +317,12 @@ class Users implements UserInterface
 
     /**
      * @param mixed $address
+     * @return $this
      */
     public function setAddress($address)
     {
         $this->address = $address;
+        return $this;
     }
 
     /**
@@ -344,10 +352,12 @@ class Users implements UserInterface
 
     /**
      * @param string $email
+     * @return $this
      */
     public function setEmail($email)
     {
         $this->email = $email;
+        return $this;
     }
 
     /**
@@ -360,10 +370,12 @@ class Users implements UserInterface
 
     /**
      * @param mixed $age
+     * @return $this
      */
     public function setAge($age)
     {
         $this->age = $age;
+        return $this;
     }
 
     /**
@@ -376,10 +388,12 @@ class Users implements UserInterface
 
     /**
      * @param mixed $sex
+     * @return $this
      */
     public function setSex($sex)
     {
         $this->sex = $sex;
+        return $this;
     }
 
 

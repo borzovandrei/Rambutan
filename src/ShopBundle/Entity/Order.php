@@ -86,20 +86,24 @@ class Order
 
 
     /**
-     * @ManyToMany(targetEntity="Users", inversedBy="id_order")
-     * @JoinTable(name="order_user")
+     * @ORM\ManyToOne(targetEntity="Users", inversedBy="orders")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
-    protected $id_user;
+    protected $user;
 
+    //some method here
 
     public function __construct()
     {
-        $this->id_user = new ArrayCollection();
+        $this->created = new \DateTime();
     }
 
+    /////////////GET///SET///////////////
 
     /**
-     * @return mixed
+     * Get id
+     *
+     * @return integer
      */
     public function getId()
     {
@@ -107,15 +111,23 @@ class Order
     }
 
     /**
-     * @param mixed $id
+     * Set created
+     *
+     * @param \DateTime $created
+     *
+     * @return Order
      */
-    public function setId($id)
+    public function setCreated($created)
     {
-        $this->id = $id;
+        $this->created = $created;
+
+        return $this;
     }
 
     /**
-     * @return mixed
+     * Get created
+     *
+     * @return \DateTime
      */
     public function getCreated()
     {
@@ -123,16 +135,23 @@ class Order
     }
 
     /**
-     * @param mixed $created
+     * Set date
+     *
+     * @param \DateTime $date
+     *
+     * @return Order
      */
-    public function setCreated()
+    public function setDate($date)
     {
-        $this->created = new \DateTime();
+        $this->date = $date;
+
+        return $this;
     }
 
-
     /**
-     * @return mixed
+     * Get date
+     *
+     * @return \DateTime
      */
     public function getDate()
     {
@@ -140,34 +159,23 @@ class Order
     }
 
     /**
-     * @param mixed $date
+     * Set price
+     *
+     * @param float $price
+     *
+     * @return Order
      */
-    public function setDate($date)
+    public function setPrice($price)
     {
-        $this->date = $date;
+        $this->price = $price;
+
+        return $this;
     }
 
     /**
-     * @return mixed
-     */
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * @param mixed $status
-     */
-    public function setStatus($status)
-    {
-        $this->status = $status;
-    }
-
-
-
-
-    /**
-     * @return mixed
+     * Get price
+     *
+     * @return float
      */
     public function getPrice()
     {
@@ -175,15 +183,23 @@ class Order
     }
 
     /**
-     * @param mixed $price
+     * Set firstname
+     *
+     * @param string $firstname
+     *
+     * @return Order
      */
-    public function setPrice($price)
+    public function setFirstname($firstname)
     {
-        $this->price = $price;
+        $this->firstname = $firstname;
+
+        return $this;
     }
 
     /**
-     * @return mixed
+     * Get firstname
+     *
+     * @return string
      */
     public function getFirstname()
     {
@@ -191,15 +207,23 @@ class Order
     }
 
     /**
-     * @param mixed $firstname
+     * Set lastname
+     *
+     * @param string $lastname
+     *
+     * @return Order
      */
-    public function setFirstname($firstname)
+    public function setLastname($lastname)
     {
-        $this->firstname = $firstname;
+        $this->lastname = $lastname;
+
+        return $this;
     }
 
     /**
-     * @return mixed
+     * Get lastname
+     *
+     * @return string
      */
     public function getLastname()
     {
@@ -207,16 +231,23 @@ class Order
     }
 
     /**
-     * @param mixed $lastname
+     * Set address
+     *
+     * @param string $address
+     *
+     * @return Order
      */
-    public function setLastname($lastname)
+    public function setAddress($address)
     {
-        $this->lastname = $lastname;
+        $this->address = $address;
+
+        return $this;
     }
 
-
     /**
-     * @return mixed
+     * Get address
+     *
+     * @return string
      */
     public function getAddress()
     {
@@ -224,31 +255,23 @@ class Order
     }
 
     /**
-     * @param mixed $address
+     * Set phone
+     *
+     * @param string $phone
+     *
+     * @return Order
      */
-    public function setAddress($address)
+    public function setPhone($phone)
     {
-        $this->address = $address;
+        $this->phone = $phone;
+
+        return $this;
     }
 
     /**
-     * @return mixed
-     */
-    public function getComment()
-    {
-        return $this->comment;
-    }
-
-    /**
-     * @param mixed $comment
-     */
-    public function setComment($comment)
-    {
-        $this->comment = $comment;
-    }
-
-    /**
-     * @return mixed
+     * Get phone
+     *
+     * @return string
      */
     public function getPhone()
     {
@@ -256,15 +279,23 @@ class Order
     }
 
     /**
-     * @param mixed $phone
+     * Set email
+     *
+     * @param string $email
+     *
+     * @return Order
      */
-    public function setPhone($phone)
+    public function setEmail($email)
     {
-        $this->phone = $phone;
+        $this->email = $email;
+
+        return $this;
     }
 
     /**
-     * @return mixed
+     * Get email
+     *
+     * @return string
      */
     public function getEmail()
     {
@@ -272,33 +303,47 @@ class Order
     }
 
     /**
-     * @param mixed $email
+     * Set comment
+     *
+     * @param string $comment
+     *
+     * @return Order
      */
-    public function setEmail($email)
+    public function setComment($comment)
     {
-        $this->email = $email;
-    }
+        $this->comment = $comment;
 
-
-
-    /**
-     * @return mixed
-     */
-    public function getIdUser()
-    {
-        return $this->id_user;
+        return $this;
     }
 
     /**
-     * @param mixed $id_user
+     * Get comment
+     *
+     * @return string
      */
-    public function setIdUser($id_user)
+    public function getComment()
     {
-        $this->id_user[] = $id_user;
+        return $this->comment;
     }
 
     /**
-     * @return mixed
+     * Set oderitem
+     *
+     * @param string $oderitem
+     *
+     * @return Order
+     */
+    public function setOderitem($oderitem)
+    {
+        $this->oderitem = $oderitem;
+
+        return $this;
+    }
+
+    /**
+     * Get oderitem
+     *
+     * @return string
      */
     public function getOderitem()
     {
@@ -306,13 +351,74 @@ class Order
     }
 
     /**
-     * @param mixed $oderitem
+     * Set status
+     *
+     * @param \ShopBundle\Entity\StatusOrder $status
+     *
+     * @return Order
      */
-    public function setOderitem($oderitem)
+    public function setStatus(\ShopBundle\Entity\StatusOrder $status = null)
     {
-        $this->oderitem = $oderitem;
+        $this->status = $status;
+
+        return $this;
     }
 
+    /**
+     * Get status
+     *
+     * @return \ShopBundle\Entity\StatusOrder
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
 
+    /**
+     * Set users
+     *
+     * @param \ShopBundle\Entity\Users $users
+     *
+     * @return Order
+     */
+    public function setUsers(\ShopBundle\Entity\Users $users = null)
+    {
+        $this->users = $users;
 
+        return $this;
+    }
+
+    /**
+     * Get users
+     *
+     * @return \ShopBundle\Entity\Users
+     */
+    public function getUsers()
+    {
+        return $this->users;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \ShopBundle\Entity\Users $user
+     *
+     * @return Order
+     */
+    public function setUser(\ShopBundle\Entity\Users $user = null)
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \ShopBundle\Entity\Users
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
 }

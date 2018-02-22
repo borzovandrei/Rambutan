@@ -1,32 +1,65 @@
 {% extends 'ShopBundle:Default:index.html.twig' %}
 
 {% block navigation %}
-    <div class="row">
-        <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
-            <ul class="nav nav-pills flex-column">
-                <li class="nav-item">
-                    <a class="nav-link active" href="{{ path('shop_homepage') }}">Главная <span class="sr-only">(current)</span></a>
-                </li>
+    <div class="wrap">
+        <div class="row">
+            <nav class="col-sm-3 col-md-2 d-none d-sm-block bg-light sidebar">
+                <div class="navigation">
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{{ path('shop_homepage') }}">Главная <span class="sr-only">(current)</span></a>
+                        </li>
 
-                {% for sort in sort %}
-                    <li class="nav-item" id="sort_nav">
-                        <a class="nav-link " href="{{ path('shop_sort', {id: sort.id}) }}">{{ sort.name }}</a>
-                    </li>
+                        {% for sort in sort %}
+                            <li class="nav-item" id="sort_nav">
+                                <a class="nav-link " href="{{ path('shop_sort', {id: sort.id}) }}">{{ sort.name }}</a>
+                            </li>
+                        {% endfor %}
+
+
+                    </ul>
+                </div>
+            </nav>
+
+            <script type="text/javascript">
+                var navbar = $('.navigation');
+                var wrapper = $('.wrap');
+                navbar.find('.nav').css('width', '222px')
+                $(window).scroll(function () {
+                    var nsc = $(document).scrollTop();
+                    var bp1 = wrapper.offset().top;
+                    var bp2 = bp1 + wrapper.outerHeight() - $(window).height();
+                    if (nsc > bp1) {
+                        navbar.css('position', 'fixed');
+                        navbar.css('top', '100');
+                    }
+                    else {
+                        navbar.css('position', 'absolute');
+                    }
+                    if (nsc > bp2) {
+                        navbar.css('top', bp2 - nsc + 40);
+                    }
+                    else {
+                        navbar.css('top', '10');
+                    }
+                });
+            </script>
+
+            <main class="col-sm-9 ml-sm-auto col-md-10 pt-3" role="main">
+                {% for flashMessage in app.session.flashbag.get('room_order') %}
+                    <div class="alert alert-success">
+                        {{ flashMessage }}
+                    </div>
                 {% endfor %}
-
-
-            </ul>
-        </nav>
-
-        <main class="col-sm-9 ml-sm-auto col-md-10 pt-3" role="main">
-            {% if (sortname=="Продукты") %}
-                <h1>Продукты</h1>
-            {% else %}
-                <h1>{{ sortname.name }}</h1>
-            {% endif %}
-
-            {% if (product!=NULL) %}
                 <div class="container marketing">
+                    {% if (sortname=="Продукты") %}
+                        <h1>Продукты</h1>
+                    {% else %}
+                        <h1>{{ sortname.name }}</h1>
+                    {% endif %}
+
+                    {% if (product!=NULL) %}
+
 
                     <div class="row">
                         {% for product in product %}
@@ -47,14 +80,14 @@
                                       role="button">Купить</a></p>
                             </div>
 
-
                         {% endfor %}
                     </div>
                     <hr class="featurette-divider">
                 </div>
-            {% else %}
-                Продуктов из данной категории нет на складе!
-            {% endif %}
-        </main>
+                {% else %}
+                    Продуктов из данной категории нет на складе!
+                {% endif %}
+            </main>
+        </div>
     </div>
 {% endblock %}

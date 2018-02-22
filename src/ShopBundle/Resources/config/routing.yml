@@ -172,6 +172,23 @@ room_order:
             methods:  GET
             id: \d+
 
+room_edit:
+    path:  /room/edit
+    defaults: { _controller: ShopBundle:Page:room_edit }
+    requirements:
+        methods:  POST
+
+room_edit_pass:
+    path:  /room/edit/pass
+    defaults: { _controller: ShopBundle:Page:room_edit_pass }
+    requirements:
+        methods:  POST
+
+room_prod:
+    path:  /room/prod
+    defaults: { _controller: ShopBundle:Page:room_prod }
+    requirements:
+        methods:  POST
 
 invoice:
     path:     /room/invoice/{id}

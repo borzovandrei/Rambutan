@@ -6,6 +6,7 @@
 body {
     margin-top: 60px;
     font-family: Tavolga;
+    cursor: url(../img/cursor.cur), auto;
 }
 
 .navbar-custom {
@@ -47,7 +48,6 @@ body {
     background-color: #33aa33;
 }
 
-
 .navbar-custom .navbar-collapse {
     text-align: center;
 }
@@ -63,7 +63,10 @@ body {
     filter: invert(1);
 }
 
+#img_prod {
+    margin-top: 10px;
 
+}
 
 .nav-item#sort_nav {
     background-color: #d1ffb8;
@@ -109,3 +112,4 @@ body {
     margin-bottom: 1.5rem;
     text-align: center;
 }
+

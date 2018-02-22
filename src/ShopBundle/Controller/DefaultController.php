@@ -49,7 +49,7 @@ class DefaultController extends Controller
         dump($data);
         return $this->render('ShopBundle:Default:search.html.twig', array(
             'data' => array_unique($data),
-            'search'=>$search,
+            'search' => $search,
         ));
     }
 
@@ -197,6 +197,8 @@ class DefaultController extends Controller
         $similar = array_slice($similar, 0, 5);//оставляем топ 5 просматриваемых
 
         $data_two = $em->getRepository('ShopBundle:Sort')->getSort($similar); //массив категорий
+
+
         $data_three = $em->getRepository('ShopBundle:Products')->getTop($data_two, $this->getParameter('view_more')); //массив id продуктов рекомендаций
 //        $data_three =  $this->get('shop_bundle.repository.shop')->getTop($data_two); //массив id продуктов рекомендаций
 
@@ -222,6 +224,28 @@ class DefaultController extends Controller
 
     public function navigationAction($id = NULL)
     {
+        if ($this->getUser() && isset($_COOKIE["name"])) {
+            dump($this->getUser()->getId());
+            dump($_COOKIE["name"]);
+            $em = $this->getDoctrine();
+            $user = $em->getRepository("ShopBundle:Users")->find($this->getUser()->getId());
+            $redis = $this->get('snc_redis.default');
+            $red = $redis->get("telegram_{$_COOKIE["name"]}");
+            $red = json_decode($red, true);
+            $red['login'] = 1;
+            $red['user']['username'] = $user->getUsername();
+            $red['user']['firstname'] = $user->getFirstname();
+            $red['user']['lastname'] = $user->getLastname();
+            $red['user']['phone'] = $user->getPhone();
+            $red['user']['email'] = $user->getEmail();
+            $red['user']['address'] = $user->getAddress();
+            $red['sumCart'] = 0;
+            $red['cart']['prod0'] = null;
+            $red['order'] = null;
+            $red['oldcomand'] = "none";
+            $redis->set("telegram_{$_COOKIE["name"]}", json_encode($red));
+        };
+
         $em = $this->getDoctrine()->getManager();
         $sort = $em->getRepository('ShopBundle:Sort')->findAll();
         if (!$id) {

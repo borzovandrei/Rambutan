@@ -3,6 +3,7 @@
 namespace ShopBundle\Service\TelegramBot;
 
 
+use CURLFile;
 use Doctrine\ORM\EntityManagerInterface;
 use Predis\ClientInterface;
 use ShopBundle\Entity\Order;
@@ -14,12 +15,18 @@ class TelegramBot implements TelegramBotInterface
     /** @var ClientInterface */
     private $redisClient;
 
+    /** @var EntityManagerInterface */
+    protected $entityManager;
+
     protected $username;
 
     protected $oldCmd;
 
-    /** @var EntityManagerInterface */
-    protected $entityManager;
+    protected $chat_id;
+
+    protected $mes_id;
+
+    protected $prod_id;
 
 
     public function __construct(ClientInterface $redisClient, EntityManagerInterface $entityManager)
@@ -31,6 +38,13 @@ class TelegramBot implements TelegramBotInterface
     public function listen()
     {
 
+//        foreach ($results as $result) {
+//            if ($result instanceof Callback) {
+//                $callbackRunner->run($result);
+//            }
+//            if ($result instanceof Message) {
+//            }
+//        }
 
         $last_update = $this->redisClient->get("telegram");
         $url = 'https://api.telegram.org/bot429703583:AAEToCrYueFNrgRAdX1NyP8TYJvt5QQDrEY/getUpdates?offset=' . $last_update;
@@ -42,48 +56,190 @@ class TelegramBot implements TelegramBotInterface
 
             foreach ($result["result"] as $key => $value) {
                 if ($last_update < $value['update_id']) {
-                    $this->redisClient->set("telegram", $value['update_id']);
                     $last_update = $value['update_id'];
-
-                    $chat_id = $value["message"]["chat"]["id"];
-                    $this->username = $value["message"]["from"]["id"];
-                    $fullname = $value["message"]["from"]["first_name"] . " " . $value["message"]["from"]["last_name"];
+                    $this->redisClient->set("telegram", $value['update_id']);
 
 
-                    if (!$this->redisClient->get("telegram_{$this->username}")) {
-                        $this->redisname();
-                    }
+                    if (!array_key_exists("callback_query", $value)) {
 
-                    $this->oldCmd = $this->redisOldComand();
-                    dump($this->oldCmd);
+                        $chat_id = $value["message"]["chat"]["id"];
+                        $this->chat_id = $chat_id;
+                        $this->username = $value["message"]["from"]["id"];
+//                        $fullname = $value["message"]["from"]["first_name"] . " " . $value["message"]["from"]["last_name"];
+                        $fullname = $this->getusername($value);
 
-                    if (array_key_exists("text", $value["message"])) {
-                        $message = $value["message"]["text"];
-                        $msg = $this->start($message, $fullname);
-                    } elseif (array_key_exists("sticker", $value["message"])) {
-                        $msg = $this->sticker($value);
-                    } elseif (array_key_exists("photo", $value["message"])) {
-                        $msg = "ФОТО";
-                    } elseif (array_key_exists("document", $value["message"])) {
-                        $msg = "ДОКУМЕНТ";
+                        if (!$this->redisClient->get("telegram_{$this->username}")) {
+                            $this->redisname();
+                        }
+
+                        $this->oldCmd = $this->redisOldComand();
+                        dump($this->oldCmd);
+
+                        if (array_key_exists("text", $value["message"])) {
+                            $message = $value["message"]["text"];
+                            $msg = $this->start($message, $fullname);
+                        } elseif (array_key_exists("sticker", $value["message"])) {
+                            $msg = $this->sticker($value);
+                        } elseif (array_key_exists("photo", $value["message"])) {
+                            $msg = "ФОТО";
+                        } elseif (array_key_exists("document", $value["message"])) {
+                            $msg = "ДОКУМЕНТ";
+                        } else {
+                            $msg = "Данный тип сообщения не поддерживается.";
+                        }
+
+                        if (is_array($msg)) {
+                            $msg[0] = urlencode($msg[0]);
+                            $msg[1] = $this->keyboard($msg[1]);
+                            file_get_contents("https://api.telegram.org/bot429703583:AAEToCrYueFNrgRAdX1NyP8TYJvt5QQDrEY/sendMessage?text=" . $msg[0] . "&chat_id=" . $chat_id . "&reply_markup=" . $msg[1]);
+
+                        } else {
+                            $msg = urlencode($msg);
+                            file_get_contents("https://api.telegram.org/bot429703583:AAEToCrYueFNrgRAdX1NyP8TYJvt5QQDrEY/sendMessage?text=" . $msg . "&chat_id=" . $chat_id);
+                        }
+
                     } else {
-                        $msg = "Данный тип сообщения не поддерживается.";
-                    }
+                        $chat_id = $value["callback_query"]["message"]["chat"]["id"];
+                        $this->chat_id = $chat_id;
+                        $this->username = $value["callback_query"]["from"]["id"];
 
-                    if (is_array($msg)) {
+
+                        if (!$this->redisClient->get("telegram_{$this->username}")) {
+                            $this->redisname();
+                        }
+                        $this->oldCmd = $this->redisOldComand();
+                        $data = $value["callback_query"]["data"];
+
+
+                        if ($this->oldCmd == "sort") {
+                            $msg = $this->showprod($data);
+                        } elseif ($this->oldCmd == "products") {
+                            switch ($data) {
+                                case "gotosort":
+                                    $msg = $this->showsort();
+                                    $this->redisNewComand("sort");
+                                    break;
+                                case "gotoprod":
+                                    $msg = $this->showprod($this->mes_id);
+                                    break;
+                                case "buy":
+                                    dump($this->prod_id);
+                                    $msg = $this->inlineCart($this->prod_id);
+                                    break;
+                                default:
+                                    $msg = $this->showproduct($data);
+                                    break;
+                            }
+                        } else {
+                            dump("Error");
+                            $msg = $this->comand($data);
+                        }
+
                         $msg[0] = urlencode($msg[0]);
                         $msg[1] = $this->keyboard($msg[1]);
-                        file_get_contents("https://api.telegram.org/bot429703583:AAEToCrYueFNrgRAdX1NyP8TYJvt5QQDrEY/sendMessage?text=" . $msg[0] . "&chat_id=" . $chat_id . "&reply_markup=" . $msg[1]);
+                        $msg[2] = $value["callback_query"]["message"]["message_id"];
 
-                    } else {
-                        $msg = urlencode($msg);
-                        file_get_contents("https://api.telegram.org/bot429703583:AAEToCrYueFNrgRAdX1NyP8TYJvt5QQDrEY/sendMessage?text=" . $msg . "&chat_id=" . $chat_id);
+                        file_get_contents("https://api.telegram.org/bot429703583:AAEToCrYueFNrgRAdX1NyP8TYJvt5QQDrEY/editMessageText?text=" . $msg[0] . "&chat_id=" . $chat_id . "&message_id=" . $msg[2] . "&reply_markup=" . $msg[1]);
 
                     }
+
+
                 }
             }
         }
     }
+
+    public function showsort()
+    {
+        $em = $this->entityManager;
+        $sort = $em->getRepository("ShopBundle:Sort")->findAll();
+        $button[] = null;
+
+        foreach ($sort as $key => $value) {
+            $button[$key] = [["text" => $value->getName(), "callback_data" => $value->getId()]];
+        }
+        $msg = 'Выберете категорию товаров: ';
+
+        return [$msg, $button];
+    }
+
+    public function showprod($sort)
+    {
+        $em = $this->entityManager;
+        $prod = $em->getRepository("ShopBundle:Products")->findBy(["id_class" => $sort]);
+        $this->redisNewComand("products");
+        if ($prod) {
+            $button[] = null;
+            foreach ($prod as $key => $value) {
+                $button[$key] = [["text" => $value->getName(), "callback_data" => $value->getId()]];
+            }
+            array_push($button, [["text" => "Назад в категории", "callback_data" => "gotosort"]]);
+            $msg = 'Выберете товар: ';
+        } else {
+            $button[0] = [["text" => "Назад в категории", "callback_data" => "gotosort"]];
+            $msg = 'В данной категории нет товаров: ';
+        }
+        return [$msg, $button];
+    }
+
+    public function inlineCart($prod)
+    {
+        $em = $this->entityManager;
+        $product = $em->getRepository("ShopBundle:Products")->find($prod);
+
+        if ($product) {
+            $redis = json_decode($this->redisClient->get("telegram_{$this->username}"), true);
+            $newProd = false;
+            foreach ($redis['cart'] as $key => $value) {
+                if ($product->getName() == $value['name']) {
+                    $redis['cart'][$key]['sum']++;
+                    $newProd = true;
+                    break;
+                }
+            }
+            if (!$newProd) {
+                $redis['cart']["prod" . $redis['sumCart']]['name'] = $product->getName();
+                $redis['cart']["prod" . $redis['sumCart']]['cost'] = $product->getShopPrice();
+                $redis['cart']["prod" . $redis['sumCart']]['sum'] = 1;
+                $redis['sumCart']++;
+            }
+            $this->redisClient->set("telegram_{$this->username}", json_encode($redis));
+            $mes = "Продукт '" . $product->getName() . "' добавлен.";
+        } else {
+            $mes = "Продукт не существет или еще нельзя купить через telegram.";
+        }
+        $button[0] = [["text" => "Назад в продукты", "callback_data" => "gotosort"]];
+        return [$mes, $button];
+    }
+
+
+    public function showproduct($prod)
+    {
+
+        $em = $this->entityManager;
+        $prod = $em->getRepository("ShopBundle:Products")->find($prod);
+
+        if ($prod) {
+            $msg = 'Информация о товаре: ';
+            $msg .= "\nНазавание: " . $prod->getName();
+            $msg .= "\nЦена: " . $prod->getShopPrice();
+            $msg .= "\nОстаток: " . $prod->getBalanse();
+            $this->mes_id = $prod->getIdClass()->getId();
+            $this->prod_id = $prod->getId();
+            $file = $prod->getAbsolutePath();
+            $this->sendPhoto($file);
+
+            $button[0] = [["text" => "Назад в продукты", "callback_data" => "gotoprod"]];
+            $button[1] = [["text" => "Купить", "callback_data" => "buy"]];
+
+        } else {
+            $button[0] = [["text" => "Назад в категории", "callback_data" => "gotosort"]];
+            $button[1] = $prod;
+            $msg = 'Упс... Данный товар не найден( ';
+        }
+        return [$msg, $button];
+    }
+
 
     public function redisname()
     {
@@ -114,10 +270,19 @@ class TelegramBot implements TelegramBotInterface
         return true;
     }
 
+
     public function start($text, $fullname)
     {
+
+//        if(method_exists($this, $text)) {
+//
+//          return  $this->{$text}();
+//        }
+//
+//        return 'hello';
+
+
         $oldCmd = $this->oldCmd;
-        dump($oldCmd);
         if ($oldCmd == "login") {
             $mes = $this->login($text);
         } elseif ($oldCmd == "shop") {
@@ -131,7 +296,8 @@ class TelegramBot implements TelegramBotInterface
                     break;
                 case "/login":
                     $this->redisNewComand("login");
-                    $mes = "Введите логин и пароль";
+                    $mes = $this->login(" ");
+//                    $mes = "Введите логин и пароль";
                     break;
                 case "/logout":
                     $mes = $this->logout();
@@ -167,6 +333,13 @@ class TelegramBot implements TelegramBotInterface
                     $this->redisNewComand("start");
                     $mes = "start";
                     break;
+                case "/showsort":
+                    $this->redisNewComand("sort");
+                    $msg[0] = urlencode("В этом разделв вы можете купить товар.\n/cart - просмотр корзины \n/order - оформить заказ");
+                    $msg[1] = $this->keyboard([["/order", "/shop"]]);
+                    file_get_contents("https://api.telegram.org/bot429703583:AAEToCrYueFNrgRAdX1NyP8TYJvt5QQDrEY/sendMessage?text=" . $msg[0] . "&chat_id=" . $this->chat_id . "&reply_markup=" . $msg[1]);
+                    $mes = $this->showsort();
+                    break;
                 default:
                     $this->redisNewComand("none");
                     $mes = "Привет, " . $fullname . " . Я бот интернет магазина https://rambutan.ml\nДля справки напиши /help";
@@ -176,42 +349,35 @@ class TelegramBot implements TelegramBotInterface
         return $mes;
     }
 
+    public function comand($comand)
+    {
+        if ($comand = "next") {
+            $msg = "next";
+        } elseif ($comand = "down") {
+            $msg = "down";
+        } else {
+            $msg = "ELSE";
+        }
+        return $msg;
+    }
+
     public function help()
     {
         $this->redisNewComand("help");
-        $keyboard = [["/login", "/myorder", "/login"], ["https://t.me/addstickers/RambutanShop"]];
-        $mes = "Наш набор стикеров:\nhttps://t.me/addstickers/RambutanShop\nПрежде чем делать заказ, необходимо авторизоваться(/login).\nКоманды бота:\n/login - вход в личный кабинет магазина\n/myorder - статус заказа\n/help - помощь";
+        $keyboard = [["/login", "/myorder", "/shop"], ["/showsort"]];
+        $mes = "Наш набор стикеров:\nhttps://t.me/addstickers/RambutanShop\nПрежде чем делать заказ, необходимо авторизоваться(/login).\nКоманды бота:\n/login - вход в личный кабинет магазина\n/myorder - статус заказа\n/showsort - категории товаров";
         return [$mes, $keyboard];
     }
 
+
     public function login($text)
     {
-        $username = $this->username;
-        $login = substr($text, 0, stripos($text, " "));
-        $password = substr($text, stripos($text, " ") + 1, strlen($text));
-        $em = $this->entityManager;
-        $user = $em->getRepository("ShopBundle:Users")->findBy(array('username' => $login, 'phone' => $password));
 
-        if (!$user) {
-            $mes = "Вы ввели не коректные данные.";
-        } else {
-            $redis = $this->redisClient->get("telegram_{$username}");
-            $redis = json_decode($redis, true);
-            $redis['login'] = 1;
-            $redis['user']['username'] = $user[0]->getUsername();
-            $redis['user']['firstname'] = $user[0]->getFirstname();
-            $redis['user']['lastname'] = $user[0]->getLastname();
-            $redis['user']['phone'] = $user[0]->getPhone();
-            $redis['user']['email'] = $user[0]->getEmail();
-            $redis['user']['address'] = $user[0]->getAddress();
-            $redis['sumCart'] = 0;
-            $redis['cart']['prod0'] = null;
-            $redis['order'] = null;
-            $this->redisClient->set("telegram_{$username}", json_encode($redis));
-            $mes = "Вы вошли как " . $user[0]->getFirstname() . " " . $user[0]->getLastname() . "\nДля покупок напишите /shop\nДля выхода напишите /logout";
-        }
+        $mes = 'что бы выполнить вход - авторизуйтесь';
+        $button[0] = [["text" => "Авторизоваться", "url" => "https://rambutan.ml/login?user=".$this->username]];
         $this->redisNewComand("none");
-        return $mes;
+        return [$mes,$button];
+
 
     }
 
@@ -237,14 +403,9 @@ class TelegramBot implements TelegramBotInterface
 
     public function shop()
     {
-        if ($this->oldCmd == "shop") {
-            $keyboard = [["/cart", "/shopend"], ["/order"]];
-            $mes = "Вы уже находитесь в режиме покупок";
-        } else {
-            $this->redisNewComand("shop");
-            $keyboard = [["/cart", "/shop"], ["/order"]];
-            $mes = "Пришлите стикер что бы положить товар в корзину \nДля просмотра корзины напишите /cart \nДля завершения покупок напишите /shopend";
-        }
+        $this->redisNewComand("shop");
+        $keyboard = [["/cart", "/shopend"], ["/order"]];
+        $mes = "Пришлите стикер что бы положить товар в корзину \nДля просмотра корзины напишите /cart \nДля завершения покупок напишите /shopend";
         return [$mes, $keyboard];
 
     }
@@ -255,11 +416,13 @@ class TelegramBot implements TelegramBotInterface
             $this->redisNewComand("none");
             $keyboard = [["/cart", "/shop"], ["/order"]];
             $mes = "Вы закончили покупки \nДля просмотра корзины напишите /cart \nДля продолжения покупок напишите /shop\nДля оформления заказа напишите /order ";
+        } elseif ($text == '/shop') {
+            $keyboard = [["/cart", "/shopend"], ["/order"]];
+            $mes = "Вы уже находитесь в режиме покупок";
         } else {
-            $keyboard = ["/cart", "/shopend"];
+            $keyboard = [["/cart", "/shopend"], ["/order"]];
             $mes = "Что бы выйти из режима покупок напишите /shopend";
         }
-
         return [$mes, $keyboard];
     }
 
@@ -275,21 +438,24 @@ class TelegramBot implements TelegramBotInterface
             $prod .= "\n" . $n . ': ' . $value['name'] . ' по цене: ' . $value['cost'] . ' в колличестве ' . $value['sum'];
         }
         $mes = "Ваша корзина:" . $prod . "\nИтого: " . $s . "руб.\nДля удаления продуктов отправьте /cartedit:";
-        return $mes;
+        $keyboard = [["/cartedit", "/shop"]];
+        return [$mes, $keyboard];
     }
 
     public function cartedit($kol)
     {
         $redis = json_decode($this->redisClient->get("telegram_{$this->username}"), true);
         if ($redis['login'] == 1) {
-            dump($redis["cart"]);
             $mes = "НЕОБХОДИМО РЕАЛИЗОВАТЬ!";
+            $keyboard = ["/SDELAYU POTOM"];
 //            $mes = "Продукт удален.\n" . $this->cart();
         } else {
             $mes = "Необходимо авторизоваться: /login";
+            $keyboard = ["/login", "/help"];
+
         }
 
-        return $mes;
+        return [$mes, $keyboard];
     }
 
 
@@ -297,7 +463,8 @@ class TelegramBot implements TelegramBotInterface
     {
         $this->redisNewComand("order");
         $mes = "Что бы выйти из режима оформления заказа /orderend ";
-        return $mes;
+        $keyboard = [["/orderinfo", "/orderend"]];
+        return [$mes, $keyboard];
     }
 
 
@@ -305,7 +472,9 @@ class TelegramBot implements TelegramBotInterface
     {
         if ($text == '/orderend') {
             $this->redisNewComand("none");
+            $keyboard = [["/cart", "/order"]];
             $mes = "Вы вышли из оформления заказа \nДля просмотра корзины напишите /cart \nДля продолжения заказа /order";
+            return [$mes, $keyboard];
         } elseif ($text == '/cart') {
             $mes = $this->cart();
         } elseif ($text == '/edit') {
@@ -337,8 +506,8 @@ class TelegramBot implements TelegramBotInterface
         $mes .= "\nСписок покупок ? /cart ";
         $mes .= "\nЖелаете изменть данные ? /edit ";
         $mes .= "\nПродолжить с этими данными ? /next ";
-        return $mes;
-
+        $keyboard = [["/cart", "/edit", "/next"], ["/orderend"]];
+        return [$mes, $keyboard];
     }
 
     public function orderedit($text)
@@ -353,10 +522,12 @@ class TelegramBot implements TelegramBotInterface
             $mes .= "\nЕмайл получателя: /email";
             $mes .= "\nАдрес доставки: /address";
             $mes .= "\nСохранить: /ok ";
+            $keyboard = [["/login", "/help", "/phone"], ["/email", "/address"], ["/ok", "/orderend"]];
         } else {
-            $mes = "Для спрвки напишите /edit";
+            $mes = "Для спрвки напишите /orderinfo";
+            $keyboard = [["/edit", "/orderinfo"], ["/orderend"]];
         }
-        return $mes;
+        return [$mes, $keyboard];
 
     }
 
@@ -375,8 +546,8 @@ class TelegramBot implements TelegramBotInterface
         $mes .= "\nАдрес доставки: " . $redis['address'];
         $mes .= "\nСписок покупок ? /cart ";
         $mes .= "\nДА /yesmyorder ";
-
-        return $mes;
+        $keyboard = [["/cart", "/yesmyorder"], ["/orderend"]];
+        return [$mes, $keyboard];
     }
 
     public function NewOrder()
@@ -412,7 +583,6 @@ class TelegramBot implements TelegramBotInterface
         $order->setEmail($redis['email']);
         $order->setPhone($redis['phone']);
         $order->setAddress($redis['address']);
-        $order->setCreated();
         $status = $this->entityManager->getRepository('ShopBundle:StatusOrder')->find(1);
         $order->setStatus($status);
         $order->setDate(new \DateTime(date("d-m-Y G:i:s")));
@@ -482,11 +652,45 @@ class TelegramBot implements TelegramBotInterface
         return $mes;
     }
 
+    public function getusername($value)
+    {
+        $username = " ";
+        if (isset($value["message"]["from"]["first_name"])) {
+            $username .= $value["message"]["from"]["first_name"] . " ";
+        }
+        if (isset($value["message"]["from"]["last_name"])) {
+            $username .= $value["message"]["from"]["last_name"];
+        }
+        return $username;
+    }
 
     public function keyboard($keyboard)
     {
-        $resp = array("keyboard" => $keyboard, "resize_keyboard" => true, "one_time_keyboard" => true);
+        if (isset($keyboard[0][0]) && is_array($keyboard[0][0])) {
+            $resp = ["inline_keyboard" => $keyboard];
+        } else {
+            $resp = array("keyboard" => $keyboard, "resize_keyboard" => true, "one_time_keyboard" => true);
+        }
         return json_encode($resp);
     }
 
+    public function sendPhoto($path)
+    {
+        $bot_url = "https://api.telegram.org/bot429703583:AAEToCrYueFNrgRAdX1NyP8TYJvt5QQDrEY/";
+        $url = $bot_url . "sendPhoto?chat_id=" . $this->chat_id;
+
+        $post_fields = array('chat_id' => $this->chat_id,
+            'photo' => new CURLFile(realpath($path))
+        );
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            "Content-Type:multipart/form-data"
+        ));
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_fields);
+        curl_exec($ch);
+
+    }
 }

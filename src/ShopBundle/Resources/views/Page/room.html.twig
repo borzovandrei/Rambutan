@@ -18,50 +18,99 @@
                         <img class="rounded"
                              src="{{ asset(['img/users/', user.path]|join) }}"
                              alt="Изображение не найдено" width="340" height="340">
-
                     </div>
+                    <div class="container" id="edit"></div>
                 </div>
                 <div class="col-lg-6 col-md-6">
-                    <table class="table">
-                        <tbody>
-                        <tr>
-                            <th scope="row">Логин:</th>
-                            <td>{{ user.username }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Фамилия:</th>
-                            <td>{{ user.firstname }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Имя:</th>
-                            <td>{{ user.lastname }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Emile:</th>
-                            <td>{{ user.email }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Телефон:</th>
-                            <td>{{ user.phone }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Дата рождения:</th>
-                            <td> {{ user.age|date('d-m-Y') }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Пол:</th>
-                            <td>{{ user.sex.name }}</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">Адрес:</th>
-                            <td>{{ user.address }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div id="myText">
+                        <table class="table">
+                            <tbody>
+                            <tr>
+                                <th scope="row">Логин:</th>
+                                <td>{{ user.username }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Фамилия:</th>
+                                <td>{{ user.firstname }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Имя:</th>
+                                <td>{{ user.lastname }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Emile:</th>
+                                <td>{{ user.email }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Телефон:</th>
+                                <td>{{ user.phone }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Дата рождения:</th>
+                                <td> {{ user.age|date('d-m-Y') }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Пол:</th>
+                                <td>{{ user.sex.name }}</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Адрес:</th>
+                                <td>{{ user.address }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div id="but" onclick="remove_text()" class="btn btn-outline-success btn-lg btn-block"
+                             role="button">Изменить
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="passwordgModal" tabindex="-1" role="dialog" aria-labelledby="basicModal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">Введите новый пароль</h4>
+                </div>
+                <div class="modal-body">
+
+                    <input class="form-control " type="password" placeholder="Новый пароль" id="password-input-1">
+
+                    <input class="form-control " type="password" placeholder="Повторите пароль" id="password-input-2">
+                </div>
+                <div class="modal-footer">
+                    <div id="but" onclick="remove_password()" class="btn btn-outline-success btn-block" role="button"
+                         data-dismiss="modal">Сохранить
+                    </div>
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="imgModal" tabindex="-1" role="dialog" aria-labelledby="basicModal"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">Выберете новое изображение</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="file" class="form-control-file" id="InputFile">
+                </div>
+                <div class="modal-footer">
+                    <div id="but" onclick="remove_img()" class="btn btn-outline-success btn-block" role="button"
+                         data-dismiss="modal">Сохранить
+                    </div>
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div class="container">
         <h3 class="display-4">Заказы:</h3>
@@ -80,14 +129,14 @@
             <tbody>
             {% for order in order %}
                 <tr {% if order.status.id == "4" %}
-                    class="table-danger"
+                    class="table-danger all"
                 {% elseif order.status.id == "3" %}
-                    class="table-success"
+                    class="table-success all"
                 {% elseif  order.status.id == "2" %}
-                    class="table-warning"
+                    class="table-warning all"
                 {% elseif  order.status.id == "1" %}
-                    class="table-active"
-                {% endif %} id="table_{{ order.id }}">
+                    class="table-active all"
+                {% endif %} id="{{ order.oderitem }}">
                     <td>{{ order.id }}</td>
                     <td>{{ order.created |date('Y.m.d') }}</td>
                     <td>{{ order.date |date('Y.m.d h:m') }}</td>
@@ -99,15 +148,197 @@
                                  src="{{ asset(['img/icons/shopping-list.svg']|join) }}"
                                  alt="Подробнее" width="20" height="20">
                         </a></td>
-
-
                 </tr>
+
             {% else %}
-                <p>Положите товар в корзину</p>
+                <p>Вы еще не делали заказ.</p>
             {% endfor %}
             </tbody>
-        </table>
 
+
+            <div id="card">
+                <div class="card border-success mb-3" style="max-width: 18rem;">
+                    <div class="card-header">Товары</div>
+                    <div class="card-body text-success">
+                        <ul id="elt1" class="list-group list-group-flush" data-bind="foreach: people">
+                            <li class="list-group-item">Тут появятся ваши товары определенного заказа.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            {#<div id="card">#}
+            {#<ul id="elt1" class="list-group list-group-flush" data-bind="foreach: people">#}
+            {#<li class="list-group-item">#}
+            {#<span data-bind="text: prod"> </span>:<span data-bind="text: sum"> </span>#}
+            {#</li>#}
+            {#</ul>#}
+            {#</div>#}
+
+            <style>
+                #card {
+                    display: none;
+                    position: fixed;
+
+                    left: 80%;
+                    bottom: 30px;
+                }
+            </style>
+        </table>
     </div>
+
+
+
+
+
+
+
+    <script type="text/javascript">
+
+        $('.all').mouseenter(function () {
+            var id = this.id;
+            $(this).data('timeout', setTimeout(function () {
+                $('#card').fadeIn("slow");
+                getProd(id);
+            }, 1500));
+        });
+
+
+        $('.all').mouseleave(function () {
+            clearTimeout($(this).data('timeout'));
+            $('#card').fadeOut("slow");
+        });
+
+
+        function getProd(id) {
+            const myRequest = new Request("{{ path('room_prod') }}", {
+                method: 'POST', body: JSON.stringify({id: id}),
+                credentials: 'include'
+            });
+            fetch(myRequest).then(
+                (response) => {
+                    response.json().then((res) => {
+                        prod = Array.from(Object.keys(res));
+                        sum = Array.from(Object.values(res));
+                        arr = [];
+                        for (var i in sum) {
+                            obj = {'sum': sum[i] +' шт.', 'prod': prod[i]};
+                            arr.push(obj);
+                        }
+                        if (arr.length == 0) {
+                            var viewModel = {
+                                people: ko.observableArray([
+                                    { sum: "в данном заказе нет товаров.", prod: "Упс.. 404"}
+                                ])
+                            }
+                        }else{
+                            var viewModel = {
+                                people: ko.observableArray(arr)
+                            };
+                        }
+
+                        ko.cleanNode(document.getElementById('elt1'));
+                        ko.applyBindings(viewModel, document.getElementById('elt1'));
+
+                    });
+                }
+            );
+
+            document.getElementById('elt1').innerHTML = '<li class="list-group-item"> <span id="text: prod" data-bind="text: prod"> </span>  :  <span data-bind="text: sum"> </span></li>';
+        }
+
+        function remove_text() {
+            qw = document.getElementById('myText');
+            sa = document.getElementById('edit');
+
+            sa.innerHTML = '<div id="imgButton" class="btn btn-outline-success btn-lg btn-block" role="button" data-toggle="modal" data-target="#imgModal">Поменять изображение </div>' +
+                '<div id="passwordButton" class="btn btn-outline-success btn-lg btn-block" role="button" data-toggle="modal" data-target="#passwordgModal"> Поменять пароль </div>';
+
+
+            qw.innerHTML = '<table class="table"><tbody> ' +
+                ' <tr> <th scope="row">Логин:</th> <td><input class="form-control " type="text" value="{{ user.username }}" id="username-input"> </td> </tr> ' +
+                ' <tr> <th scope="row">Фамилия:</th> <td><input class="form-control " type="text" value="{{ user.firstname }}" id="firstname-input"></td> </tr> ' +
+                ' <tr> <th scope="row">Имя:</th> <td><input class="form-control " type="text" value="{{ user.lastname }}" id="lastname-input"></td> </tr> ' +
+                ' <tr> <th scope="row">Emile:</th> <td> <input class="form-control" type="email" value="{{ user.email }}" id="email-input"></td> </tr>' +
+                ' <tr> <th scope="row">Телефон:</th> <td> <input class="form-control" type="tel" value="{{ user.phone }}" id="tel-input"></td> </tr>' +
+                ' <tr> <th scope="row">Дата рождения:</th> <td> <input class="form-control" type="date" value="{{ user.age|date('Y-m-d') }}" id="date-input"></td> </tr>' +
+                ' <tr> <th scope="row">Пол:</th> <td><label class="mr-sm-2" for="sexSelect"></label> ' +
+                ' <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="sexSelect"><option value = 1>Мужчина</option><option value = 2>Девушка</option></select></td> </tr> <tr>' +
+                ' <th scope="row">Адрес:</th> <td> <textarea class="form-control" id="address-input" rows="3">{{ user.address }}</textarea></td> </tr> ' +
+                ' </tbody> </table>' +
+                ' <div id="but" onclick="save_text()" class="btn btn-outline-success btn-lg btn-block"role="button">Сохранить</div>;';
+        }
+
+        function remove_password() {
+            pass1 = document.getElementById('password-input-1').value;
+            pass2 = document.getElementById('password-input-2').value;
+            if (pass1 == pass2) {
+                console.log(pass1);
+                const myRequest = new Request("{{ path('room_edit_pass') }}", {
+                    method: 'POST', body: JSON.stringify({pass: pass1}),
+                    credentials: 'include'
+                });
+                fetch(myRequest).then(
+                    (response) => {
+                        response.json().then((res) => {
+                            console.log(res);
+                            if (res.redirectLink !== undefined) {
+                                location.href = res.redirectLink;
+                            }
+                        });
+                    }
+                )
+            }
+
+        }
+
+
+        function save_text() {
+            var data = {};
+            data.id = {{ user.id }}
+                data.username = document.getElementById('username-input').value;
+            data.firstname = document.getElementById('firstname-input').value;
+            data.lastname = document.getElementById('lastname-input').value;
+            data.email = document.getElementById('email-input').value;
+            data.tel = document.getElementById('tel-input').value;
+            data.date = document.getElementById('date-input').value;
+            data.address = document.getElementById('address-input').value;
+            var sex = document.getElementById('sexSelect');
+            data.sex = sex.options[sex.selectedIndex].text;
+
+
+            const myRequest = new Request("{{ path('room_edit') }}", {
+                method: 'POST', body: JSON.stringify({data: data}),
+                credentials: 'include'
+            });
+            fetch(myRequest);
+
+            new_text(data);
+        }
+
+
+        function new_text(data) {
+
+            as = document.getElementById('myText');
+            sa = document.getElementById('edit');
+
+            sa.innerHTML = '';
+
+            as.innerHTML = '<table class="table"><tbody>' +
+                '<tr><th scope="row">Логин:</th><td>' + data.username + '</td></tr>' +
+                '<tr><th scope="row">Фамилия:</th><td>' + data.firstname + '</td></tr>' +
+                '<tr><th scope="row">Имя:</th><td>' + data.lastname + '</td></tr>' +
+                '<tr><th scope="row">Emile:</th><td>' + data.email + '</td></tr>' +
+                '<tr><th scope="row">Телефон:</th><td>' + data.tel + '</td></tr>' +
+                '<tr><th scope="row">Дата рождения:</th><td>' + data.date + '</td></tr>' +
+                '<tr><th scope="row">Пол:</th><td>' + data.sex + '</td></tr><tr>' +
+                '<th scope="row">Адрес:</th><td>' + data.address + '</td></tr>' +
+                '</tbody></table>' +
+                '<div id="but" onclick="remove_text()" class="btn btn-outline-success btn-lg btn-block"role="button">Изменить</div>';
+
+        }
+    </script>
+
+
 
 {% endblock %}

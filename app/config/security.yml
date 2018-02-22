@@ -21,7 +21,9 @@ security:
             form_login:
                 check_path: /login_check
                 login_path: /login
-            logout: true
+            logout:
+                path: /logout
+                target: /login
             security: true
             anonymous: true
 #            access_denied_handler: ShopBundle/Controller/AccessDeniedHandler

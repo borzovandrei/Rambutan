@@ -11,6 +11,12 @@ interface TelegramBotInterface {
 
     public function start($text, $fullname);
 
+    public function comand($comand);
+
+    public function showsort();
+
+    public function showprod($sort);
+
     public function help();
 
     public function login($text);

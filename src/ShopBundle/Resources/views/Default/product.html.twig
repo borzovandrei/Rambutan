@@ -2,138 +2,165 @@
 
 {% block body %}
     <div class="container">
-        <div class="row">
-            <div class="col-6 col-md-4">
-                <div class="container">
-                    <img class="rounded img" id="img_prod"
-                            {#style="position:fixed"#}
-                         src="{{ asset(['img/products/', product.path]|join) }}"
-                         alt="Generic placeholder image" width="340" height="340">
-                </div>
-            </div>
-            <div class="col-12 col-md-8">
-                <div class="jumbotron border border-success border-top-0 ">
-                    <h2>{{ product.name }}.</h2>
-                    <h3>Осталось на складе: {{ product.balanse }} ({{ product.measure.name }}.)</h3>
-                    <p>Цена: {{ product.shopPrice }} руб.</p>
-                    <p><a class="btn btn-outline-success"
-                          data-id="{{ product.id }}"
-                          data-price="{{ product.shopPrice }}"
-                          data-url="{{ path('add_cart') }}"
-                          role="button">Купить</a></p>
-                    {% if is_granted('ROLE_MANAGER') %}
-                        <p><a class="btn btn-outline-warning"
-                              href="{{ path('admin_product_edit', { 'id': product.id }) }}">Изменить</a>
-                        </p>
-                    {% endif %}
-
-                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                        <a class="like"
-                           id="like"
-                           data-id="{{ product.id }}"
-                           data-author="{{ app.user.id }}"
-                           data-url="{{ path('shop_like') }}"
-                           role="button"><img class="icon" src="{{ asset('img/icons/hands.svg') }}"
-                                              alt="Лайк"
-                                              width="50" height="50"></a>
-
-                        {{ like }}
-
-                        <a class="like"
-                           id="dislike"
-                           data-id="{{ product.id }}"
-                           data-author="{{ app.user.id }}"
-                           data-url="{{ path('shop_like') }}"
-                           role="button"><img class="icon"
-                                              src="{{ asset('img/icons/dishands.svg') }}"
-                                              alt="Дизлайк"
-                                              width="50" height="50"></a>
-
-                        <div class="btn" id="content"></div>
-
-                    {% else %}
-                        Что бы оценить товар, Вам необходимо авторизоваться!
-                    {% endif %}
-
-
-                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <script>
-                        const messages = document.getElementById('content');
-                        like.onclick = function () {
-                            const xhr = new XMLHttpRequest();
-                            url = '/product/like';
-                            var formData = new FormData(document.forms.person);
-                            formData.append("id", "{{ product.id  }}");
-                            formData.append("author", "{{  app.user.id  }}");
-                            formData.append("likes", "1");
-                            xhr.open("POST", url, true);
-                            xhr.onload = function () {
-                                if (xhr.readyState !== 4) return;
-                                messages.innerHTML=this.responseText;
-                                setTimeout(function() {
-                                    messages.innerHTML='';
-                                }, 3000);
-                            };
-                            xhr.send(formData);
-                        };
-                        dislike.onclick = function () {
-                            const xhr = new XMLHttpRequest();
-                            url = '/product/like';
-                            var formData = new FormData(document.forms.person);
-                            formData.append("id", "{{ product.id  }}");
-                            formData.append("author", "{{  app.user.id  }}");
-                            formData.append("likes", "0");
-                            xhr.open("POST", url, true);
-                            xhr.onload = function () {
-                                if (xhr.readyState !== 4) return;
-                                messages.innerHTML=this.responseText;
-                                setTimeout(function() {
-                                    messages.innerHTML='';
-                                }, 3000);
-                            };
-                            xhr.send(formData);
-
-                        }
-                    </script>
-                    {% endif %}
-
-                    <h2>Недавно просмотренные:</h2>
-                    <div class="row">
-                        {% for data in data %}
-                            <div class="col">
-                                <p>
-                                    <a href="{{ path('shop_product', {id: data.id}) }}">
-                                        <img class="rounded"
-                                             src="{{ asset(['img/products/', data.path]|join) }}"
-                                             alt="Generic placeholder image" width="70" height="70">
-                                    </a>
-                                </p>
-                                <h3>{{ data.name }}.</h3>
-                                <p>Цена: {{ data.shopPrice }} руб.</p>
-                            </div>
-                        {% endfor %}
+        <div class="wrap">
+            <div class="row">
+                <div class="col-6 col-md-4">
+                    <div class="container">
+                        <div class="navigation">
+                        <img class="rounded img" id="img_prod"
+                             src="{{ asset(['img/products/', product.path]|join) }}"
+                             alt="Generic placeholder image" width="340" height="340">
                     </div>
+                </div>
+                </div>
+                <div class="col-12 col-md-8">
+                    <div class="jumbotron border border-success border-top-0 ">
+                        <h2>{{ product.name }}.</h2>
+                        <h3>Осталось на складе: {{ product.balanse }} ({{ product.measure.name }}.)</h3>
+                        <p>Цена: {{ product.shopPrice }} руб.</p>
+                        <p><a class="btn btn-outline-success"
+                              data-id="{{ product.id }}"
+                              data-price="{{ product.shopPrice }}"
+                              data-url="{{ path('add_cart') }}"
+                              role="button">Купить</a></p>
+                        {% if is_granted('ROLE_MANAGER') %}
+                            <p><a class="btn btn-outline-warning"
+                                  href="{{ path('admin_product_edit', { 'id': product.id }) }}">Изменить</a>
+                            </p>
+                        {% endif %}
 
-                    <h2>Вам может понравиться:</h2>
-                    <div class="row">
-                        {% for recomend in recomend %}
-                            <div class="col">
-                                <p>
-                                    <a href="{{ path('shop_product', {id: recomend.id}) }}">
-                                        <img class="rounded"
-                                             src="{{ asset(['img/products/', recomend.path]|join) }}"
-                                             alt="Generic placeholder image" width="70" height="70">
-                                    </a>
-                                </p>
-                                <h3>{{ recomend.name }}.</h3>
-                                <p>Цена: {{ recomend.shopPrice }} руб.</p>
-                            </div>
-                        {% endfor %}
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <a class="like"
+                               id="like"
+                               data-id="{{ product.id }}"
+                               data-author="{{ app.user.id }}"
+                               data-url="{{ path('shop_like') }}"
+                               role="button"><img class="icon" src="{{ asset('img/icons/hands.svg') }}"
+                                                  alt="Лайк"
+                                                  width="50" height="50"></a>
+
+                            {{ like }}
+
+                            <a class="like"
+                               id="dislike"
+                               data-id="{{ product.id }}"
+                               data-author="{{ app.user.id }}"
+                               data-url="{{ path('shop_like') }}"
+                               role="button"><img class="icon"
+                                                  src="{{ asset('img/icons/dishands.svg') }}"
+                                                  alt="Дизлайк"
+                                                  width="50" height="50"></a>
+
+                            <div class="btn" id="content"></div>
+
+                        {% else %}
+                            Что бы оценить товар, Вам необходимо авторизоваться!
+                        {% endif %}
+
+
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <script>
+                                const messages = document.getElementById('content');
+                                like.onclick = function () {
+                                    const xhr = new XMLHttpRequest();
+                                    url = '/product/like';
+                                    var formData = new FormData(document.forms.person);
+                                    formData.append("id", "{{ product.id }}");
+                                    formData.append("author", "{{ app.user.id }}");
+                                    formData.append("likes", "1");
+                                    xhr.open("POST", url, true);
+                                    xhr.onload = function () {
+                                        if (xhr.readyState !== 4) return;
+                                        messages.innerHTML = this.responseText;
+                                        setTimeout(function () {
+                                            messages.innerHTML = '';
+                                        }, 3000);
+                                    };
+                                    xhr.send(formData);
+                                };
+                                dislike.onclick = function () {
+                                    const xhr = new XMLHttpRequest();
+                                    url = '/product/like';
+                                    var formData = new FormData(document.forms.person);
+                                    formData.append("id", "{{ product.id }}");
+                                    formData.append("author", "{{ app.user.id }}");
+                                    formData.append("likes", "0");
+                                    xhr.open("POST", url, true);
+                                    xhr.onload = function () {
+                                        if (xhr.readyState !== 4) return;
+                                        messages.innerHTML = this.responseText;
+                                        setTimeout(function () {
+                                            messages.innerHTML = '';
+                                        }, 3000);
+                                    };
+                                    xhr.send(formData);
+
+                                }
+                            </script>
+                        {% endif %}
+
+                        <h2>Недавно просмотренные:</h2>
+                        <div class="row">
+                            {% for data in data %}
+                                <div class="col">
+                                    <p>
+                                        <a href="{{ path('shop_product', {id: data.id}) }}">
+                                            <img class="rounded"
+                                                 src="{{ asset(['img/products/', data.path]|join) }}"
+                                                 alt="Generic placeholder image" width="70" height="70">
+                                        </a>
+                                    </p>
+                                    <h3>{{ data.name }}.</h3>
+                                    <p>Цена: {{ data.shopPrice }} руб.</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <h2>Вам может понравиться:</h2>
+                        <div class="row">
+                            {% for recomend in recomend %}
+                                <div class="col">
+                                    <p>
+                                        <a href="{{ path('shop_product', {id: recomend.id}) }}">
+                                            <img class="rounded"
+                                                 src="{{ asset(['img/products/', recomend.path]|join) }}"
+                                                 alt="Generic placeholder image" width="70" height="70">
+                                        </a>
+                                    </p>
+                                    <h3>{{ recomend.name }}.</h3>
+                                    <p>Цена: {{ recomend.shopPrice }} руб.</p>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
+        <script type="text/javascript">
+            if ($(window).width() >= '768'){
+            var navbar = $('.navigation');
+            var wrapper = $('.wrap');
+            $(window).scroll(function () {
+                var nsc = $(document).scrollTop();
+                var bp1 = wrapper.offset().top;
+                var bp2 = bp1 + wrapper.outerHeight() - $(window).height();
+                if (nsc > bp1) {
+                    navbar.css('position', 'fixed');
+                    navbar.css('margin-top', '70px');
+                    navbar.css('top', bp2 + 10);
+                }
+                else {
+                    navbar.css('position', 'absolute');
+                    navbar.css('margin-top', '50px');
+                }
+                if (nsc > bp2) {
+                    navbar.css('top', bp2 - nsc);
+                }
+                else {
+                    navbar.css('top', '0');
+                }
+            })};
+        </script>
 
         <div class="card border-success mb-3" style="max-width: 100rem;">
             <div class="card-header bg-transparent border-success"><h2>Отзывы</h2></div>

@@ -108,7 +108,7 @@ snc_redis:
 knp_snappy:
     pdf:
         enabled:    true
-        binary:     /usr/local/bin/wkhtmltopdf
+        binary:     /usr/local/bin/wkhtmltopdf #xvfb-run /usr/bin/wkhtmltopdf #/usr/local/bin/wkhtmltopdf
         options:    []
     image:
         enabled:    true
