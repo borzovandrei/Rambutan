@@ -15,11 +15,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 class PageController extends Controller
 {
@@ -37,7 +37,24 @@ class PageController extends Controller
         }
         if ($data !== null) {
             var_dump($data);
-            $this->regVK($data["response"][0], null);
+            $this->regVK($data["response"][0]);
+
+            $em = $this->getDoctrine()->getManager();
+            $user = $em->getRepository('ShopBundle:Users')->findOneBy(['username'=>$data["response"][0]["uid"]]);
+            $token = new UsernamePasswordToken(
+                $user,
+                null,
+                'vk',
+                $user->getRoles()
+            );
+
+            $this->get("security.token_storage")->setToken($token);
+            $request->getSession()->set('_security_vk', serialize($token));
+
+            $event = new InteractiveLoginEvent($request, $token);
+            $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
+
+
             return $this->redirectToRoute("shop_room");
         }
 
@@ -64,7 +81,7 @@ class PageController extends Controller
     }
 
     //метод вк_регистрации
-    private function regVK($data, Request $request)
+    private function regVK($data)
     {
         $em = $this->getDoctrine()->getManager();
         $username = 'vk' . $data["uid"];
@@ -101,16 +118,6 @@ class PageController extends Controller
             $em->persist($user);
             $em->flush();
 
-
-            $token =new UsernamePasswordToken(
-                $user->getUsername(),
-                $user->getPassword(),
-                'social_network',
-                $user->getRoles()
-            );
-
-            $this->get("security.token_storage")->setToken($token);
-            $request->getSession()->set('_security_secured_area', serialize($token));
         }
 
 
@@ -160,8 +167,24 @@ class PageController extends Controller
     //О компании
     public function aboutAction(Request $request)
     {
-        $feedback = new Feedback();
+//
+//        $em = $this->getDoctrine()->getManager();
+//        $user = $em->getRepository('ShopBundle:Users')->find(1);
+//        $token = new UsernamePasswordToken(
+//            $user,
+//            null,
+//            'vk',
+//            $user->getRoles()
+//        );
+//
+//        $this->get("security.token_storage")->setToken($token);
+//        $request->getSession()->set('_security_vk', serialize($token));
+//
+//        $event = new InteractiveLoginEvent($request, $token);
+//        $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
 
+
+        $feedback = new Feedback();
         $form = $this->createForm(EmileType::class, $feedback);
 
         if ($request->isMethod($request::METHOD_POST)) {
