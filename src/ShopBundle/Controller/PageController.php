@@ -15,6 +15,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Symfony\Component\Security\Core\Security;
 
@@ -34,7 +37,7 @@ class PageController extends Controller
         }
         if ($data !== null) {
             var_dump($data);
-            $this->regVK($data["response"][0]);
+            $this->regVK($data["response"][0], null);
             return $this->redirectToRoute("shop_room");
         }
 
@@ -61,7 +64,7 @@ class PageController extends Controller
     }
 
     //метод вк_регистрации
-    private function regVK($data)
+    private function regVK($data, Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         $username = 'vk' . $data["uid"];
@@ -97,6 +100,17 @@ class PageController extends Controller
 
             $em->persist($user);
             $em->flush();
+
+
+            $token =new UsernamePasswordToken(
+                $user->getUsername(),
+                $user->getPassword(),
+                'social_network',
+                $user->getRoles()
+            );
+
+            $this->get("security.token_storage")->setToken($token);
+            $request->getSession()->set('_security_secured_area', serialize($token));
         }
 
 
