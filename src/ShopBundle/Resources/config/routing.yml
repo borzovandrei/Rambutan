@@ -82,6 +82,12 @@ shop_reg:
     requirements:
          methods:  GET
 
+shop_reg_vk:
+    path:   /reg/vk
+    defaults: { _controller: ShopBundle:Page:regVk }
+    requirements:
+         methods:  GET
+
 ############################################################################################################
 
 _security_login:
@@ -181,6 +187,12 @@ room_edit:
 room_edit_pass:
     path:  /room/edit/pass
     defaults: { _controller: ShopBundle:Page:room_edit_pass }
+    requirements:
+        methods:  POST
+
+room_edit_img:
+    path:  /room/edit/img
+    defaults: { _controller: ShopBundle:Page:room_edit_img }
     requirements:
         methods:  POST
 

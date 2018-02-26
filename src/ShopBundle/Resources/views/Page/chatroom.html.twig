@@ -60,7 +60,7 @@
 
                     var xhr = new XMLHttpRequest();
                     var timestamp = (new Date()).getTime();
-                    url = 'http://localhost:8008/sub/' + {{ id }} +"?&v=" + timestamp;
+                    url = 'http://rambutan.ml/sub/' + {{ id }} +"?&v=" + timestamp;
                     xhr.open("GET", url, true);
                     xhr.onload = function () {
                         var date = new Date();

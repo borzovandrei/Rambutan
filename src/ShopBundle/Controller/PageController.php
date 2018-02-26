@@ -24,9 +24,20 @@ class PageController extends Controller
     //метод авторизазии
     public function loginAction(Request $request)
     {
-        $session = $request->getSession();
-        $vk = $this->getParameter('vk_id');
-        dump($vk);
+        $token = null;
+        $data = null;
+        if ($request->get("code") !== null) {
+            $token = json_decode(file_get_contents('https://oauth.vk.com/access_token?client_id=' . $this->getParameter('vk_id') . '&display=page&redirect_uri=' . $this->getParameter('vk_url') . '&client_secret=' . $this->getParameter('vk_secret') . '&code=' . $_GET["code"]), true);
+        }
+        if ($token !== null) {
+            $data = json_decode(file_get_contents('https://api.vk.com/method/users.get?user_id=' . $token['user_id'] . '&access_token=' . $token['access_token'] . '&fields=uid,sex,bdate,city,nickname,sex'), true);
+        }
+        if ($data !== null) {
+            var_dump($data);
+            $this->regVK($data["response"][0]);
+            return $this->redirectToRoute("shop_room");
+        }
+
 
         if ($request->attributes->has(Security::AUTHENTICATION_ERROR)) {
             $error = $request->attributes->get(Security::AUTHENTICATION_ERROR);
@@ -47,6 +58,56 @@ class PageController extends Controller
         return $res;
 
 
+    }
+
+    //метод вк_регистрации
+    private function regVK($data)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $username = 'vk' . $data["uid"];
+        $find = $em->getRepository('ShopBundle:Users')->findBy(['username' => $username]);
+        dump($find);
+
+        if (!$find) {
+            $user = new Users();
+            dump($data);
+            if ($data["sex"] == 1) {
+                $data["sex"] = 2;
+            } else {
+                $data["sex"] = 1;
+            }
+            $sex = $em->getRepository('ShopBundle:Sex')->findOneBy(['id' => $data["sex"]]);
+            $role = $em->getRepository('ShopBundle:Role')->find(2);
+            $user->setAddress($data["city"])
+                ->setAge(new \DateTime($data["bdate"]))
+                ->setUsername('vk' . $data["uid"])
+                ->setFirstname($data["first_name"])
+                ->setLastname($data["last_name"])
+                ->setEmail('email@vk.com')
+                ->setPhone('000')
+                ->setSex($sex)
+                ->setPath('vk_user.png');
+
+            $user->setSalt(md5(time()));
+            $encoder = new MessageDigestPasswordEncoder('sha512', true, 10);
+            $password = $encoder->encodePassword($data["uid"], $user->getSalt());
+            $user->setPassword($password);
+            $user->getUserRoles()->add($role);
+
+
+            $em->persist($user);
+            $em->flush();
+        }
+
+
+        return true;
+//        return $this->redirectToRoute("shop_homepage");
+    }
+
+
+    public function regVkAction()
+    {
+        return $this->redirect("https://oauth.vk.com/authorize?client_id=6382685&display=page&redirect_uri=http://dev.rambutan.ml/login&response_type=code");
     }
 
 
@@ -174,6 +235,19 @@ class PageController extends Controller
         return new JsonResponse([
             'redirectLink' => $this->generateUrl('_security_logout')
         ], 200);
+    }
+
+
+    //редактировнаие изображеия
+    public function room_edit_imgAction(Request $request)
+    {
+        $user = $this->getUser();
+        var_dump("1231231");
+        $user->upload();
+        $em = $this->getDoctrine()->getManager();
+
+        return true;
+
     }
 
     //быстрый просмотр продуктов
@@ -438,7 +512,7 @@ class PageController extends Controller
             "message" => $message
         ];
 
-        $ch = curl_init('http://localhost:8008/pub?id=' . $chatRoom->getIdRoom());
+        $ch = curl_init('http://rambutan.ml/pub?id=' . $chatRoom->getIdRoom());
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));

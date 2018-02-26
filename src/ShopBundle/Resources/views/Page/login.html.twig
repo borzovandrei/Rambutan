@@ -20,9 +20,6 @@
                 {% endif %}
 
 
-                <a href="https://oauth.vk.com/authorize?client_id=6382269&display=page&redirect_uri=https://rambutan.ml/login&response_type=code"
-                   target="_blank">ВК</a>
-
 
                 <form class="form-signin" action="{{ path('_security_check') }}" method="POST">
                     <h2 class="display-4 ">Пожалуйста, авторизуйтесь</h2>
@@ -38,9 +35,11 @@
                             <input type="checkbox" value="remember-me"> Запомнить меня
                         </label>
                     </div>
+                    <button class="btn btn-lg btn-block btn-success" type="submit" name="login">Войти</button>
                     <input class="btn btn-lg btn-success btn-block" type="button" value="Регистрация"
                            onClick='location.href="{{ path('shop_reg') }}"'>
-                    <button class="btn btn-lg btn-block btn-success" type="submit" name="login">Войти</button>
+                    <input class="btn btn-lg btn-success btn-block" type="button" value="Или войдите через ВКонтакте"
+                           onClick='location.href="{{ path('shop_reg_vk') }}"'>
                 </form>
             {% endif %}
         </div>

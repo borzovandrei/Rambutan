@@ -9,7 +9,8 @@
     {% block stylesheets %}
         <link href='http://fonts.googleapis.com/css?family=Irish+Grover' rel='stylesheet' type='text/css'>
         <link href='http://fonts.googleapis.com/css?family=La+Belle+Aurore' rel='stylesheet' type='text/css'>
-        <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js'></script>
+        <script type='text/javascript'
+                src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js'></script>
         <script
                 src="https://code.jquery.com/jquery-3.2.1.min.js"
                 integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -49,9 +50,9 @@
                             <a class="nav-link" href="{{ path('shop_room') }}">
                                 <img class="icons"
                                         {% if is_granted('ROLE_MANAGER') %}
-                                     src="{{ asset('img/icons/profile2.svg') }}"
-                                     {% elseif  is_granted('ROLE_USER') %}
-                                         src="{{ asset('img/icons/profile1.svg') }}"
+                                            src="{{ asset('img/icons/profile2.svg') }}"
+                                        {% elseif  is_granted('ROLE_USER') %}
+                                            src="{{ asset('img/icons/profile1.svg') }}"
                                         {% endif %}
                                      alt="Личный кабинет"
                                      width="30" height="30">
@@ -107,7 +108,8 @@
                       method="get"
                       action="{{ path("shop_search", {'search': app.request.query.get('search')}) }}"
                       role="search">
-                    <input class="form-control mr-sm-2" type="text" name="search" placeholder="Яблоки" aria-label="Search">
+                    <input class="form-control mr-sm-2" type="text" name="search" placeholder="Яблоки"
+                           aria-label="Search">
                     <button class="btn btn-success my-2 my-sm-0" type="submit">Поиск</button>
                 </form>
             </div>

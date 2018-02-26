@@ -464,4 +464,15 @@ class Users implements UserInterface
     }
 
 
+    /**
+     * @param mixed $path
+     * @return $this
+     */
+    public function setPath($path)
+    {
+        $this->path = $path;
+        return $this;
+    }
+
+
 }

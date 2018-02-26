@@ -222,16 +222,16 @@
                         sum = Array.from(Object.values(res));
                         arr = [];
                         for (var i in sum) {
-                            obj = {'sum': sum[i] +' шт.', 'prod': prod[i]};
+                            obj = {'sum': sum[i] + ' шт.', 'prod': prod[i]};
                             arr.push(obj);
                         }
                         if (arr.length == 0) {
                             var viewModel = {
                                 people: ko.observableArray([
-                                    { sum: "в данном заказе нет товаров.", prod: "Упс.. 404"}
+                                    {sum: "в данном заказе нет товаров.", prod: "Упс.. 404"}
                                 ])
                             }
-                        }else{
+                        } else {
                             var viewModel = {
                                 people: ko.observableArray(arr)
                             };
@@ -289,6 +289,29 @@
                     }
                 )
             }
+
+        }
+
+
+        function remove_img() {
+            img = document.getElementById('InputFile');
+
+            console.log(img);
+            const myRequest = new Request("{{ path('room_edit_img') }}", {
+                method: 'POST', body: JSON.stringify({img: img}),
+                credentials: 'include'
+            });
+            fetch(myRequest).then(
+                (response) => {
+                    {#response.json().then((res) => {#}
+                        {#console.log(res);#}
+                        {#if (res.redirectLink !== undefined) {#}
+                            {#location.href = res.redirectLink;#}
+                        {#}#}
+                    {#});#}
+                }
+            )
+
 
         }
 
