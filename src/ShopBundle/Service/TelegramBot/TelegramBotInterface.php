@@ -7,7 +7,7 @@ interface TelegramBotInterface {
 
 
 
-    public function listen();
+    public function listen($token);
 
     public function start($text, $fullname);
 

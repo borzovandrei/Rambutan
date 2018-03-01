@@ -75,7 +75,7 @@ class PageController extends Controller
         ]);
 
         if (isset($_GET["user"])) {
-            $res->headers->setCookie(new Cookie("name", $_GET["user"], Ctime() + 3600));
+            $res->headers->setCookie(new Cookie("name", $_GET["user"], time() + 3600));
         }
 
         return $res;

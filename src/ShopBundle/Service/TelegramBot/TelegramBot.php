@@ -35,12 +35,12 @@ class TelegramBot implements TelegramBotInterface
         $this->entityManager = $entityManager;
     }
 
-    public function listen()
+    public function listen($token)
     {
 
 
         $last_update = $this->redisClient->get("telegram");
-        $url = 'https://api.telegram.org/bot429703583:AAEToCrYueFNrgRAdX1NyP8TYJvt5QQDrEY/getUpdates?offset=' . $last_update;
+        $url = 'https://api.telegram.org/bot'.$token.'/getUpdates?offset=' . $last_update;
         set_time_limit(0);
 
         while (true) {
