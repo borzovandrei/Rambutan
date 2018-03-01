@@ -16,6 +16,7 @@
                 <div class="col-lg-6 col-md-6">
                     <div class="container">
                         <img class="rounded"
+                             id ="avatar"
                              src="{{ asset(['img/users/', user.path]|join) }}"
                              alt="Изображение не найдено" width="340" height="340">
                     </div>
@@ -59,7 +60,7 @@
                             </tr>
                             </tbody>
                         </table>
-                        <div id="but" onclick="remove_text()" class="btn btn-outline-success btn-lg btn-block"
+                        <div id="but" onclick="remove_text()" class="btn btn-lg btn-outline-success  btn-block"
                              role="button">Изменить
                         </div>
                     </div>
@@ -293,26 +294,30 @@
         }
 
 
-        function remove_img() {
-            img = document.getElementById('InputFile');
 
-            console.log(img);
+        function remove_img() {
+            img = document.getElementById('InputFile').files[0];
+
+            var formData = new FormData();
+            formData.append('photo', img);
+
             const myRequest = new Request("{{ path('room_edit_img') }}", {
-                method: 'POST', body: JSON.stringify({img: img}),
+                method: 'POST',
+                body: formData,
                 credentials: 'include'
             });
+
             fetch(myRequest).then(
                 (response) => {
-                    {#response.json().then((res) => {#}
-                        {#console.log(res);#}
-                        {#if (res.redirectLink !== undefined) {#}
-                            {#location.href = res.redirectLink;#}
-                        {#}#}
-                    {#});#}
+                    image = document.getElementById('InputFile');
+                    var fReader = new FileReader();
+                    fReader.readAsDataURL(image.files[0]);
+                    fReader.onloadend = function(event){
+                        var img = document.getElementById("avatar");
+                        img.src = event.target.result;
+                    }
                 }
             )
-
-
         }
 
 
@@ -357,7 +362,7 @@
                 '<tr><th scope="row">Пол:</th><td>' + data.sex + '</td></tr><tr>' +
                 '<th scope="row">Адрес:</th><td>' + data.address + '</td></tr>' +
                 '</tbody></table>' +
-                '<div id="but" onclick="remove_text()" class="btn btn-outline-success btn-lg btn-block"role="button">Изменить</div>';
+                '<div id="but" onclick="remove_text()" class="btn btn-lg btn-success btn-block"role="button">Изменить</div>';
 
         }
     </script>

@@ -8,11 +8,10 @@ $('.btn-minus').click(minus);
 $('.btn-del').click(del);
 
 
-
 function plus() {
     var num = $(this).attr('data-id');
-    var sum = $('.sum'+num).attr('sum-id');
-    document.getElementById('id'+sum).innerHTML++;
+    var sum = $('.sum' + num).attr('sum-id');
+    document.getElementById('id' + sum).innerHTML++;
 
     var id = $(this).attr('data-id');
     var sum = $(this).attr('data-sum');
@@ -28,6 +27,7 @@ function plus() {
         prace: priceprod
     });
 
+
     postCart(url);
     saveCart();
     showMiniCart();
@@ -36,32 +36,33 @@ function plus() {
 
 function minus() {
     var num = $(this).attr('data-id');
-    var sum = $('.sum'+num).attr('sum-id');
+    var sum = $('.sum' + num).attr('sum-id');
 
-    console.log(document.getElementById('id'+sum));
-    if (document.getElementById('id'+sum).innerHTML > 0){
-        document.getElementById('id'+sum).innerHTML--;
+    if (document.getElementById('id' + sum).innerHTML > 0) {
+        document.getElementById('id' + sum).innerHTML--;
+        var id = $(this).attr('data-id');
+        var priceprod = $(this).attr('data-price');
+        var url = $(this).data('url');
+        price += -priceprod;
+        cart.products.shift();
+        cart.products.push({
+            id: id,
+            prace: priceprod
+        });
+        delProductById(url, id);
+        saveCart();
+        showMiniCart();
     }
-    var id = $(this).attr('data-id');
-    var priceprod = $(this).attr('data-price');
-    var url = $(this).data('url');
-    price += -priceprod;
-    cart.products.shift();
-    cart.products.push({
-        id: id,
-        prace: priceprod
-    });
 
-    delProductById(url,id);
-    saveCart();
-    showMiniCart();
+
+
 }
 
 function del() {
     var num = $(this).attr('data-id');
-    var sum = $('.sum'+num).attr('sum-id');
-    var prod = document.getElementById('id'+sum).innerHTML;
-    document.getElementById('id'+sum).innerHTML=0;
+    var sum = $('.sum' + num).attr('sum-id');
+    var prod = document.getElementById('id' + sum).innerHTML;
+    document.getElementById('id' + sum).innerHTML = 0;
 
     var id = $(this).attr('data-id');
     var priceprod = $(this).attr('data-price'); //реализовать изменение цен
@@ -74,7 +75,7 @@ function del() {
         prace: priceprod
     });
 
-    delProductById(url,id);
+    delProductById(url, id);
     saveCart();
     showMiniCart();
 }

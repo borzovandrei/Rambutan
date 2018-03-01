@@ -11,6 +11,7 @@
             </h4>
             {% for chatroom in chatroom %}
 
+
                 <input class="btn btn-lg btn-success btn-outline-success btn-block" type="button" value="{{ chatroom.name }}"
                        onClick='location.href="{{ path('shop_chat', { 'id': chatroom.idRoom }) }}"'>
 

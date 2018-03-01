@@ -38,13 +38,6 @@ class TelegramBot implements TelegramBotInterface
     public function listen()
     {
 
-//        foreach ($results as $result) {
-//            if ($result instanceof Callback) {
-//                $callbackRunner->run($result);
-//            }
-//            if ($result instanceof Message) {
-//            }
-//        }
 
         $last_update = $this->redisClient->get("telegram");
         $url = 'https://api.telegram.org/bot429703583:AAEToCrYueFNrgRAdX1NyP8TYJvt5QQDrEY/getUpdates?offset=' . $last_update;

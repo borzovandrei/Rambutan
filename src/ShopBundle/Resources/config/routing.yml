@@ -99,6 +99,7 @@ _security_check:
 
 _security_logout:
     path:  /logout
+    defaults: { _controller: ShopBundle:Page:logout }
 
 admin_home:
     path:  /admin

@@ -15,7 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Symfony\Component\Security\Core\Security;
@@ -34,13 +33,17 @@ class PageController extends Controller
         }
         if ($token !== null) {
             $data = json_decode(file_get_contents('https://api.vk.com/method/users.get?user_id=' . $token['user_id'] . '&access_token=' . $token['access_token'] . '&fields=uid,sex,bdate,city,nickname,sex'), true);
+            $city = json_decode(file_get_contents('https://api.vk.com/method/database.getCitiesById?city_ids=' . $data["response"][0]["city"]), true);
+            $data["response"][0]["city"] = $city["name"];
+            dump($data);
         }
         if ($data !== null) {
             var_dump($data);
             $this->regVK($data["response"][0]);
 
+            //аунтетификация пользователя
             $em = $this->getDoctrine()->getManager();
-            $user = $em->getRepository('ShopBundle:Users')->findOneBy(['username'=>$data["response"][0]["uid"]]);
+            $user = $em->getRepository('ShopBundle:Users')->findOneBy(['username' => 'vk' . $data["response"][0]["uid"]]);
             $token = new UsernamePasswordToken(
                 $user,
                 null,
@@ -86,7 +89,7 @@ class PageController extends Controller
         $em = $this->getDoctrine()->getManager();
         $username = 'vk' . $data["uid"];
         $find = $em->getRepository('ShopBundle:Users')->findBy(['username' => $username]);
-        dump($find);
+
 
         if (!$find) {
             $user = new Users();
@@ -120,9 +123,7 @@ class PageController extends Controller
 
         }
 
-
         return true;
-//        return $this->redirectToRoute("shop_homepage");
     }
 
 
@@ -167,21 +168,18 @@ class PageController extends Controller
     //О компании
     public function aboutAction(Request $request)
     {
-//
-//        $em = $this->getDoctrine()->getManager();
-//        $user = $em->getRepository('ShopBundle:Users')->find(1);
-//        $token = new UsernamePasswordToken(
-//            $user,
-//            null,
-//            'vk',
-//            $user->getRoles()
-//        );
-//
-//        $this->get("security.token_storage")->setToken($token);
-//        $request->getSession()->set('_security_vk', serialize($token));
-//
-//        $event = new InteractiveLoginEvent($request, $token);
-//        $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
+
+        dump($this->getParameter('vk_url'));
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository('ShopBundle:Users')->find(3);
+
+        $user->setSalt(md5(time()));
+        $encoder = new MessageDigestPasswordEncoder('sha512', true, 10);
+        $password = $encoder->encodePassword(1234, $user->getSalt());
+        $user->setPassword($password);
+
+        $em->persist($user);
+        $em->flush();
 
 
         $feedback = new Feedback();
@@ -228,6 +226,7 @@ class PageController extends Controller
     public function room_editAction(Request $request)
     {
         $data = json_decode($request->getContent(), true);
+        dump($data);
         $data = $data['data'];
 
         $em = $this->getDoctrine()->getManager();
@@ -279,11 +278,16 @@ class PageController extends Controller
     public function room_edit_imgAction(Request $request)
     {
         $user = $this->getUser();
-        var_dump("1231231");
+        dump($request);
+        dump($request->files->get('photo'));
+        $user->setFile($request->files->get('photo'));
+
         $user->upload();
         $em = $this->getDoctrine()->getManager();
+        $em->persist($user);
+        $em->flush();
 
-        return true;
+        return new JsonResponse(true, 200);
 
     }
 

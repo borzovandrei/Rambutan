@@ -8,11 +8,17 @@ $('.btn.btn-outline-success').on('click', addToCart);
 $('.btn-default.btn').on('click', delCart);
 $('#order_Оформить').on('click', delCart);
 
+var cost = document.cookie.replace(/(?:(?:^|.*;\s*)cost\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
 function addToCart() {
     var id = $(this).attr('data-id');
     var priceprod = $(this).attr('data-price');
     var url = $(this).data('url');
+
+    if (priceprod === undefined) {
+        return;
+    }
+
     price += +priceprod;
 
     cart.products.shift();
@@ -20,6 +26,7 @@ function addToCart() {
         id: id,
         prace: priceprod
     });
+
 
     postCart(url);
     saveCart();
@@ -29,38 +36,42 @@ function addToCart() {
 
 
 function saveCart() {
-    localStorage.setItem('cost', JSON.stringify(price.toFixed(2)));
+    document.cookie = "cost=" + price.toFixed(2)+"; path=/";
 }
 
 function loadCart() {
-    if (localStorage.getItem('cost')) {
-        if (localStorage.getItem('cost')==="NaN"){
-            cost=0
+    if (cost) {
+        if (cost === "NaN") {
+            cost = 0
         }
-        cost = JSON.parse(localStorage.getItem('cost'));
+
         price = +cost;
         showMiniCart();
+    } else {
+        price = 0;
+        showMiniCart();
     }
+
 }
 
 function delCart() {
-    if (localStorage.getItem('cost')) {
-        localStorage.setItem('cost', 0);
+    if (cost) {
+        document.cookie = "cost=0";
         showMiniCart();
     }
 }
 
 function showMiniCart() {
     var out = "Корзина";
-    if(JSON.parse(localStorage.getItem('cost')) === 0.00){
+    if (cost === 0.00) {
         out = 'Корзина';
-    }else if(JSON.parse(localStorage.getItem('cost')) === "NaN"){
+    } else if (cost === "NaN") {
         out = 'Корзина';
-    }else {
+    } else {
         out = 'В корзине: ' + price.toFixed(2) + 'руб.';
     }
     $('.nav-link.disabled').html(out);
-    $('#sum_cart').html(price.toFixed(2)+ 'руб.');
+    $('#sum_cart').html(price.toFixed(2) + 'руб.');
 }
 
 
@@ -88,8 +99,6 @@ function delProductById(url, id) {
 }
 
 
-
 $(document).ready(function () {
     loadCart();
-    showMiniCart();
 });
