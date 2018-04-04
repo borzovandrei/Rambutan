@@ -576,6 +576,8 @@ class TelegramBot implements TelegramBotInterface
         $order->setEmail($redis['email']);
         $order->setPhone($redis['phone']);
         $order->setAddress($redis['address']);
+        $user = $this->entityManager->getRepository('ShopBundle:Users')->find($redis['id']);
+        $order->setUser($user);
         $status = $this->entityManager->getRepository('ShopBundle:StatusOrder')->find(1);
         $order->setStatus($status);
         $order->setDate(new \DateTime(date("d-m-Y G:i:s")));

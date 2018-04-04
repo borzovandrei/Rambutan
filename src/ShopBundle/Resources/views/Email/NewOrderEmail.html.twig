@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html" ; charset=utf-8"/>
+
+    <link href='http://fonts.googleapis.com/css?family=Irish+Grover' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=La+Belle+Aurore' rel='stylesheet' type='text/css'>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+            integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
+          crossorigin="anonymous">
+
+</head>
+<body>
+<div class="container jumbotron border border-success ">
+    <div class="container">
+        <h3 class="display-4">Доброго времени суток, {{ enquiry.firstname }} {{ enquiry.lastname }}!</h3>
+
+        <h4>Вы сделали заказ на сумму {{ enquiry.price }}  в {{ "now" | date("Y-m-d H:i") }}"</h4>
+        <a href="http://rambutan.ml/login"> Войдите в личный кабинет</a>, что бы увидеть подробности.
+
+    </div>
+</div>
+<div class="container">
+    <img src="{{ asset('img/logo.png') }}" width="30" height="30">
+    С уважением, Rambutan - online shop
+    +7(800)555-35-35
+</div>
+</body>

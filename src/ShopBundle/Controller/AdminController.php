@@ -240,9 +240,8 @@ class AdminController extends Controller
         }
 
         $order->setStatus($status);
-
         $message = \Swift_Message::newInstance()
-            ->setSubject('Rambutan orders')
+            ->setSubject('Rambutan (статус заказа)')
             ->setFrom('order@rambutan.com')
             ->setTo($order->getEmail())
             ->setBody($this->renderView('ShopBundle:Email:statusEmail.html.twig', array('enquiry' => $order)), 'text/html');

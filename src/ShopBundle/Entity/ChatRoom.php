@@ -1,6 +1,7 @@
 <?php
 namespace ShopBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -31,6 +32,24 @@ class ChatRoom
      */
     protected $chat;
 
+
+    /**
+     * @ORM\OneToOne(targetEntity="Users", inversedBy="chatroom")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    protected $id_user;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Role")
+     * @ORM\JoinTable(name="chatroom_role",
+     *     joinColumns={@ORM\JoinColumn(name="chatroom_id", referencedColumnName="id_room")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="role_id", referencedColumnName="id")}
+     * )
+     *
+     * @var ArrayCollection $chatroomRoles
+     */
+    protected $chatroomRoles;
+
     /**
      * @return mixed
      */
@@ -45,6 +64,22 @@ class ChatRoom
     public function setChat($chat)
     {
         $this->chat = $chat;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIdUser()
+    {
+        return $this->id_user;
+    }
+
+    /**
+     * @param mixed $id_user
+     */
+    public function setIdUser($id_user)
+    {
+        $this->id_user = $id_user;
     }
 
 

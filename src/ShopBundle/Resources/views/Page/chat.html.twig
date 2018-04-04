@@ -6,18 +6,38 @@
 
     <div class="container jumbotron border border-success ">
         <div class="container">
-            <h4 class="display-5">
+            <h2 class="display-5">
                 Добро пожаловать в чат, {{ app.user.username }}!
-            </h4>
-            {% for chatroom in chatroom %}
+            </h2>
+            {% if is_granted('ROLE_MANAGER') %}
+                <div class="row">
+                    <div class="col">
+                        <h4>Рабочие чаты:</h4>
+                        {% for chatroom in chatroom_manager %}
+                            <input class="btn btn-lg btn-success btn-outline-success btn-block" type="button"
+                                   value="{{ chatroom.name }}"
+                                   onClick='location.href="{{ path('shop_chat', { 'id': chatroom.idRoom }) }}"'>
+                        {% endfor %}
+                    </div>
+                    <div class="col">
+                        <h4>Пользовательские чаты:</h4>
+                        {% for chatroom in chatroom_user %}
+                            <input class="btn btn-lg btn-success btn-outline-success btn-block" type="button"
+                                   value="{{ chatroom.name }}"
+                                   onClick='location.href="{{ path('shop_chat', { 'id': chatroom.idRoom }) }}"'>
+                        {% endfor %}
+                    </div>
+                </div>
 
-
-                <input class="btn btn-lg btn-success btn-outline-success btn-block" type="button" value="{{ chatroom.name }}"
-                       onClick='location.href="{{ path('shop_chat', { 'id': chatroom.idRoom }) }}"'>
 
             {% else %}
                 <p>ВСКОРЕ ВЫ СМОЖЕТЕ СОЗДАВАТЬ ЧАТЫ</p>
-            {% endfor %}
+
+                <input class="btn btn-lg btn-success btn-outline-success btn-block" type="button"
+                       value="Свяжитесь с нами."
+                       onClick='location.href="{{ path('shop_chat', { 'id': path.idRoom }) }}"'>
+            {% endif %}
+
 
         </div>
     </div>

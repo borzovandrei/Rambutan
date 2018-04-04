@@ -92,6 +92,12 @@ class Users implements UserInterface
 
 
     /**
+     * @ORM\OneToOne(targetEntity="ChatRoom", mappedBy="id_user")
+     */
+    protected $chatroom;
+
+
+    /**
      * @ORM\OneToMany(targetEntity="Likes", mappedBy="author")
      */
     protected $likes;

@@ -239,6 +239,7 @@ class DefaultController extends Controller
             $red['user']['phone'] = $user->getPhone();
             $red['user']['email'] = $user->getEmail();
             $red['user']['address'] = $user->getAddress();
+            $red['user']['id'] = $user->getId();
             $red['sumCart'] = 0;
             $red['cart']['prod0'] = null;
             $red['order'] = null;

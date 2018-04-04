@@ -486,7 +486,15 @@ class PageController extends Controller
                 }
 
 //                $em->flush();
-//
+
+                //Отправка письма
+                $message = \Swift_Message::newInstance()
+                    ->setSubject('Rambutan (новый заказ)')
+                    ->setFrom('order@rambutan.com')
+                    ->setTo($order->getEmail())
+                    ->setBody($this->renderView('ShopBundle:Email:NewOrderEmail.html.twig', array('enquiry' => $order)), 'text/html');
+                $this->get('mailer')->send($message);
+
                 //очистка редиса
                 $redis = $this->get('snc_redis.default');
                 $redis->del("cart_{$cardId}", '*');
@@ -497,7 +505,7 @@ class PageController extends Controller
                 if (!$user) {
                     return $this->redirectToRoute("shop_homepage");
                 } else {
-                    $this->get('session')->getFlashBag()->add('room_order', 'Спасибо, что вы выбрали нас! Чек о покупке Вы сможете найти на странице заказа.');
+                    $this->get('session')->getFlashBag()->add('room_order', 'Спасибо, что вы выбрали нас! На Вашу почту было отправлено письмо. Чек о покупке Вы сможете найти на странице заказа.');
                     return $this->redirectToRoute("shop_room");
                 }
 
@@ -516,11 +524,31 @@ class PageController extends Controller
     public function chatAction()
     {
         $em = $this->getDoctrine()->getManager();
-        $chatroom = $em->getRepository('ShopBundle:ChatRoom')->findAll();
+        $user_id = $this->getUser()->getId();
+
+        if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_MANAGER')) {
+            $chatroom = $em->getRepository('ShopBundle:ChatRoom')->findOneBy(['id_user'=>$user_id]);
+            if (!$chatroom){
+                $chatroom=new ChatRoom();
+                $chatroom->setIdUser($this->getUser());
+                $chatroom->setName($this->getUser()->getUsername().$this->getUser()->getId());
+                $em->persist($chatroom);
+                $em->flush();
+            }
+        }
+
+        $path = $em->getRepository('ShopBundle:ChatRoom')->findOneBy(['id_user'=>$user_id]);
+
+        $chatroom_manager = $em->getRepository('ShopBundle:ChatRoom')->findBy(['id_user'=>null]);
+        $chatroom_user = $em->getRepository('ShopBundle:ChatRoom')->findByNot('id_user', !null);
+
         return $this->render('ShopBundle:Page:chat.html.twig', [
-            'chatroom' => $chatroom,
+            'chatroom_user' => $chatroom_user,
+            'chatroom_manager' => $chatroom_manager,
+            'path' => $path,
         ]);
     }
+
 
 
     //вывод сообщений в определенной комнате
