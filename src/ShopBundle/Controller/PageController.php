@@ -33,9 +33,9 @@ class PageController extends Controller
         }
         if ($token !== null) {
             $data = json_decode(file_get_contents('https://api.vk.com/method/users.get?user_id=' . $token['user_id'] . '&access_token=' . $token['access_token'] . '&fields=uid,sex,bdate,city,nickname,sex'), true);
-            $city = json_decode(file_get_contents('https://api.vk.com/method/database.getCitiesById?city_ids=' . $data["response"][0]["city"]), true);
-            $data["response"][0]["city"] = $city["name"];
-            dump($data);
+//            $city = json_decode(file_get_contents('https://api.vk.com/method/database.getCitiesById?city_ids=' . $data["response"][0]["city"]), true);
+//            $data["response"][0]["city"] = $city["name"];
+//            dump($data);
         }
         if ($data !== null) {
             var_dump($data);
