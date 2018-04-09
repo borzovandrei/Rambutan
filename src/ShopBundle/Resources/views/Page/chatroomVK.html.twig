@@ -34,7 +34,14 @@
 
         <div id="messages"></div>
 
+
+
         <form id="publish" class="form-inline ">
+            <label class="mr-sm-2" for="inlineFormCustomSelect">Получатель</label>
+            <select class="custom-select mr-sm-1" id="inlineFormCustomSelect">
+                <option selected>Выбирете получателя</option>
+                <option value="1">One</option>
+            </select>
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Ваше сообщение" name="message"/>
                 <input type="submit" class="btn btn-success" value="Отправить"/>
@@ -87,7 +94,9 @@
                     }
 
                     if (JSON.parse(this.responseText).message['service'] == 'vk') {
-                        document.cookie = "vk_id=" + JSON.parse(this.responseText).message['user_id'];
+                        var vk_id= JSON.parse(this.responseText).message['user_id'];
+                        document.cookie = "vk_id=" + vk_id;
+                        console.log(vk_id);
                     }
 
 
@@ -115,10 +124,5 @@
         </script>
 
     </div>
-    {% if is_granted('ROLE_MANAGER') %}
-        <p><a class="btn btn-outline-danger btn-lg btn-block"
-              href="{{ path('shop_chat_delete', { 'id': id }) }}">Удалить чат</a>
-        </p>
-    {% endif %}
     </div>
 {% endblock %}
