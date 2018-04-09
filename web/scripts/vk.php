@@ -44,7 +44,7 @@ function callback_handleEvent()
                 "message" => $message,
             ];
 
-            $ch = curl_init('http://rambutan.ml/pub?id=1');
+            $ch = curl_init('http://rambutan.ml/pub?id=8');
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));

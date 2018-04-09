@@ -149,6 +149,12 @@ shop_chat:
               methods:  GET
               id: \d+
 
+shop_chatVK:
+    path:  /admin/chatVK
+    defaults: { _controller: ShopBundle:Page:chatroomVK }
+    requirements:
+              methods:  GET
+
 
 shop_chat_delete:
     path:  /admin/chatroom/del/{id}

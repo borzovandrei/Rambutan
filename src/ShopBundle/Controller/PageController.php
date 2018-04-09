@@ -482,7 +482,7 @@ class PageController extends Controller
             if (!$chatroom){
                 $chatroom=new ChatRoom();
                 $chatroom->setIdUser($this->getUser());
-                $chatroom->setName($this->getUser()->getUsername().$this->getUser()->getId());
+                $chatroom->setName($this->getUser()->getUsername());
                 $em->persist($chatroom);
                 $em->flush();
             }
@@ -514,6 +514,22 @@ class PageController extends Controller
         return $this->render('ShopBundle:Page:chatroom.html.twig', [
             'chat' => $messages,
             'id' => $id,
+        ]);
+    }
+
+    //вывод сообщений в определенной комнате
+    public function chatroomVKAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $chat = $em->getRepository('ShopBundle:ChatRoom')->findOneBy(['name' => 'ВКонтакте']);
+        if (!$chat) {
+            throw $this->createNotFoundException('Данного чата не существует');
+        }
+        $messages = $em->getRepository('ShopBundle:Chat')->getChat($chat->getIdRoom());
+
+        return $this->render('ShopBundle:Page:chatroomVK.html.twig', [
+            'chat' => $messages,
+            'id' => $chat->getIdRoom(),
         ]);
     }
 

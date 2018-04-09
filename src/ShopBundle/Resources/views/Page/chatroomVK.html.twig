@@ -1,0 +1,124 @@
+{% extends 'ShopBundle:Default:index.html.twig' %}
+
+
+{% block title %}Чат{% endblock %}
+
+{% block body %}
+
+    <div class="container jumbotron border border-success ">
+        <imput class="container ">
+            <h3 class="display-4">Организационная подержка пользователей "ВКонтакте" от {{ app.user.username }}!</h3>
+
+
+
+            {% for chat in chat %}
+                <div
+                        {% if  chat.author  ==  app.user.username %}
+                        class="card border-primary mb-3 ml-auto" style="max-width: 20rem;" id="comment">
+                    {% else %}
+                        class="card border-danger mb-3" style="max-width: 20rem;"id="comment">
+                    {% endif %}
+                    <div class="card-header">{{ chat.date|date('d-m-Y h:m:s') }}</div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{ chat.author }}</h4>
+                        <p class="card-text">{{ chat.message }}</p>
+                    </div>
+                </div>
+            {% else %}
+                <p>Вы можете написать тут первым</p>
+            {% endfor %}
+
+
+            <imput class="username" id="usernames" name="{{ app.user.username }}"/>
+        </imput>
+
+        <div id="messages"></div>
+
+        <form id="publish" class="form-inline ">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Ваше сообщение" name="message"/>
+                <input type="submit" class="btn btn-success" value="Отправить"/>
+            </div>
+        </form>
+
+
+
+        <script>
+            const messages = document.getElementById('messages');
+
+            publish.onsubmit = function () {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", '/chat_send/{{ id }}', true);
+                xhr.onload = function () {
+                };
+
+                if (document.cookie.replace(/(?:(?:^|.*;\s*)vk_id\s*\=\s*([^;]*).*$)|^.*$/, "$1")){
+                    var id = document.cookie.replace(/(?:(?:^|.*;\s*)vk_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+                    console.log(1111111);
+                    xhr.send(JSON.stringify({message: this.elements.message.value, id: id}));
+                    this.elements.message.value = '';
+                    return false;
+                }
+
+
+
+                xhr.send(JSON.stringify({message: this.elements.message.value}));
+                this.elements.message.value = '';
+                return false;
+            };
+
+            subscribe();
+
+            function subscribe() {
+
+                var xhr = new XMLHttpRequest();
+                var timestamp = (new Date()).getTime();
+                url = 'http://rambutan.ml/sub/' + {{ id }} +"?&v=" + timestamp;
+                xhr.open("GET", url, true);
+                xhr.onload = function () {
+                    var date = new Date();
+                    var date_str = date.getDate() + "-" + (1 + date.getMonth()) + "-" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+
+
+                    if (JSON.parse(this.responseText).user_autor === '{{ app.user.username }}') {
+                        var writer = '<div  class="card border-primary mb-3 ml-auto" style="max-width: 20rem;" id="comment">';
+                    } else {
+                        var writer = '<div  class="card border-danger mb-3" style="max-width: 20rem;"id="comment">';
+                    }
+
+                    if (JSON.parse(this.responseText).message['service'] == 'vk') {
+                        document.cookie = "vk_id=" + JSON.parse(this.responseText).message['user_id'];
+                    }
+
+
+                    var msgs = document.createElement('div');
+
+                    msgs.innerHTML = writer +
+                        "<div class='card-header'>" + date_str + "</div><div class='card-body'>" +
+                        "<h4 class='card-title' >" + JSON.parse(this.responseText).user_autor + "</h4><p class='card-text'>" +
+                        JSON.parse(this.responseText).message['message'] +
+                        "</p></div></div>";
+
+
+                    messages.appendChild(msgs);
+
+                    subscribe();
+                };
+                xhr.onerror = xhr.onabort = function () {
+                    setTimeout(subscribe, 500);
+                };
+                xhr.send('');
+            }
+
+
+
+        </script>
+
+    </div>
+    {% if is_granted('ROLE_MANAGER') %}
+        <p><a class="btn btn-outline-danger btn-lg btn-block"
+              href="{{ path('shop_chat_delete', { 'id': id }) }}">Удалить чат</a>
+        </p>
+    {% endif %}
+    </div>
+{% endblock %}

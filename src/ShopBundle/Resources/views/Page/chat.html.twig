@@ -14,9 +14,15 @@
                     <div class="col">
                         <h4>Рабочие чаты:</h4>
                         {% for chatroom in chatroom_manager %}
-                            <input class="btn btn-lg btn-success btn-outline-success btn-block" type="button"
-                                   value="{{ chatroom.name }}"
-                                   onClick='location.href="{{ path('shop_chat', { 'id': chatroom.idRoom }) }}"'>
+                            {% if chatroom.name == 'ВКонтакте' %}
+                                <input class="btn btn-lg btn-primary btn-outline-primary btn-block" type="button"
+                                       value="{{ chatroom.name }}"
+                                       onClick='location.href="{{ path('shop_chatVK') }}"'>
+                            {% else %}
+                                <input class="btn btn-lg btn-success btn-outline-success btn-block" type="button"
+                                       value="{{ chatroom.name }}"
+                                       onClick='location.href="{{ path('shop_chat', { 'id': chatroom.idRoom }) }}"'>
+                            {% endif %}
                         {% endfor %}
                     </div>
                     <div class="col">
