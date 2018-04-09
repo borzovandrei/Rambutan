@@ -99,7 +99,6 @@ _security_check:
 
 _security_logout:
     path:  /logout
-    defaults: { _controller: ShopBundle:Page:logout }
 
 admin_home:
     path:  /admin
@@ -142,9 +141,18 @@ chat_room:
               methods:  GET
 
 
+
 shop_chat:
     path:  /chatroom/{id}
     defaults: { _controller: ShopBundle:Page:chatroom }
+    requirements:
+              methods:  GET
+              id: \d+
+
+
+shop_chat_delete:
+    path:  /admin/chatroom/del/{id}
+    defaults: { _controller: ShopBundle:Page:chatroomdelete }
     requirements:
               methods:  GET
               id: \d+

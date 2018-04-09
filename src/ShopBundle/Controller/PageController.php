@@ -15,10 +15,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 class PageController extends Controller
 {
@@ -33,31 +31,10 @@ class PageController extends Controller
         }
         if ($token !== null) {
             $data = json_decode(file_get_contents('https://api.vk.com/method/users.get?user_id=' . $token['user_id'] . '&access_token=' . $token['access_token'] . '&fields=uid,sex,bdate,city,nickname,sex'), true);
-            $city = json_decode(file_get_contents('https://api.vk.com/method/database.getCitiesById?city_ids=' . $data["response"][0]["city"]), true);
-            $data["response"][0]["city"] = $city["name"];
-            dump($data);
         }
         if ($data !== null) {
             var_dump($data);
             $this->regVK($data["response"][0]);
-
-            //аунтетификация пользователя
-            $em = $this->getDoctrine()->getManager();
-            $user = $em->getRepository('ShopBundle:Users')->findOneBy(['username' => 'vk' . $data["response"][0]["uid"]]);
-            $token = new UsernamePasswordToken(
-                $user,
-                null,
-                'vk',
-                $user->getRoles()
-            );
-
-            $this->get("security.token_storage")->setToken($token);
-            $request->getSession()->set('_security_vk', serialize($token));
-
-            $event = new InteractiveLoginEvent($request, $token);
-            $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
-
-
             return $this->redirectToRoute("shop_room");
         }
 
@@ -75,7 +52,7 @@ class PageController extends Controller
         ]);
 
         if (isset($_GET["user"])) {
-            $res->headers->setCookie(new Cookie("name", $_GET["user"], time() + 3600));
+            $res->headers->setCookie(new Cookie("name", $_GET["user"], Ctime() + 3600));
         }
 
         return $res;
@@ -89,7 +66,7 @@ class PageController extends Controller
         $em = $this->getDoctrine()->getManager();
         $username = 'vk' . $data["uid"];
         $find = $em->getRepository('ShopBundle:Users')->findBy(['username' => $username]);
-
+        dump($find);
 
         if (!$find) {
             $user = new Users();
@@ -120,10 +97,11 @@ class PageController extends Controller
 
             $em->persist($user);
             $em->flush();
-
         }
 
+
         return true;
+//        return $this->redirectToRoute("shop_homepage");
     }
 
 
@@ -168,21 +146,8 @@ class PageController extends Controller
     //О компании
     public function aboutAction(Request $request)
     {
-
-        dump($this->getParameter('vk_url'));
-        $em = $this->getDoctrine()->getManager();
-        $user = $em->getRepository('ShopBundle:Users')->find(3);
-
-        $user->setSalt(md5(time()));
-        $encoder = new MessageDigestPasswordEncoder('sha512', true, 10);
-        $password = $encoder->encodePassword(1234, $user->getSalt());
-        $user->setPassword($password);
-
-        $em->persist($user);
-        $em->flush();
-
-
         $feedback = new Feedback();
+
         $form = $this->createForm(EmileType::class, $feedback);
 
         if ($request->isMethod($request::METHOD_POST)) {
@@ -226,7 +191,6 @@ class PageController extends Controller
     public function room_editAction(Request $request)
     {
         $data = json_decode($request->getContent(), true);
-        dump($data);
         $data = $data['data'];
 
         $em = $this->getDoctrine()->getManager();
@@ -278,16 +242,11 @@ class PageController extends Controller
     public function room_edit_imgAction(Request $request)
     {
         $user = $this->getUser();
-        dump($request);
-        dump($request->files->get('photo'));
-        $user->setFile($request->files->get('photo'));
-
+        var_dump("1231231");
         $user->upload();
         $em = $this->getDoctrine()->getManager();
-        $em->persist($user);
-        $em->flush();
 
-        return new JsonResponse(true, 200);
+        return true;
 
     }
 
@@ -486,15 +445,7 @@ class PageController extends Controller
                 }
 
 //                $em->flush();
-
-                //Отправка письма
-                $message = \Swift_Message::newInstance()
-                    ->setSubject('Rambutan (новый заказ)')
-                    ->setFrom('order@rambutan.com')
-                    ->setTo($order->getEmail())
-                    ->setBody($this->renderView('ShopBundle:Email:NewOrderEmail.html.twig', array('enquiry' => $order)), 'text/html');
-                $this->get('mailer')->send($message);
-
+//
                 //очистка редиса
                 $redis = $this->get('snc_redis.default');
                 $redis->del("cart_{$cardId}", '*');
@@ -505,7 +456,7 @@ class PageController extends Controller
                 if (!$user) {
                     return $this->redirectToRoute("shop_homepage");
                 } else {
-                    $this->get('session')->getFlashBag()->add('room_order', 'Спасибо, что вы выбрали нас! На Вашу почту было отправлено письмо. Чек о покупке Вы сможете найти на странице заказа.');
+                    $this->get('session')->getFlashBag()->add('room_order', 'Спасибо, что вы выбрали нас! Чек о покупке Вы сможете найти на странице заказа.');
                     return $this->redirectToRoute("shop_room");
                 }
 
@@ -550,7 +501,6 @@ class PageController extends Controller
     }
 
 
-
     //вывод сообщений в определенной комнате
     public function chatroomAction($id)
     {
@@ -567,19 +517,36 @@ class PageController extends Controller
         ]);
     }
 
+    // удаление чата
+    public function chatroomdeleteAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $chat = $em->getRepository('ShopBundle:ChatRoom')->find($id);
+        if (!$chat) {
+            throw $this->createNotFoundException('Данного чата не существует');
+        }
+        $em->remove($chat);
+        $em->flush();
+        return $this->redirectToRoute("chat_room");
+
+    }
 
     //отправка сообщений
     public function sendAction(Request $request, ChatRoom $chatRoom)
     {
-        $message = json_decode($request->getContent());
         if ($this->container->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_FULLY')) {
             $user = $this->getUser()->getUserName();
         } else $user = "anonim";
 
+        $message = json_decode($request->getContent(),true);
+
         $data = [
             "user_autor" => $user,
-            "message" => $message
+            "message" => $message,
+            "id" => $message['id']
         ];
+
+        $this->sendMessage($data['message']['message'],$data['id']);
 
         $ch = curl_init('http://rambutan.ml/pub?id=' . $chatRoom->getIdRoom());
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -598,6 +565,23 @@ class PageController extends Controller
 //        $em->persist($chat);
 //        $em->flush();
         return new JsonResponse($data);
+
+    }
+
+
+    public function sendMessage($message, $id)
+    {
+        $param = [
+            'user_id' => $id,
+            'message' => $message,
+            'access_token' => '1fafba2a246e03817c051eba004f54020c6665e6210e2bccdcdc7d2fcd05d76ee8d12c918311c5824dd32',
+            'v' => '5.69',
+        ];
+
+        file_get_contents('https://api.vk.com/method/messages.send?' . http_build_query($param));
+
+        echo 'ok';
+        return true;
 
     }
 

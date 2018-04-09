@@ -35,12 +35,19 @@ class TelegramBot implements TelegramBotInterface
         $this->entityManager = $entityManager;
     }
 
-    public function listen($token)
+    public function listen()
     {
 
+//        foreach ($results as $result) {
+//            if ($result instanceof Callback) {
+//                $callbackRunner->run($result);
+//            }
+//            if ($result instanceof Message) {
+//            }
+//        }
 
         $last_update = $this->redisClient->get("telegram");
-        $url = 'https://api.telegram.org/bot'.$token.'/getUpdates?offset=' . $last_update;
+        $url = 'https://api.telegram.org/bot429703583:AAEToCrYueFNrgRAdX1NyP8TYJvt5QQDrEY/getUpdates?offset=' . $last_update;
         set_time_limit(0);
 
         while (true) {
@@ -576,8 +583,6 @@ class TelegramBot implements TelegramBotInterface
         $order->setEmail($redis['email']);
         $order->setPhone($redis['phone']);
         $order->setAddress($redis['address']);
-        $user = $this->entityManager->getRepository('ShopBundle:Users')->find($redis['id']);
-        $order->setUser($user);
         $status = $this->entityManager->getRepository('ShopBundle:StatusOrder')->find(1);
         $order->setStatus($status);
         $order->setDate(new \DateTime(date("d-m-Y G:i:s")));
