@@ -1,6 +1,6 @@
 {% extends 'ShopBundle:Default:index.html.twig' %}
 
-{% block title %}Добавить продукт{% endblock %}
+{% block title %}Менеджер{% endblock %}
 
 {% block body %}
     <div class="container jumbotron border border-success ">
@@ -112,12 +112,12 @@
                                         Вывести результат в XLS файл
                                     </label>
                                 </div>
-                                <div class="form-check">
-                                    <label class="form-check-label">
-                                        <input class="form-check-input" type="radio" name="result" id="pdf" value="3">
-                                        Вывести результат в PDF файл
-                                    </label>
-                                </div>
+                                {#<div class="form-check">#}
+                                    {#<label class="form-check-label">#}
+                                        {#<input class="form-check-input" type="radio" name="result" id="pdf" value="3">#}
+                                        {#Вывести результат в PDF файл#}
+                                    {#</label>#}
+                                {#</div>#}
 
                                 <button type="submit" class="btn btn-success">Отправить</button>
                             </form>

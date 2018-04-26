@@ -6,10 +6,14 @@
 {% block body %}
 
     <div class="container jumbotron border border-success ">
-        <imput class="container ">
+        <imput class="container " id="page">
             <h3 class="display-4">Организационная подержка пользователей "ВКонтакте" от {{ app.user.username }}!</h3>
-
-
+            <div class="btn-group">
+                <a href="https://rambutan.ml/chat" class="btn btn-success" role="button">Выбрать чат</a>
+                <span id="page">
+                    <a href="#publish" class="btn btn-success" role="button">Ответить</a>
+                </span>
+            </div>
 
             {% for chat in chat %}
                 <div
@@ -35,12 +39,13 @@
         <div id="messages"></div>
 
 
-
         <form id="publish" class="form-inline ">
             <label class="mr-sm-2" for="inlineFormCustomSelect">Получатель</label>
-            <select class="custom-select mr-sm-1" id="inlineFormCustomSelect">
-                <option selected>Выбирете получателя</option>
-                <option value="1">One</option>
+            <select class="custom-select mr-sm-1" id="direct">
+                <option selected>Массовая рассылка</option>
+                {% for users in users %}
+                    <option value="{{ users.id }}">{{ users.last }} {{ users.first }}</option>
+                {% endfor %}
             </select>
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Ваше сообщение" name="message"/>
@@ -49,9 +54,18 @@
         </form>
 
 
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $("#page").on("click","a", function (event) {
+                    event.preventDefault();
+                    var id  = $(this).attr('href'),
+                        top = $(id).offset().top;
+                    $('body,html').animate({scrollTop: top}, 750);
+                });
+            });
 
-        <script>
             const messages = document.getElementById('messages');
+            const direct = document.getElementById('direct');
 
             publish.onsubmit = function () {
                 var xhr = new XMLHttpRequest();
@@ -59,19 +73,22 @@
                 xhr.onload = function () {
                 };
 
-                if (document.cookie.replace(/(?:(?:^|.*;\s*)vk_id\s*\=\s*([^;]*).*$)|^.*$/, "$1")){
-                    var id = document.cookie.replace(/(?:(?:^|.*;\s*)vk_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-                    console.log(1111111);
+                console.log(direct.value);
+
+                if (direct.value == 'Массовая рассылка') {
+
+                    xhr.send(JSON.stringify({message: this.elements.message.value, id: 'vk'}));
+                    this.elements.message.value = '';
+                    return false;
+
+                } else {
+                    var id = direct.value;
                     xhr.send(JSON.stringify({message: this.elements.message.value, id: id}));
                     this.elements.message.value = '';
                     return false;
                 }
 
 
-
-                xhr.send(JSON.stringify({message: this.elements.message.value}));
-                this.elements.message.value = '';
-                return false;
             };
 
             subscribe();
@@ -94,9 +111,21 @@
                     }
 
                     if (JSON.parse(this.responseText).message['service'] == 'vk') {
-                        var vk_id= JSON.parse(this.responseText).message['user_id'];
+                        var vk_id = JSON.parse(this.responseText).message['user_id'];
+                        var user_autor = JSON.parse(this.responseText).user_autor;
+                        var check = 0;
                         document.cookie = "vk_id=" + vk_id;
-                        console.log(vk_id);
+
+                        for (var i = 0, l = direct.length; i < l; i++) {
+                            var option = direct[i];
+                            if (option.value == vk_id) {
+                                check = +1;
+                            }
+                        }
+                        if (check == 0) {
+                            direct.innerHTML += "<option value='" + vk_id + "'>" + user_autor + "</option>";
+                        }
+
                     }
 
 
@@ -113,12 +142,12 @@
 
                     subscribe();
                 };
+
                 xhr.onerror = xhr.onabort = function () {
-                    setTimeout(subscribe, 500);
+                    setTimeout(subscribe, 200);
                 };
                 xhr.send('');
             }
-
 
 
         </script>

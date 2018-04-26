@@ -26,7 +26,6 @@ framework:
     trusted_hosts: ~
     session:
         handler_id: snc_redis.session.handler
-        cookie_httponly: false
 #        # https://symfony.com/doc/current/reference/configuration/framework.html#handler-id
 #        handler_id: session.handler.native_file
 #        save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
@@ -109,7 +108,7 @@ snc_redis:
 knp_snappy:
     pdf:
         enabled:    true
-        binary:     /usr/local/bin/wkhtmltopdf #xvfb-run /usr/bin/wkhtmltopdf #/usr/local/bin/wkhtmltopdf
+        binary:     xvfb-run /usr/bin/wkhtmltopdf #xvfb-run /usr/bin/wkhtmltopdf #/usr/local/bin/wkhtmltopdf
         options:    []
     image:
         enabled:    true

@@ -46,7 +46,7 @@ class DefaultController extends Controller
         if (!$data) {
             $data = [0];
         }
-        dump($data);
+//        dump($data);
         return $this->render('ShopBundle:Default:search.html.twig', array(
             'data' => array_unique($data),
             'search' => $search,
@@ -225,8 +225,8 @@ class DefaultController extends Controller
     public function navigationAction($id = NULL)
     {
         if ($this->getUser() && isset($_COOKIE["name"])) {
-            dump($this->getUser()->getId());
-            dump($_COOKIE["name"]);
+//            dump($this->getUser()->getId());
+//            dump($_COOKIE["name"]);
             $em = $this->getDoctrine();
             $user = $em->getRepository("ShopBundle:Users")->find($this->getUser()->getId());
             $redis = $this->get('snc_redis.default');

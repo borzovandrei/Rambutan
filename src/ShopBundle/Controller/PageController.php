@@ -16,7 +16,10 @@ use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+
 
 class PageController extends Controller
 {
@@ -28,13 +31,33 @@ class PageController extends Controller
         $data = null;
         if ($request->get("code") !== null) {
             $token = json_decode(file_get_contents('https://oauth.vk.com/access_token?client_id=' . $this->getParameter('vk_id') . '&display=page&redirect_uri=' . $this->getParameter('vk_url') . '&client_secret=' . $this->getParameter('vk_secret') . '&code=' . $_GET["code"]), true);
+//            dump($token['user_id']);
         }
         if ($token !== null) {
-            $data = json_decode(file_get_contents('https://api.vk.com/method/users.get?user_id=' . $token['user_id'] . '&access_token=' . $token['access_token'] . '&fields=uid,sex,bdate,city,nickname,sex'), true);
+//            dump($token);
+            $data = json_decode(file_get_contents('https://api.vk.com/method/users.get?user_id=' . $token['user_id'] . '&access_token=' . $token['access_token'] . '&fields=uid,sex,bdate,city,nickname,sex&v=5.74'), true);
+//            dump($data);
         }
         if ($data !== null) {
-            var_dump($data);
+//            dump($data);
             $this->regVK($data["response"][0]);
+
+            //аунтетификация пользователя
+            $em = $this->getDoctrine()->getManager();
+            $user = $em->getRepository('ShopBundle:Users')->findOneBy(['username' => 'vk' . $data["response"][0]["id"]]);
+            $token = new UsernamePasswordToken(
+                $user,
+                null,
+                'vk',
+                $user->getRoles()
+            );
+
+            $this->get("security.token_storage")->setToken($token);
+            $request->getSession()->set('_security_vk', serialize($token));
+
+            $event = new InteractiveLoginEvent($request, $token);
+            $this->get("event_dispatcher")->dispatch("security.interactive_login", $event);
+
             return $this->redirectToRoute("shop_room");
         }
 
@@ -52,7 +75,7 @@ class PageController extends Controller
         ]);
 
         if (isset($_GET["user"])) {
-            $res->headers->setCookie(new Cookie("name", $_GET["user"], Ctime() + 3600));
+            $res->headers->setCookie(new Cookie("name", $_GET["user"], time() + 3600));
         }
 
         return $res;
@@ -64,13 +87,13 @@ class PageController extends Controller
     private function regVK($data)
     {
         $em = $this->getDoctrine()->getManager();
-        $username = 'vk' . $data["uid"];
+        $username = 'vk' . $data["id"];
         $find = $em->getRepository('ShopBundle:Users')->findBy(['username' => $username]);
-        dump($find);
+//        dump($find);
 
         if (!$find) {
             $user = new Users();
-            dump($data);
+//            dump($data);
             if ($data["sex"] == 1) {
                 $data["sex"] = 2;
             } else {
@@ -78,13 +101,13 @@ class PageController extends Controller
             }
             $sex = $em->getRepository('ShopBundle:Sex')->findOneBy(['id' => $data["sex"]]);
             $role = $em->getRepository('ShopBundle:Role')->find(2);
-            $user->setAddress($data["city"])
+            $user->setAddress($data["city"]["title"])
                 ->setAge(new \DateTime($data["bdate"]))
-                ->setUsername('vk' . $data["uid"])
+                ->setUsername($username)
                 ->setFirstname($data["first_name"])
                 ->setLastname($data["last_name"])
-                ->setEmail('email@vk.com')
-                ->setPhone('000')
+                ->setEmail('edit@vk.com')
+                ->setPhone('+79990000000')
                 ->setSex($sex)
                 ->setPath('vk_user.png');
 
@@ -107,7 +130,7 @@ class PageController extends Controller
 
     public function regVkAction()
     {
-        return $this->redirect("https://oauth.vk.com/authorize?client_id=6382685&display=page&redirect_uri=http://dev.rambutan.ml/login&response_type=code");
+        return $this->redirect("https://oauth.vk.com/authorize?client_id=6382685&display=page&redirect_uri=http://rambutan.ml/login&response_type=code");
     }
 
 
@@ -128,7 +151,7 @@ class PageController extends Controller
         $password = $encoder->encodePassword($form["password"]->getData(), $user->getSalt());
         $user->setPassword($password);
 
-        dump($request);
+//        dump($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $user->upload();
@@ -177,7 +200,6 @@ class PageController extends Controller
     public function roomAction(Request $request)
     {
         $user = $this->getUser();
-
         $em = $this->getDoctrine()->getManager();
         $orders = $em->getRepository('ShopBundle:Order')->findBy(['user' => $user]);
 
@@ -242,11 +264,14 @@ class PageController extends Controller
     public function room_edit_imgAction(Request $request)
     {
         $user = $this->getUser();
-        var_dump("1231231");
+//        dump($request);
+//        dump($request->files->get('photo'));
+        $user->setFile($request->files->get('photo'));
         $user->upload();
         $em = $this->getDoctrine()->getManager();
-
-        return true;
+        $em->persist($user);
+        $em->flush();
+        return new JsonResponse(true, 200);
 
     }
 
@@ -258,14 +283,14 @@ class PageController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         $order = $em->getRepository('ShopBundle:OrderItem')->findBy(["orderprod" => $id]);
-        dump($order);
+//        dump($order);
         $prod = [];
         foreach ($order as $k => $v) {
             $product = $em->getRepository('ShopBundle:Products')->findOneBy(["id" => $v->getItem()]);
             $prod[$product->getName()] = $v->getSum();
         }
 
-        dump($prod);
+//        dump($prod);
         $response = new JsonResponse();
         $response->setData($prod);
 
@@ -432,7 +457,7 @@ class PageController extends Controller
                     $order->setUser($user);
                 }
                 $order->setOderitem(strval(md5(rand())));
-                dump($order);
+//                dump($order);
 
 
                 //сохранение в заказ продуктов
@@ -445,7 +470,16 @@ class PageController extends Controller
                 }
 
 //                $em->flush();
-//
+
+                //Отправка письма
+                $message = \Swift_Message::newInstance()
+                    ->setSubject('Rambutan (новый заказ)')
+                    ->setFrom('order@rambutan.com')
+                    ->setTo($order->getEmail())
+                    ->setBody($this->renderView('ShopBundle:Email:NewOrderEmail.html.twig', array('enquiry' => $order)), 'text/html');
+                $this->get('mailer')->send($message);
+
+
                 //очистка редиса
                 $redis = $this->get('snc_redis.default');
                 $redis->del("cart_{$cardId}", '*');
@@ -478,9 +512,9 @@ class PageController extends Controller
         $user_id = $this->getUser()->getId();
 
         if (!$this->container->get('security.authorization_checker')->isGranted('ROLE_MANAGER')) {
-            $chatroom = $em->getRepository('ShopBundle:ChatRoom')->findOneBy(['id_user'=>$user_id]);
-            if (!$chatroom){
-                $chatroom=new ChatRoom();
+            $chatroom = $em->getRepository('ShopBundle:ChatRoom')->findOneBy(['id_user' => $user_id]);
+            if (!$chatroom) {
+                $chatroom = new ChatRoom();
                 $chatroom->setIdUser($this->getUser());
                 $chatroom->setName($this->getUser()->getUsername());
                 $em->persist($chatroom);
@@ -488,9 +522,9 @@ class PageController extends Controller
             }
         }
 
-        $path = $em->getRepository('ShopBundle:ChatRoom')->findOneBy(['id_user'=>$user_id]);
+        $path = $em->getRepository('ShopBundle:ChatRoom')->findOneBy(['id_user' => $user_id]);
 
-        $chatroom_manager = $em->getRepository('ShopBundle:ChatRoom')->findBy(['id_user'=>null]);
+        $chatroom_manager = $em->getRepository('ShopBundle:ChatRoom')->findBy(['id_user' => null]);
         $chatroom_user = $em->getRepository('ShopBundle:ChatRoom')->findByNot('id_user', !null);
 
         return $this->render('ShopBundle:Page:chat.html.twig', [
@@ -520,6 +554,7 @@ class PageController extends Controller
     //вывод сообщений в определенной комнате
     public function chatroomVKAction()
     {
+        $redis = $this->get('snc_redis.default');
         $em = $this->getDoctrine()->getManager();
         $chat = $em->getRepository('ShopBundle:ChatRoom')->findOneBy(['name' => 'ВКонтакте']);
         if (!$chat) {
@@ -527,9 +562,16 @@ class PageController extends Controller
         }
         $messages = $em->getRepository('ShopBundle:Chat')->getChat($chat->getIdRoom());
 
+        $users = [];
+
+        if ($redis->get("vk")) {
+            $users = json_decode($redis->get("vk"), true);
+        }
+//        dump($users);
         return $this->render('ShopBundle:Page:chatroomVK.html.twig', [
             'chat' => $messages,
             'id' => $chat->getIdRoom(),
+            'users' => $users,
         ]);
     }
 
@@ -554,7 +596,7 @@ class PageController extends Controller
             $user = $this->getUser()->getUserName();
         } else $user = "anonim";
 
-        $message = json_decode($request->getContent(),true);
+        $message = json_decode($request->getContent(), true);
 
         $data = [
             "user_autor" => $user,
@@ -562,7 +604,21 @@ class PageController extends Controller
             "id" => $message['id']
         ];
 
-        $this->sendMessage($data['message']['message'],$data['id']);
+        if ($message['id'] == 'vk') {
+            $this->sendAll($data['message']['message']);
+            $data['message']['message'] = "<b>Массовая рассылка:</b> </br>" . $data['message']['message'];
+        } else {
+            if ($data['id']) {
+                $this->sendMessage($data['message']['message'], $data['id']);
+                $user_info = json_decode(file_get_contents("https://api.vk.com/method/users.get?user_ids={$data['id']}&v=5.0"));
+                $first_name = $user_info->response[0]->first_name;
+                $last_name = $user_info->response[0]->last_name;
+                $data['message']['message'] = "<b>Кому: </b>" . $last_name . " " . $first_name . "</br> <b>Сообщение:</b> </br>" . $data['message']['message'];
+            } else {
+                $data['message']['message'] = "<b>Сообщение:</b> </br>" . $data['message']['message'];
+            }
+        }
+
 
         $ch = curl_init('http://rambutan.ml/pub?id=' . $chatRoom->getIdRoom());
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -584,6 +640,18 @@ class PageController extends Controller
 
     }
 
+
+    public function sendAll($message)
+    {
+        $redis = $this->get('snc_redis.default');
+        $users = json_decode($redis->get("vk"), true);
+        foreach ($users as $k => $v) {
+            $this->sendMessage($message, $v['id']);
+        }
+
+        return true;
+
+    }
 
     public function sendMessage($message, $id)
     {

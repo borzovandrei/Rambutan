@@ -17,11 +17,12 @@
                             {% if chatroom.name == 'ВКонтакте' %}
                                 <input class="btn btn-lg btn-primary btn-outline-primary btn-block" type="button"
                                        value="{{ chatroom.name }}"
-                                       onClick='location.href="{{ path('shop_chatVK') }}"'>
+                                       onClick='location.href="http://rambutan.ml/admin/chatVK"'>
                             {% else %}
                                 <input class="btn btn-lg btn-success btn-outline-success btn-block" type="button"
                                        value="{{ chatroom.name }}"
-                                       onClick='location.href="{{ path('shop_chat', { 'id': chatroom.idRoom }) }}"'>
+                                       onClick='location.href="http://rambutan.ml/chatroom/{{ chatroom.idRoom }}"'>
+                                {#onClick='location.href="{{ path('shop_chat', { 'id': chatroom.idRoom }) }}"'>#}
                             {% endif %}
                         {% endfor %}
                     </div>
@@ -30,7 +31,7 @@
                         {% for chatroom in chatroom_user %}
                             <input class="btn btn-lg btn-success btn-outline-success btn-block" type="button"
                                    value="{{ chatroom.name }}"
-                                   onClick='location.href="{{ path('shop_chat', { 'id': chatroom.idRoom }) }}"'>
+                                   onClick='location.href="http://rambutan.ml/chatroom/{{ chatroom.idRoom }}"'>
                         {% endfor %}
                     </div>
                 </div>
@@ -46,5 +47,7 @@
 
 
         </div>
+
     </div>
+
 {% endblock %}

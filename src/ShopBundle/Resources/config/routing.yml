@@ -231,3 +231,9 @@ telegram:
     defaults: { _controller: ShopBundle:Telegram:telegram }
     requirements:
               methods:  GET
+
+vkbot:
+    path:  /vkbot
+    defaults: { _controller: ShopBundle:Vk:bot }
+    requirements:
+              methods:  GET

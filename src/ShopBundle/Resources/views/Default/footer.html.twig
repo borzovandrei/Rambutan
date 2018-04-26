@@ -1,9 +1,20 @@
 <footer class="footer">
     <div class="container">
-        <p class="float-right">
+        <p class="float-right" id="page">
             <a href="#">На вверх</a>
         </p>
         <p>Мы доставляем только свежие продукты!</p>
-        <p>Возникли вопросы? <a  href="{{ path('shop_about') }}"> свяжитесь с нами</a>.</p>
+        <p>Возникли вопросы? <a href="{{ path('shop_about') }}"> свяжитесь с нами</a>.</p>
     </div>
 </footer>
+
+<script>
+//    $(document).ready(function () {
+//        $("#page").on("click", "a", function (event) {
+//            event.preventDefault();
+//            var id = $(this).attr('href'),
+//                top = $(id).offset().top;
+//            $('body,html').animate({scrollTop: top}, 750);
+//        });
+//    });
+</script>

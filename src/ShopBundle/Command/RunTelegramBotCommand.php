@@ -14,7 +14,7 @@ class RunTelegramBotCommand extends ContainerAwareCommand
     {
         $this
             ->setName('RunTelegram')
-            ->setDescription('...')
+            ->setDescription('Telegram bot for customer')
             ->addArgument('argument', InputArgument::OPTIONAL, 'Argument description')
             ->addOption('option', null, InputOption::VALUE_NONE, 'Option description')
         ;

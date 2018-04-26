@@ -158,6 +158,7 @@ class AdminController extends Controller
     {
         $product = new Products();
         $product->setRating(0);
+        $product->setTelegram(0);
         $form = $this->createForm(ProductAddType::class, $product);
         $form->handleRequest($request);
 
@@ -183,7 +184,7 @@ class AdminController extends Controller
         if (!$product) {
             throw $this->createAccessDeniedException("Данного товара нет в магазине");
         }
-
+        $product->setTelegram(0);
         $form = $this->createForm(ProductAddType::class, $product);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -255,7 +256,6 @@ class AdminController extends Controller
         return $this->redirect($this->generateUrl('shop_add'));
 
     }
-
 
 
 }

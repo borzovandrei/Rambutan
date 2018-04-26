@@ -3,8 +3,8 @@
 namespace ShopBundle\Service\TelegramBot;
 
 
-interface TelegramBotInterface {
-
+interface TelegramBotInterface
+{
 
 
     public function listen();
@@ -19,7 +19,7 @@ interface TelegramBotInterface {
 
     public function help();
 
-    public function login($text);
+    public function login();
 
     public function logout();
 

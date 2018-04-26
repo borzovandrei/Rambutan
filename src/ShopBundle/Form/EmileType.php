@@ -32,7 +32,7 @@ class EmileType extends AbstractType
         $builder->add('body', TextareaType::class, array(
             'label' => 'Сообщение:',
             'attr' => array(
-                'placeholder' => "Пожалуйста, напишите более подрбно"
+                'placeholder' => "Пожалуйста, напишите более подрбно (не менее 50 символов)."
             )));
     }
 

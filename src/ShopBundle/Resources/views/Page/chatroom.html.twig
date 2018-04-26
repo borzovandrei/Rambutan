@@ -6,10 +6,14 @@
 {% block body %}
 
     <div class="container jumbotron border border-success ">
-        <imput class="container ">
+        <imput class="container">
             <h3 class="display-4">Добро пожаловать в чат, {{ app.user.username }}!</h3>
-
-
+            <div class="btn-group">
+                <a href="https://rambutan.ml/chat" class="btn btn-success" role="button">Выбрать чат</a>
+                <span id="page">
+                    <a href="#publish" class="btn btn-success" role="button">Ответить</a>
+                </span>
+            </div>
 
             {% for chat in chat %}
                 <div
@@ -42,8 +46,16 @@
         </form>
 
 
-
         <script>
+            $(document).ready(function () {
+                $("#page").on("click", "a", function (event) {
+                    event.preventDefault();
+                    var id = $(this).attr('href'),
+                        top = $(id).offset().top;
+                    $('body,html').animate({scrollTop: top}, 750);
+                });
+            });
+
             const messages = document.getElementById('messages');
 
             publish.onsubmit = function () {
@@ -52,14 +64,13 @@
                 xhr.onload = function () {
                 };
 
-                if (document.cookie.replace(/(?:(?:^|.*;\s*)vk_id\s*\=\s*([^;]*).*$)|^.*$/, "$1")){
-                    var id = document.cookie.replace(/(?:(?:^|.*;\s*)vk_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
-                    console.log(1111111);
-                    xhr.send(JSON.stringify({message: this.elements.message.value, id: id}));
-                    this.elements.message.value = '';
-                    return false;
-                }
-
+//                if (document.cookie.replace(/(?:(?:^|.*;\s*)vk_id\s*\=\s*([^;]*).*$)|^.*$/, "$1")){
+//                    var id = document.cookie.replace(/(?:(?:^|.*;\s*)vk_id\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+//                    console.log(1111111);
+//                    xhr.send(JSON.stringify({message: this.elements.message.value, id: id}));
+//                    this.elements.message.value = '';
+//                    return false;
+//                }
 
 
                 xhr.send(JSON.stringify({message: this.elements.message.value}));
@@ -76,6 +87,7 @@
                 url = 'http://rambutan.ml/sub/' + {{ id }} +"?&v=" + timestamp;
                 xhr.open("GET", url, true);
                 xhr.onload = function () {
+
                     var date = new Date();
                     var date_str = date.getDate() + "-" + (1 + date.getMonth()) + "-" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
 
@@ -86,9 +98,9 @@
                         var writer = '<div  class="card border-danger mb-3" style="max-width: 20rem;"id="comment">';
                     }
 
-                    if (JSON.parse(this.responseText).message['service'] == 'vk') {
-                        document.cookie = "vk_id=" + JSON.parse(this.responseText).message['user_id'];
-                    }
+//                    if (JSON.parse(this.responseText).message['service'] == 'vk') {
+//                        document.cookie = "vk_id=" + JSON.parse(this.responseText).message['user_id'];
+//                    }
 
 
                     var msgs = document.createElement('div');
@@ -104,6 +116,8 @@
 
                     subscribe();
                 };
+
+
                 xhr.onerror = xhr.onabort = function () {
                     setTimeout(subscribe, 500);
                 };
@@ -111,14 +125,15 @@
             }
 
 
-
         </script>
 
     </div>
     {% if is_granted('ROLE_MANAGER') %}
-        <p><a class="btn btn-outline-danger btn-lg btn-block"
-              href="{{ path('shop_chat_delete', { 'id': id }) }}">Удалить чат</a>
-        </p>
+        <div class="container ">
+            <p><a class="btn btn-outline-danger btn-lg btn-block"
+                  href="{{ path('shop_chat_delete', { 'id': id }) }}">Удалить чат</a>
+            </p>
+        </div>
     {% endif %}
     </div>
 {% endblock %}

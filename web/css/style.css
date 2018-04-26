@@ -103,9 +103,16 @@ body {
 .footer {
     background: linear-gradient(to right, #63a353, #b2e53f, #c2ff8b, #ffffff);
     color: #ffffff;
-    position: relative;
-    bottom: 0;
     width: 100%;
+    left: 0;
+    padding-top: 10px;
+    bottom: -120px;
+    position: absolute;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
 }
 
 .marketing .col-lg-4 {
